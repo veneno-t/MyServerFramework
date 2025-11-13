@@ -9,7 +9,6 @@ void COMMonsterDecisionTree::destroy()
 void COMMonsterDecisionTree::clearTree()
 {
 	mDTNodePool->destroyClassList(mNodeList);
-	mNodeList.clear();
 	mMutexConditionList.clear();
 	mConditionGroup.clear();
 	mRoot = nullptr;

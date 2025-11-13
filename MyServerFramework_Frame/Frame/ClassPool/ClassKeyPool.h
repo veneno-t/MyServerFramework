@@ -1,42 +1,43 @@
 ﻿#pragma once
 
 #include "ClassPoolBase.h"
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
+#include "ErrorProfile.h"
 
 // 大体上与ClassTypePool类似,ClassTypePool是根据物体的类型来创建,创建后会自动设置物体的类型
 // ClassKeyPool是根据KeyType来创建,KeyType不一定是物体的类型,只是物体类型的唯一索引
 // 所以跟ClassTypePool唯一的区别就是在创建物体后不会调用对象的setType
 // 仅限于在主线程使用
-template<typename ClassType, typename KeyType, typename TypeCheck = typename IsSubClassOf<ClassPooledObject, ClassType>::mType>
+template<typename ClassType, typename KeyType, typename TypeCheck = typename IsSubClassOf<ClassObject, ClassType>::mType>
 class ClassKeyPool : public ClassPoolBase
 {
 	BASE(ClassKeyPool, ClassPoolBase);
 public:
 	void quit() override
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
 			return;
 		}
-		for (const auto& pair : mUnusedList)
+#endif
+		for (auto& pair : mUnusedList)
 		{
-			auto& list = pair.second;
-			for (auto* value : list)
-			{
-				delete value;
-			}
+			DELETE_LIST(pair.second);
 		}
 		mUnusedList.clear();
 	}
 	void newClassList(const KeyType key, Vector<ClassType*>& classList, const int dataCount)
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
 			return;
 		}
+#endif
 		classList.clearAndReserve(dataCount);
 		if (mUnusedList.size() > 0)
 		{
@@ -75,7 +76,7 @@ public:
 				classList.push_back(obj);
 			}
 			mTotalCount.insertOrGet(key, make_pair(typeid(*tempValidObj).name(), 0)).second += createCount;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0 && tempValidObj != nullptr)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0 && tempValidObj != nullptr)
 			{
 				LOG(string(typeid(*tempValidObj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -91,11 +92,13 @@ public:
 	}
 	ClassType* newClass(const KeyType key)
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
 			return nullptr;
 		}
+#endif
 		ClassType* obj = nullptr;
 		if (mUnusedList.size() > 0)
 		{
@@ -116,7 +119,7 @@ public:
 			}
 			obj->resetProperty();
 			++mTotalCount.insertOrGet(key, make_pair(typeid(*obj).name(), 0)).second;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -128,11 +131,13 @@ public:
 	template<class T, typename TypeCheck0 = typename IsSubClassOf<ClassType, T>::mType>
 	T* newClass(const KeyType key)	
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
-			return nullptr;
+			return;
 		}
+#endif
 		T* obj = nullptr;
 		if (mUnusedList.size() > 0)
 		{
@@ -148,7 +153,7 @@ public:
 			obj = new T();
 			obj->resetProperty();
 			++mTotalCount.insertOrGet(key, make_pair(typeid(*obj).name(), 0)).second;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -161,11 +166,13 @@ public:
 	template<class T, typename TypeCheck0 = typename IsSubClassOf<ClassType, T>::mType>
 	void newClassList(const KeyType key, Vector<ClassType*>& classList, const int dataCount)
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
 			return;
 		}
+#endif
 		classList.clearAndReserve(dataCount);
 		if (mUnusedList.size() > 0)
 		{
@@ -195,7 +202,7 @@ public:
 				classList.push_back(obj);
 			}
 			mTotalCount.insertOrGet(key, make_pair(typeid(*classList[0]).name(), 0)).second += needCreateCount;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*classList[0]).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -210,17 +217,19 @@ public:
 	template<typename T, typename TypeCheck0 = typename IsSubClassOf<ClassType, T>::mType>
 	void destroyClass(T*& obj, const KeyType key)
 	{
+#ifdef WINDOWS
 		if (!isMainThread())
 		{
 			ERROR(string("只能在主线程调用,type:") + typeid(ClassType).name());
 			return;
 		}
+#endif
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
 		if (mDestroied || obj == nullptr)
 		{
 			return;
 		}
-		// 先重置所有属性,确认设置为已回收,再添加到列表,一旦添加到列表,随时就可能再分配出去,最后加入列表可以避免线程冲突
+		obj->destroy();
 		if (!obj->markDispose(this))
 		{
 			ERROR_PROFILE((string("0重复销毁对象:") + typeid(ClassType).name()).c_str());
@@ -231,19 +240,21 @@ public:
 		mUnusedList.insertOrGet(key).push_back(obj);
 		obj = nullptr;
 	}
-	//------------------------------------------------------------------------------------------------------------------
-protected:
-	virtual ClassType* create(const KeyType key) = 0;
-	void onHour() override
+	void dump() override
 	{
 		for (const auto& item : mTotalCount)
 		{
-			if (item.second.second > 1000)
+			const int itemCount = item.second.second;
+			if (itemCount > 1000)
 			{
-				LOG("ClassKeyPool: " + item.second.first + "的数量:" + IToS(item.second.second));
+				const int unuseCount = mUnusedList.tryGet(item.first).size();
+				LOG("ClassKeyPool: " + item.second.first + "的数量:" + IToS(itemCount) + ",总大小:" + LLToS(itemCount * sizeof(ClassType) / 1024) + "KB" + ", 未使用数量:" + IToS(unuseCount));
 			}
 		}
 	}
+	//------------------------------------------------------------------------------------------------------------------
+protected:
+	virtual ClassType* create(const KeyType key) = 0;
 protected:
 	HashMap<KeyType, Vector<ClassType*>> mUnusedList;	// 未使用对象的列表
 	HashMap<KeyType, pair<string, int>> mTotalCount;	// 创建的对象总数

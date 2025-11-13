@@ -7,6 +7,8 @@
 
 class MySQLDataHashMapScope
 {
+    typedef typename unordered_map<llong, MySQLData*>::iterator iterator;
+    typedef typename unordered_map<llong, MySQLData*>::const_iterator const_iterator;
 private:
     HashMap<llong, MySQLData*> mList;       // 原始数据
     Counter* mCounter = nullptr;            // 引用计数
@@ -15,7 +17,7 @@ public:
     MySQLDataHashMapScope() {}
     explicit MySQLDataHashMapScope(HashMap<llong, MySQLData*>&& list)
     {
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             return;
         }
@@ -27,7 +29,7 @@ public:
     MySQLDataHashMapScope(const MySQLDataHashMapScope& other) :
         mCounter(other.mCounter)
     {
-        if (other.mList.size() == 0)
+        if (other.mList.isEmpty())
         {
             return;
         }
@@ -61,6 +63,12 @@ public:
     {
         release();
     }
+    iterator begin()                { return mList.begin(); }
+    iterator end()                  { return mList.end(); }
+    const_iterator begin() const    { return mList.begin(); }
+    const_iterator end()  const     { return mList.end(); }
+    const_iterator cbegin() const   { return mList.cbegin(); }
+    const_iterator cend() const     { return mList.cend(); }
     const HashMap<llong, MySQLData*>& get() const& { return mList; }
     const HashMap<llong, MySQLData*>& get() const&& = delete;
     bool isValid() const { return mList.size() != 0; }
@@ -80,7 +88,6 @@ public:
         {
             mMySQLDataPool->destroyClassList(mList);
             mCounterThreadPool->destroyClass(mCounter);
-            mCounter = nullptr;
         }
     }
     void releaseNoDestroy()
@@ -92,7 +99,6 @@ public:
             {
                 mList.clear();
                 mCounterThreadPool->destroyClass(mCounter);
-                mCounter = nullptr;
             }
             else
             {

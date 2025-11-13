@@ -1,12 +1,13 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "FrameDefine.h"
 #include "StateParamMember.h"
+#include "ErrorProfile.h"
 
-class MICRO_LEGEND_FRAME_API ParamSet : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API ParamSet : public ClassObject
 {
-	BASE(ParamSet, ClassPooledObject);
+	BASE(ParamSet, ClassObject);
 public:
 	void resetProperty() override;
 	void setParam(int index, const string& stringParam);

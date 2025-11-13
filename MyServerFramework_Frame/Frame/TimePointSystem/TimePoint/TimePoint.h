@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "TimeValue.h"
 
-class MICRO_LEGEND_FRAME_API TimePoint : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API TimePoint : public ClassObject
 {
-	BASE(TimePoint, ClassPooledObject);
+	BASE(TimePoint, ClassObject);
 public:
 	virtual void init(){}
 	virtual void update(float elapsedTime);

@@ -10,12 +10,14 @@ public:
 	// 不使用MyString() = default; 因为这样仍然会允许使用初始化列表
 	MyString() {}
 	// 为了方便查代码,将返回指针的函数命名为具体的名字
-	const char* str() const			{ return mValue; }
-	char* toBuffer()				{ return mValue; }
+	const char* str() const				{ return mValue; }
+	char* toBuffer()					{ return mValue; }
 	// 仅为了在类型匹配时能够编译通过,尽量避免直接使用
-	const char* data() const		{ return mValue; }
-	char* data()					{ return mValue; }
-	bool isEmpty() const			{ return mValue[0] == '\0'; }
+	const char* data() const			{ return mValue; }
+	char* data()						{ return mValue; }
+	bool isEmpty() const				{ return mValue[0] == '\0'; }
+	constexpr int getMaxLength() const	{ return Length; }
+	void clear()						{ mValue[0] = '\0'; }
 	int length() const 
 	{
 		FOR_I(Length)

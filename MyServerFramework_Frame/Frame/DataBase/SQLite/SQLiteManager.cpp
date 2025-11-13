@@ -1,19 +1,9 @@
 ﻿#include "FrameHeader.h"
 
-void SQLiteManager::quit()
+void SQLiteManager::lateQuit()
 {
-	for (const auto& iter : mSQLiteList)
-	{
-		delete iter.second;
-	}
-	mSQLiteList.clear();
-}
-
-void SQLiteManager::addSQLiteTable(SQLiteTableBase* table, const char* tableName)
-{
-	table->setTableName(tableName);
-	table->init(string(FrameDefine::SQLITE_PATH) + tableName + ".db");
-	mSQLiteList.insert(table->getTableName(), table);
+	// 由于其他系统的quit对SQLiteData有依赖,所以在lateQuit中才去销毁Data
+	DELETE_MAP(mSQLiteList);
 }
 
 void SQLiteManager::checkAll()

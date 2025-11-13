@@ -2,7 +2,7 @@
 
 void EventSystem::quit()
 {
-	for (const auto& item : mListenerEventMap)
+	for (auto& item : mListenerEventMap)
 	{
 		mEventInfoPool->destroyClassList(item.second);
 	}
@@ -23,14 +23,14 @@ void EventSystem::update(float elapsedTime)
 	for (auto& itemChracter : mCharacterEventList)
 	{
 		auto& characterListenerList = itemChracter.second;
-		if (characterListenerList.size() == 0)
+		if (characterListenerList.isEmpty())
 		{
 			continue;
 		}
 		removeEvent.clear();
 		for (const auto& itemEvent : characterListenerList)
 		{
-			if (itemEvent.second.size() == 0)
+			if (itemEvent.second.isEmpty())
 			{
 				removeEvent.push_back(itemEvent.first);
 			}
@@ -41,7 +41,7 @@ void EventSystem::update(float elapsedTime)
 			{
 				characterListenerList.erase(eventType);
 			}
-			if (characterListenerList.size() == 0)
+			if (characterListenerList.isEmpty())
 			{
 				removeCharacterEvent.push_back(itemChracter.first);
 			}
@@ -74,7 +74,7 @@ void EventSystem::pushEventInternal(GameEvent* param, const llong characterID)
 		{
 			break;
 		}
-		if (characterListenerList->size() == 0)
+		if (characterListenerList->isEmpty())
 		{
 			mCharacterEventList.erase(characterID);
 			break;
@@ -84,7 +84,7 @@ void EventSystem::pushEventInternal(GameEvent* param, const llong characterID)
 		{
 			break;
 		}
-		if (listenerList->size() == 0)
+		if (listenerList->isEmpty())
 		{
 			characterListenerList->erase(eventType);
 			break;
@@ -183,12 +183,12 @@ void EventSystem::unlistenEvent(IEventListener* listener)
 				break;
 			}
 			curEventList->eraseElement(info);
-			if (curEventList->size() == 0)
+			if (curEventList->isEmpty())
 			{
 				if (!curEventList->isForeaching())
 				{
 					characterList->erase(info->mType);
-					if (characterList->size() == 0)
+					if (characterList->isEmpty())
 					{
 						mCharacterEventList.erase(info->mCharacterGUID);
 					}
@@ -203,7 +203,7 @@ void EventSystem::unlistenEvent(IEventListener* listener)
 		if (auto* globalEventList = mGlobalEventList.getPtr(info->mType))
 		{
 			globalEventList->eraseElement(info);
-			if (globalEventList->size() == 0)
+			if (globalEventList->isEmpty())
 			{
 				mGlobalEventList.erase(info->mType);
 			}
@@ -232,8 +232,7 @@ void EventSystem::removeCharacterEvent(const llong characterID)
 				infoList->eraseElement(item);
 			}
 		}
-		mEventInfoPool->destroyClassList(iter->second.getMainList());
-		iter->second.clear();
+		mEventInfoPool->destroyClassList(iter->second);
 		// 如果没有在遍历这个列表,就可以直接移除
 		if (!iter->second.isForeaching())
 		{
@@ -244,7 +243,7 @@ void EventSystem::removeCharacterEvent(const llong characterID)
 			++iter;
 		}
 	}
-	if (characterList->size() == 0)
+	if (characterList->isEmpty())
 	{
 		mCharacterEventList.erase(characterID);
 	}

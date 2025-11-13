@@ -43,6 +43,9 @@
     <Filter Include="Frame\CommandSystem\CmdGlobal">
       <UniqueIdentifier>{13fa2320-179e-4f8f-8a97-aa9fcb648220}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Frame\CommandSystem\CmdHttp">
+      <UniqueIdentifier>{ab883888-6ba4-4a7b-b8fd-7298b0558d2a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Frame\CommandSystem\CmdMySQLManager">
       <UniqueIdentifier>{f0b1d39c-4f64-4620-ade8-553b56a6e3a6}</UniqueIdentifier>
     </Filter>
@@ -159,6 +162,9 @@
     </Filter>
     <Filter Include="Frame\Thread">
       <UniqueIdentifier>{625ec121-664d-4ea9-b9b0-a612d1d138c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frame\Ticker">
+      <UniqueIdentifier>{539c18fb-e938-465f-ab96-01ac57f1c48e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Frame\TimePointSystem">
       <UniqueIdentifier>{45e855b7-0945-4ebc-8d1d-61bff7e8dbe3}</UniqueIdentifier>
@@ -315,6 +321,9 @@
     <ClInclude Include="Frame\ClassPool\ClassKeyPoolThread.h">
       <Filter>Frame\ClassPool</Filter>
     </ClInclude>
+    <ClInclude Include="Frame\ClassPool\ClassObject.h">
+      <Filter>Frame\ClassPool</Filter>
+    </ClInclude>
     <ClInclude Include="Frame\ClassPool\ClassPool.h">
       <Filter>Frame\ClassPool</Filter>
     </ClInclude>
@@ -322,9 +331,6 @@
       <Filter>Frame\ClassPool</Filter>
     </ClInclude>
     <ClInclude Include="Frame\ClassPool\ClassPoolBase.h">
-      <Filter>Frame\ClassPool</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\ClassPool\ClassPooledObject.h">
       <Filter>Frame\ClassPool</Filter>
     </ClInclude>
     <ClInclude Include="Frame\ClassPool\ClassPoolThread.h">
@@ -435,6 +441,9 @@
     <ClInclude Include="Frame\ClassPool\Pool\StatePool.h">
       <Filter>Frame\ClassPool\Pool</Filter>
     </ClInclude>
+    <ClInclude Include="Frame\ClassPool\Pool\TickerPool.h">
+      <Filter>Frame\ClassPool\Pool</Filter>
+    </ClInclude>
     <ClInclude Include="Frame\ClassPool\Pool\TimePointPool.h">
       <Filter>Frame\ClassPool\Pool</Filter>
     </ClInclude>
@@ -489,148 +498,130 @@
     <ClInclude Include="Frame\CommandSystem\CmdGlobal\CmdGlobalDelayLambda.h">
       <Filter>Frame\CommandSystem\CmdGlobal</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteAll.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdHttp\CmdHttpGet.cpp">
+      <Filter>Frame\CommandSystem\CmdHttp</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\CommandSystem\CmdHttp\CmdHttpGet.h">
+      <Filter>Frame\CommandSystem\CmdHttp</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\CommandSystem\CmdHttp\CmdHttpPost.cpp">
+      <Filter>Frame\CommandSystem\CmdHttp</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\CommandSystem\CmdHttp\CmdHttpPost.h">
+      <Filter>Frame\CommandSystem\CmdHttp</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteAll.cpp">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteAll.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteAll.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnLLong.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByID.cpp">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnLLong.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByID.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnLLong2And.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByLLong2AndT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnLLong2And.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByLLongIntAndT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnString.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByLLongT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByColumnString.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDeleteByStringT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByID.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLInsertDataT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseDeleteByID.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLInsertOrUpdateDataT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertCombine.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryAllT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertCombine.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryByIDT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertData.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryByIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertData.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryByLLongT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertDataT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryByStringT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertOrUpdateData.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryCountByIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseInsertOrUpdateData.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryCountByLLong2OrT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryByColumnIntT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryCountByLLongT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryByColumnLLongT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryExistByStringT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryByColumnStringT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByIDT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryByIDT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnInt.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByLLongListT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnInt.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByLLongT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnLLong.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByStringListT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnLLong.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLQueryListByStringT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnLLong2Or.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateAllIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryCountByColumnLLong2Or.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateBoolT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryExistByColumnString.cpp">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateDataT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryExistByColumnString.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateFloat2T.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByColumnIntT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateFloatT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByColumnLLongListT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateInt2T.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByColumnLLongT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateIntFloatT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByColumnStringListT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByColumnStringT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateLLongIntT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseQueryListByIDT.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateLLongListT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateAllInt.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateLLongT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateBool.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateString2T.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateData.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateFloat.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateFloat2.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateInt.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateInt2.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateIntFloat.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateLLong.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateLLongInt.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateLLongList.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateString.h">
-      <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLDataBaseUpdateString2.h">
+    <ClInclude Include="Frame\CommandSystem\CmdMySQLManager\CmdMySQLUpdateStringT.h">
       <Filter>Frame\CommandSystem\CmdMySQLManager</Filter>
     </ClInclude>
     <ClInclude Include="Frame\CommandSystem\CmdNetServer\CmdNetServerLogoutAccount.cpp">
@@ -664,6 +655,12 @@
       <Filter>Frame\Common</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Common\Dump.h">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\ErrorProfile.cpp">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\ErrorProfile.h">
       <Filter>Frame\Common</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Common\FrameBase.cpp">
@@ -714,6 +711,18 @@
     <ClInclude Include="Frame\Common\ObjectTool.h">
       <Filter>Frame\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Frame\Common\Profiler.cpp">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\Profiler.h">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\ProfilerData.h">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\ProfilerScope.h">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
     <ClInclude Include="Frame\Common\RandomSystem.cpp">
       <Filter>Frame\Common</Filter>
     </ClInclude>
@@ -727,6 +736,9 @@
       <Filter>Frame\Common</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Common\StreamBuffer.h">
+      <Filter>Frame\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Common\UsingSTD.h">
       <Filter>Frame\Common</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Component\ComponentOwner.cpp">
@@ -922,6 +934,9 @@
       <Filter>Frame\Dependency\curl</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Dependency\curl\multi.h">
+      <Filter>Frame\Dependency\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Dependency\curl\options.h">
       <Filter>Frame\Dependency\curl</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Dependency\curl\stdcheaders.h">
@@ -1389,6 +1404,12 @@
     <ClInclude Include="Frame\Net\Http\HttpListenInfo.h">
       <Filter>Frame\Net\Http</Filter>
     </ClInclude>
+    <ClInclude Include="Frame\Net\Http\HttpManager.cpp">
+      <Filter>Frame\Net\Http</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Net\Http\HttpManager.h">
+      <Filter>Frame\Net\Http</Filter>
+    </ClInclude>
     <ClInclude Include="Frame\Net\Http\HttpServerSystem.cpp">
       <Filter>Frame\Net\Http</Filter>
     </ClInclude>
@@ -1584,6 +1605,18 @@
     <ClInclude Include="Frame\Thread\TimeLock.h">
       <Filter>Frame\Thread</Filter>
     </ClInclude>
+    <ClInclude Include="Frame\Ticker\Ticker.cpp">
+      <Filter>Frame\Ticker</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Ticker\Ticker.h">
+      <Filter>Frame\Ticker</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Ticker\TickerSystem.cpp">
+      <Filter>Frame\Ticker</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Ticker\TickerSystem.h">
+      <Filter>Frame\Ticker</Filter>
+    </ClInclude>
     <ClInclude Include="Frame\TimePointSystem\TimePointSystem.cpp">
       <Filter>Frame\TimePointSystem</Filter>
     </ClInclude>
@@ -1654,6 +1687,9 @@
       <Filter>Frame\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Utility\BinaryUtility.h">
+      <Filter>Frame\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Utility\CmdUtility.h">
       <Filter>Frame\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Utility\FileUtility.cpp">

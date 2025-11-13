@@ -26,11 +26,7 @@ public:
 	void quit() override
 	{
 		THREAD_LOCK(mLock);
-		for (T* obj : mUnusedList)
-		{
-			delete obj;
-		}
-		mUnusedList.clear();
+		DELETE_LIST(mUnusedList);
 	}
 	T* newPod()
 	{
@@ -47,7 +43,8 @@ public:
 		if (obj == nullptr)
 		{
 			obj = new T();
-			if (++mTotalCount % 5000 == 0 && mShowCountLog)
+			++mTotalCount;
+			if (mShowCountLog && (mTotalCount & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount) + "个");
 			}
@@ -70,14 +67,9 @@ public:
 	void clearPool()
 	{
 		THREAD_LOCK(mLock);
-		for (T* obj : mUnusedList)
-		{
-			delete obj;
-		}
-		mUnusedList.clear(true);
+		DELETE_LIST(mUnusedList);
 	}
-protected:
-	void onHour() override
+	void dump() override
 	{
 		if (mTotalCount > 1000)
 		{

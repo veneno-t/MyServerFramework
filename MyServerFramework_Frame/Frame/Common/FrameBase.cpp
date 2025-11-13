@@ -1,10 +1,8 @@
 ﻿#include "FrameHeader.h"
 
-// 下面包含自动生成的代码,以// FrameSystem为起始,以第一个空行或者}为结束
-
 namespace FrameBase
 {
-	// FrameSystem Define
+	// auto generate start FrameSystem Define
 	ServerFramework* mServerFramework;
 	CharacterManager* mCharacterManager;
 	VectorPoolManager* mVectorPoolManager;
@@ -20,12 +18,14 @@ namespace FrameBase
 	InputSystem* mInputSystem;
 	KeyframeManager* mKeyframeManager;
 	LogSystem* mLogSystem;
+	HttpManager* mHttpManager;
 	HttpServerSystem* mHttpServerSystem;
 	TCPServerSystem* mTCPServerSystem;
 	UDPServerSystem* mUDPServerSystem;
 	WebSocketServerSystem* mWebSocketServerSystem;
 	FrameStateManager* mFrameStateManager;
 	ThreadManager* mThreadManager;
+	TickerSystem* mTickerSystem;
 	TimePointSystem* mTimePointSystem;
 	TimeTaskSystem* mTimeTaskSystem;
 	ArrayPool* mArrayPool;
@@ -52,6 +52,7 @@ namespace FrameBase
 	PacketWebSocketThreadPool* mPacketWebSocketThreadPool;
 	StateParamPool* mStateParamPool;
 	StatePool* mStatePool;
+	TickerPool* mTickerPool;
 	TimePointPool* mTimePointPool;
 	CharacterFactoryManager* mCharacterFactoryManager;
 	CharacterStateFactoryManager* mCharacterStateFactoryManager;
@@ -59,10 +60,10 @@ namespace FrameBase
 	PacketTCPFactoryManager* mPacketTCPFactoryManager;
 	PacketWebSocketFactoryManager* mPacketWebSocketFactoryManager;
 	StateParamFactoryManager* mStateParamFactoryManager;
-
+	// auto generate end FrameSystem Define
 	void constructFrameDone()
 	{
-		// FrameSystem Get
+		// auto generate start FrameSystem Get
 		mServerFramework = ServerFramework::getSingleton();
 		mServerFramework->getSystem(STR(CharacterManager), mCharacterManager);
 		mServerFramework->getSystem(STR(VectorPoolManager), mVectorPoolManager);
@@ -78,12 +79,14 @@ namespace FrameBase
 		mServerFramework->getSystem(STR(InputSystem), mInputSystem);
 		mServerFramework->getSystem(STR(KeyframeManager), mKeyframeManager);
 		mServerFramework->getSystem(STR(LogSystem), mLogSystem);
+		mServerFramework->getSystem(STR(HttpManager), mHttpManager);
 		mServerFramework->getSystem(STR(HttpServerSystem), mHttpServerSystem);
 		mServerFramework->getSystem(STR(TCPServerSystem), mTCPServerSystem);
 		mServerFramework->getSystem(STR(UDPServerSystem), mUDPServerSystem);
 		mServerFramework->getSystem(STR(WebSocketServerSystem), mWebSocketServerSystem);
 		mServerFramework->getSystem(STR(FrameStateManager), mFrameStateManager);
 		mServerFramework->getSystem(STR(ThreadManager), mThreadManager);
+		mServerFramework->getSystem(STR(TickerSystem), mTickerSystem);
 		mServerFramework->getSystem(STR(TimePointSystem), mTimePointSystem);
 		mServerFramework->getSystem(STR(TimeTaskSystem), mTimeTaskSystem);
 		mServerFramework->getSystem(STR(ArrayPool), mArrayPool);
@@ -110,6 +113,7 @@ namespace FrameBase
 		mServerFramework->getSystem(STR(PacketWebSocketThreadPool), mPacketWebSocketThreadPool);
 		mServerFramework->getSystem(STR(StateParamPool), mStateParamPool);
 		mServerFramework->getSystem(STR(StatePool), mStatePool);
+		mServerFramework->getSystem(STR(TickerPool), mTickerPool);
 		mServerFramework->getSystem(STR(TimePointPool), mTimePointPool);
 		mServerFramework->getSystem(STR(CharacterFactoryManager), mCharacterFactoryManager);
 		mServerFramework->getSystem(STR(CharacterStateFactoryManager), mCharacterStateFactoryManager);
@@ -117,11 +121,12 @@ namespace FrameBase
 		mServerFramework->getSystem(STR(PacketTCPFactoryManager), mPacketTCPFactoryManager);
 		mServerFramework->getSystem(STR(PacketWebSocketFactoryManager), mPacketWebSocketFactoryManager);
 		mServerFramework->getSystem(STR(StateParamFactoryManager), mStateParamFactoryManager);
+		// auto generate end FrameSystem Get
 	}
 
 	void clearFrameSystem()
 	{
-		// FrameSystem Clear
+		// auto generate start FrameSystem Clear
 		mServerFramework = nullptr;
 		mCharacterManager = nullptr;
 		mVectorPoolManager = nullptr;
@@ -137,12 +142,14 @@ namespace FrameBase
 		mInputSystem = nullptr;
 		mKeyframeManager = nullptr;
 		mLogSystem = nullptr;
+		mHttpManager = nullptr;
 		mHttpServerSystem = nullptr;
 		mTCPServerSystem = nullptr;
 		mUDPServerSystem = nullptr;
 		mWebSocketServerSystem = nullptr;
 		mFrameStateManager = nullptr;
 		mThreadManager = nullptr;
+		mTickerSystem = nullptr;
 		mTimePointSystem = nullptr;
 		mTimeTaskSystem = nullptr;
 		mArrayPool = nullptr;
@@ -169,6 +176,7 @@ namespace FrameBase
 		mPacketWebSocketThreadPool = nullptr;
 		mStateParamPool = nullptr;
 		mStatePool = nullptr;
+		mTickerPool = nullptr;
 		mTimePointPool = nullptr;
 		mCharacterFactoryManager = nullptr;
 		mCharacterStateFactoryManager = nullptr;
@@ -176,5 +184,6 @@ namespace FrameBase
 		mPacketTCPFactoryManager = nullptr;
 		mPacketWebSocketFactoryManager = nullptr;
 		mStateParamFactoryManager = nullptr;
+		// auto generate end FrameSystem Clear
 	}
 }

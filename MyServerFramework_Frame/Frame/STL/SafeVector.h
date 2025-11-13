@@ -56,6 +56,7 @@ public:
 		target = move(mMainList);
 	}
 	int size() const						{ return mMainList.size(); }
+	bool isEmpty() const					{ return mMainList.isEmpty(); }
 	T* data() const							{ return mMainList.data(); }
 	bool conains(const T& value) const		{ return mMainList.contains(value); }
 	void push_back(const T& value)
@@ -118,9 +119,9 @@ public:
 	{
 		if (mForeaching)
 		{
-			FOR_VECTOR(mMainList)
+			for (const T& item : mMainList)
 			{
-				mModifyList.emplace_back(mMainList[i], false);
+				mModifyList.emplace_back(item, false);
 			}
 		}
 		else

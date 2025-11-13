@@ -25,8 +25,8 @@ int main()
 {
 	// 记录主线程ID
 	setMainThread(getThreadID());
-	setTimeMS(getRealTimeMS());
-	setTimeSecond((llong)time(nullptr));
+	setTimeMSecondUTC(getRealTimeMS());
+	setTimeSecondUTC((llong)time(nullptr));
 	// 设置随机数种子
 	srand((int)time(nullptr));
 
@@ -59,8 +59,8 @@ int main()
 		}
 #endif
 		// 每帧获取一次当前时间
-		setTimeMS(getRealTimeMS());
-		setTimeSecond((llong)time(nullptr));
+		setTimeMSecondUTC(getRealTimeMS());
+		setTimeSecondUTC((llong)time(nullptr));
 		const float frameTime = timeLock.update() * 0.001f;
 		const llong startRealMS = getRealTimeMS();
 		game->update(frameTime);

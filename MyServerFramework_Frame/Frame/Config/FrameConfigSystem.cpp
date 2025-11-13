@@ -27,6 +27,14 @@ void FrameConfigSystem::readConfig(const Vector<pair<string, string>>& valueList
 		{
 			mHttpPort = SToI(paramValue);
 		}
+		else if (paramName == "SSL_CERTIFICATION_FILE")
+		{
+			mSSLCertificationFile = paramValue;
+		}
+		else if (paramName == "SSL_PRIVATE_KEY_FILE")
+		{
+			mSSLPrivateKeyFile = paramValue;
+		}
 		else if (paramName == "HEART_BEAT_TIME_OUT")
 		{
 			mHeartBeatTimeout = SToF(paramValue);
@@ -71,6 +79,10 @@ void FrameConfigSystem::readConfig(const Vector<pair<string, string>>& valueList
 		{
 			mMySQLDataBase = paramValue;
 		}
+		else if (paramName == "SERVER_ID")
+		{
+			mServerID = SToI(paramValue);
+		}
 	}
 }
 
@@ -87,7 +99,7 @@ Vector<pair<string, string>> FrameConfigSystem::parseConfig(const string& fileNa
 	{
 		// 首先去掉所有的空格和制表符
 		int curLen = 0;
-		FOR_I((int)lineString.length())
+		FOR_I(lineString.length())
 		{
 			if (lineString[i] != ' ' && lineString[i] != '\t' && lineString[i] != '\r' && lineString[i] != '\n')
 			{

@@ -14,29 +14,13 @@ void TCPServerSystem::quit()
 	mThreadManager->destroyThread(mReceiveThread);
 	mThreadManager->destroyThread(mAcceptThread);
 	// 销毁所有客户端
-	for (const auto& iterClient : mClientList)
-	{
-		delete iterClient.second;
-	}
-	mClientList.clear();
+	DELETE_MAP(mClientList);
 #ifdef WINDOWS
 	WSACleanup();
 #endif
-	if (mSocket != INVALID_SOCKET)
-	{
-		CLOSE_SOCKET(mSocket);
-		mSocket = INVALID_SOCKET;
-	}
-	if (mPacketDataBuffer != nullptr)
-	{
-		delete mPacketDataBuffer;
-		mPacketDataBuffer = nullptr;
-	}
-	if (mRecvBuffer != nullptr)
-	{
-		delete[] mRecvBuffer;
-		mRecvBuffer = nullptr;
-	}
+	CLOSE_SOCKET(mSocket);
+	DELETE(mPacketDataBuffer);
+	DELETE_ARRAY(mRecvBuffer);
 }
 
 void TCPServerSystem::init()
@@ -72,10 +56,11 @@ void TCPServerSystem::init()
 	sockaddr_in addrServ;
 	makeSockAddr(addrServ, INADDR_ANY, mPort);
 	//绑定Sockets Server
-	if (bind(mSocket, (const struct sockaddr*)&addrServ, sizeof(sockaddr_in)) != 0)
+	int bindCode = bind(mSocket, (const struct sockaddr*)&addrServ, sizeof(sockaddr_in));
+	if (bindCode != 0)
 	{
 		mSocket = INVALID_SOCKET;
-		ERROR("bind failed!");
+		ERROR("bind failed! code:" + IToS(bindCode));
 		// linux下只要绑定端口失败就退出,否则会一直无法连接此服务器
 #ifdef LINUX
 		exit(0);
@@ -166,7 +151,7 @@ void TCPServerSystem::acceptThread(CustomThread* thread)
 
 void TCPServerSystem::processSend()
 {
-	if (mSendClientList.size() == 0)
+	if (mSendClientList.isEmpty())
 	{
 		return;
 	}
@@ -247,7 +232,7 @@ void TCPServerSystem::processSend()
 
 void TCPServerSystem::processRecv()
 {
-	if (mRecvClientList.size() == 0)
+	if (mRecvClientList.isEmpty())
 	{
 		return;
 	}
@@ -318,11 +303,11 @@ void TCPServerSystem::checkSendRecvError(TCPServerClient* client, const int succ
 	// 客户端可能已经与服务器断开了连接,先立即标记该客户端已断开,然后再移除
 	if (successLength == 0)
 	{
-		client->setDeadClient("客户端主动关闭连接");
+		client->setDeadClient("客户端主动关闭连接", DEAD_TYPE::MANUAL_QUIT);
 	}
 	else
 	{
-		client->setDeadClient("recv或send返回值小于0");
+		client->setDeadClient("recv或send返回值小于0", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 	const int errorCode = errno;
 	if (errorCode == 0)
@@ -340,7 +325,7 @@ void TCPServerSystem::checkSendRecvError(TCPServerClient* client, const int succ
 	}
 	else if (errorCode == EBADMSG)
 	{
-		client->setDeadClient("客户端已经关闭了Socket");
+		client->setDeadClient("客户端已经关闭了Socket", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 }
 
@@ -362,7 +347,7 @@ void TCPServerSystem::update(const float elapsedTime)
 	}
 
 	// 更新客户端,找出是否有客户端需要断开连接
-	thread_local static Vector<pair<int, string>> tempLogoutClientList;
+	thread_local static Vector<TCPServerClient*> tempLogoutClientList;
 	tempLogoutClientList.clear();
 	for (const auto& item : mClientList)
 	{
@@ -371,14 +356,14 @@ void TCPServerSystem::update(const float elapsedTime)
 		// 将已经死亡的客户端放入列表
 		if (client->isDeadClient())
 		{
-			tempLogoutClientList.emplace_back(item.first, client->getDeadReason());
+			tempLogoutClientList.emplace_back(client);
 		}
 	}
 
 	// 断开死亡客户端,需要等待所有线程的当前帧都执行完毕,否则在此处直接销毁客户端会导致其他线程报错
-	for (const auto& logoutInfo : tempLogoutClientList)
+	for (TCPServerClient* client : tempLogoutClientList)
 	{
-		disconnectSocket(logoutInfo.first, logoutInfo.second);
+		disconnectSocket(client);
 	}
 
 	// 服务器心跳
@@ -437,7 +422,7 @@ void TCPServerSystem::writePacket(PacketTCP* packet)
 	mWritePacketBytes += mPacketDataBuffer->getByteCount();
 }
 
-int TCPServerSystem::notifyAcceptClient(const MY_SOCKET socket, const string& ip)
+int TCPServerSystem::notifyAcceptClient(MY_SOCKET socket, const string& ip)
 {
 	// 加入主线程的客户端列表
 	const int clientGUID = generateSocketGUID();
@@ -469,19 +454,13 @@ int TCPServerSystem::notifyAcceptClient(const MY_SOCKET socket, const string& ip
 	return clientGUID;
 }
 
-void TCPServerSystem::disconnectSocket(const int clientGUID, const string& reason)
+void TCPServerSystem::disconnectSocket(TCPServerClient* client)
 {
 	if (!isMainThread())
 	{
 		ERROR("只能在主线程中调用");
 		return;
 	}
-	const auto iterClient = mClientList.find(clientGUID);
-	if (iterClient == mClientList.end())
-	{
-		return;
-	}
-	TCPServerClient* client = iterClient->second;
 	// 从客户端列表移除,三个列表都要移除
 	{
 		THREAD_LOCK(mSendLock);
@@ -492,34 +471,27 @@ void TCPServerSystem::disconnectSocket(const int clientGUID, const string& reaso
 		mRecvClientList.eraseElement(client);
 	}
 	// 从主线程的客户端列表中移除
-	mClientList.erase(iterClient);
+	mClientList.erase(client->getClientGUID());
 	if (mOutputLog)
 	{
 		PLAYER_LOG("客户端断开连接:角色ID:" + LLToS(client->getPlayerGUID()) + 
-					",原因:" + reason + ", 剩余连接数:" + IToS(getClientCount()), client->getPlayerGUID());
+					",原因:" + client->getDeadReason() + ", 剩余连接数:" + IToS(getClientCount()), client->getPlayerGUID());
 	}
 	// 退出账号的登录
 	CmdNetServerLogoutAccount::execute(client);
+
 	// 销毁客户端
-	delete client;
-}
-
-void TCPServerSystem::notifyAccountLogin(TCPServerClient* client)
-{
-	mClientAccountIDList.insert(client->getAccountGUID(), client);
-}
-
-void TCPServerSystem::notifyAccountLogout(TCPServerClient* client)
-{
-	mClientAccountIDList.erase(client->getAccountGUID());
+	DELETE(client);
 }
 
 void TCPServerSystem::logoutAll()
 {
 	// 复制一份列表出来
-	auto tempList = mClientList;
+	HashMap<int, TCPServerClient*> tempList;
+	mClientList.clone(tempList);
 	for (const auto& iter : tempList)
 	{
+		iter.second->setDeadClient("全部退出登录", DEAD_TYPE::SERVER_KICK_OUT);
 		CmdNetServerLogoutAccount::execute(iter.second);
 	}
 }
@@ -534,6 +506,7 @@ void TCPServerSystem::encrypt(char* data, const int length, const byte* key, con
 	FOR_I(length)
 	{
 		const byte keyChar = (byte)(key[keyIndex] ^ (byte)param);
+		data[i] ^= keyChar;
 		data[i] += keyChar >> 1;
 		data[i] ^= (byte)(((keyChar * keyIndex) & (mKey0 * mKey1)) | ((mKey2 + mKey3) * keyIndex));
 		keyIndex += i;
@@ -556,6 +529,7 @@ void TCPServerSystem::decrypt(char* data, const int length, const byte* key, con
 		const byte keyChar = (byte)(key[keyIndex] ^ (byte)param);
 		data[i] ^= (byte)(((keyChar * keyIndex) & (mKey0 * mKey1)) | ((mKey2 + mKey3) * keyIndex));
 		data[i] -= keyChar >> 1;
+		data[i] ^= keyChar;
 		keyIndex += i;
 		if (keyIndex >= keyLen)
 		{

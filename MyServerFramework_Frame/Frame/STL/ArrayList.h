@@ -11,6 +11,7 @@ public:
 	const T* data() const { return mValue; }
 	T* data() { return mValue; }
 	int size() const { return mSize; }
+	bool isEmpty() const { return mSize == 0; }
 	// 如果设置的size比当前size小,则不会生效
 	void setSize(int size) 
 	{
@@ -20,6 +21,14 @@ public:
 		}
 	}
 	constexpr int maxSize() const { return Length; }
+	void resize(int size) { mSize = size; }
+	T* begin() { return mValue; }
+	T* end() { return mValue + mSize; }
+	const T* begin() const { return mValue; }
+	const T* end() const { return mValue + mSize; }
+	const T* cbegin() const { return mValue; }
+	const T* cend() const { return mValue + mSize; }
+
 	bool add(const T& value0, const T& value1, const T& value2, const T& value3, const T& value4, const T& value5)
 	{
 		if (mSize + 5 >= Length)
@@ -197,6 +206,11 @@ public:
 		MEMCPY((char*)mValue + sizeof(T) * mSize, sizeof(T) * (Length - mSize), src.data(), sizeof(T) * copyLength);
 		mSize += src.size();
 		return true;
+	}
+	bool setRange(const T* src, const int copyCount)
+	{
+		clear();
+		return addRange(src, copyCount);
 	}
 	bool addRange(const T* src, const int copyCount)
 	{

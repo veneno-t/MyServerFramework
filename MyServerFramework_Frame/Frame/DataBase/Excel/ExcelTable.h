@@ -12,18 +12,16 @@ class ExcelTable : public ExcelTableBase
 public:
 	~ExcelTable() override
 	{
-		for (const auto& iter : mDataList)
-		{
-			delete iter.second;
-		}
-		mDataList.clear();
+		DELETE_MAP(mDataList);
 	}
 	virtual void init(const string& tableName)
 	{
 		mTableName = tableName;
 		FileContent file;
-		if (!openBinaryFile(FrameDefine::EXCEL_PATH + mTableName + ".bytes", &file))
+		string path = FrameDefine::EXCEL_PATH + mTableName + ".bytes";
+		if (!openBinaryFile(path, &file))
 		{
+			ERROR("加载表格文件失败:" + path);
 			return;
 		}
 		// 解密
@@ -39,6 +37,14 @@ public:
 	T* getData(const int id, const bool showError = true) const { return mDataList.tryGet(id); }
 	bool hasData(const int id) const { return mDataList.contains(id); }
 	const HashMap<int, T*>& getAllData() const { return mDataList; }
+	void checkEnumResult(bool result, const char* varName, int dataID)
+	{
+		if (!result)
+		{
+			ERROR(string("enum value error,name:") + varName + " in " + mTableName + ", ID:" + IToS(dataID) + ", Table:" + getTableName());
+		}
+	}
+
 	void checkData(const int checkID, const int dataID, ExcelTableBase* refTable)
 	{
 		if (checkID > 0 && !hasData(checkID))
@@ -60,11 +66,11 @@ public:
 	template<typename T0, int Length>
 	void checkData(const ArrayList<Length, T0>& checkIDList, const int dataID, ExcelTableBase* refTable)
 	{
-		FOR_I(checkIDList.size())
+		for (const T0 id : checkIDList)
 		{
-			if (!hasData(checkIDList[i]))
+			if (!hasData(id))
 			{
-				ERROR("can not find item id:" + IToS(checkIDList[i]) + " in " + mTableName + ", ref ID:" + IToS(dataID) + ", ref Table:" + refTable->getTableName());
+				ERROR("can not find item id:" + IToS(id) + " in " + mTableName + ", ref ID:" + IToS(dataID) + ", ref Table:" + refTable->getTableName());
 			}
 		}
 	}
@@ -79,8 +85,7 @@ public:
 protected:
 	void decodeFile(char* fileBuffer, const int bufferSize)
 	{
-		const string preFileName = "AAAA" + mTableName;
-		const string key = generateFileMD5(preFileName.c_str(), (int)preFileName.length()) + "123456789";
+		const string key = generateMD5("ASLD" + mTableName, true) + "23y35y983";
 		int keyIndex = 0;
 		for (int i = 0; i < bufferSize; ++i)
 		{

@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "FrameDefine.h"
 #include "StateParam.h"
 #include "StateParamMemberValue.h"
 
-class MICRO_LEGEND_FRAME_API CharacterState : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API CharacterState : public ClassObject
 {
-	BASE(CharacterState, ClassPooledObject);
+	BASE(CharacterState, ClassObject);
 public:
 	CharacterState();
 	~CharacterState() override;
@@ -18,7 +18,9 @@ public:
 	virtual void update(const float elapsedTime);
 	// isBreak表示是否是因为添加了互斥状态而退出的,willDestroy表示是否是销毁而退出的
 	virtual void leave(bool isBreak, bool willDestroy, bool removeByDie) {}
-	virtual void destroy() {}
+	void destroy() override { base::destroy(); }
+	// 当状态的互斥类型是OVERLAP_LAYER时,添加相同类型的buff就会调用addSameState,来通知叠加层数
+	virtual void addSameState(CharacterState* newState) {}
 	void resetProperty() override;
 	virtual void setCharacter(Character* character)	{ mCharacter = character; }
 	void setType(ushort type)						{ mType = type; }
@@ -27,6 +29,7 @@ public:
 	void setOriginStateTime(float time)				{ mOriginStateTime = time; }
 	void setLeaving(bool leaving)					{ mLeaving = leaving; }
 	void setID(llong id)							{ mID = id; }
+	void removeLater()								{ mStateTime = 0.0f; }
 	bool isActive() const							{ return mActive; }
 	float getStateTime() const						{ return mStateTime; }
 	llong getID() const								{ return mID; }

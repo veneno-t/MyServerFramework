@@ -1,6 +1,6 @@
 ﻿#include "FrameHeader.h"
 
-QueryScope::QueryScope(MySQLTable* table, const char* queryStr)
+QueryScope::QueryScope(const MySQLTable* table, const char* queryStr)
 {
 	mTable = table;
 	const llong time0 = getRealTimeMS();

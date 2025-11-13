@@ -44,12 +44,9 @@ void KeyframeManager::loadAll()
 	createCurve<CurveSineOut>(KEYFRAME::SINE_OUT);
 	createCurve<CurveSineInOut>(KEYFRAME::SINE_IN_OUT);
 }
+
 void KeyframeManager::quit()
 {
 	// 将实例化出的所有物体销毁
-	for (const auto& curve : mCurveList)
-	{
-		delete curve.second;
-	}
-	mCurveList.clear();
+	DELETE_MAP(mCurveList);
 }

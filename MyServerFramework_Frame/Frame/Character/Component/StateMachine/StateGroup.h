@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "FrameDefine.h"
-#include "Set.h"
 
 // 状态组,状态组可以指定同一组中状态的互斥类型
 class MICRO_LEGEND_FRAME_API StateGroup
@@ -22,7 +21,7 @@ public:
 			mMainStateList.insert(state);
 		}
 	}
-public:
+protected:
 	Set<ushort> mMainStateList;					// 状态组中的主状态类型
 	Set<ushort> mStateList;						// 状态组中的所有状态
 	ushort mType = 0;							// 状态组类型

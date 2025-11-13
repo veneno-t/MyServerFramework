@@ -3,6 +3,15 @@
 #include "FrameDefine.h"
 #include "Vector.h"
 
+template<typename Callback, typename... Args>
+void CALL(Callback&& cb, Args&&... args)
+{
+	if (cb != nullptr)
+	{
+		forward<Callback>(cb)(forward<Args>(args)...);
+	}
+}
+
 // 回调
 // 通用回调定义
 typedef void (*CustomThreadCallback)(CustomThread* thread);
@@ -17,6 +26,7 @@ typedef void (*CommandCallback)(GameCommand* cmd, void* user_data);
 typedef void (*ServerCheckPingCallback)(TCPServerClient* client, int index);
 typedef void (*WebServerCheckPingCallback)(WebSocketServerClient* client, int index);
 typedef void (*FreezeAccountCallback)(llong accountGUID, llong timeSecond, const char* reason);
+typedef void (*HttpCallback)(evhttp_request* req, const string& uri, void* userData);
 // 定义为普通的函数指针,方便进行比较,占用内存也较小
 typedef void (*FrameTickCallback)(GameComponent* component, float elapsedTime);
 typedef void (*SecondTickCallback)(GameComponent* component);
@@ -32,14 +42,14 @@ typedef function<void(const string& value)> StringCallback;
 typedef function<void(MySQLData* data)> MySQLDataCallback;
 
 typedef function<void(CharacterState* state)> CharacterStateCallback;
-typedef function<void(TCPServerClient* client)> LogoutPlayerCallback;
-typedef function<void(TCPServerClient* client)> LogoutAccountCallback;
-typedef function<void(WebSocketServerClient* client)> WebSocketLogoutPlayerCallback;
-typedef function<void(WebSocketServerClient* client)> WebSocketLogoutAccountCallback;
+typedef function<void(TCPServerClient* client)> TCPServerClientCallback;
+typedef function<void(WebSocketServerClient* client)> WebSocketServerClientCallback;
 typedef function<void(const Vector<MySQLData*>& dataList)> QueryDataListCallback;
 typedef function<void(string&& log, string&& file)> ErrorProfileEvent;
-typedef function<void(const string& uri, const string& param, const StringCallback& responseCallback, void* userData)> HttpCallback;
 typedef function<void(llong accountGUID, llong unfreezeTime, const string& reason)> FreezeAccountEvent;
+
+// 带返回值的回调
+typedef function<bool()> BoolFunction;
 
 template <typename T>
 using QueryDataCallbackT = function<void(T* data)>;

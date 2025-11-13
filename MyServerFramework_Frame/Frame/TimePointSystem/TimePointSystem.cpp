@@ -9,7 +9,6 @@ void TimePointSystem::init()
 void TimePointSystem::quit()
 {
 	mTimePointPool->destroyClassList(mTimePointList);
-	mTimePointList.clear();
 }
 
 void TimePointSystem::update(const float elapsedTime)

@@ -7,6 +7,8 @@
 
 class MySQLDataListScope
 {
+    typedef typename vector<MySQLData*>::iterator iterator;
+    typedef typename vector<MySQLData*>::const_iterator const_iterator;
 private:
     Vector<MySQLData*> mList;       // 原始数据
     Counter* mCounter = nullptr;    // 引用计数
@@ -15,7 +17,7 @@ public:
     MySQLDataListScope() {}
     explicit MySQLDataListScope(Vector<MySQLData*>&& list)
     {
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             return;
         }
@@ -27,7 +29,7 @@ public:
     MySQLDataListScope(const MySQLDataListScope& other) :
         mCounter(other.mCounter)
     {
-        if (other.mList.size() == 0)
+        if (other.mList.isEmpty())
         {
             return;
         }
@@ -61,8 +63,14 @@ public:
     {
         release();
     }
+    iterator begin()                        { return mList.begin(); }
+    iterator end()                          { return mList.end(); }
+    const_iterator begin() const            { return mList.begin(); }
+    const_iterator end()  const             { return mList.end(); }
+    const_iterator cbegin() const           { return mList.cbegin(); }
+    const_iterator cend() const             { return mList.cend(); }
     // 指针访问操作符
-    const Vector<MySQLData*>& get() const& { return mList; }
+    const Vector<MySQLData*>& get() const&  { return mList; }
     const Vector<MySQLData*>& get() const&& = delete;
     bool isValid() const { return mList.size() != 0; }
     // 如果已经确认data在外部被销毁了,则可以从当前列表中移除
@@ -81,7 +89,6 @@ public:
         {
             mMySQLDataPool->destroyClassList(mList);
             mCounterThreadPool->destroyClass(mCounter);
-            mCounter = nullptr;
         }
     }
     void releaseNoDestroy()
@@ -93,7 +100,6 @@ public:
             {
                 mList.clear();
                 mCounterThreadPool->destroyClass(mCounter);
-                mCounter = nullptr;
             }
             else
             {

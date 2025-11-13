@@ -8,7 +8,7 @@ class MICRO_LEGEND_FRAME_API ExcelManager : public FrameComponent
 public:
 	void quit() override;
 	ExcelTableBase* getTable(const string& name) const { return mTableList.tryGet(name); }
-	template<typename T>
+	template<typename T, typename TypeCheck = typename IsSubClassOf<ExcelTableBase, T>::mType>
 	T* registeExcel(const char* tableName)
 	{
 		T* table = new T();

@@ -2,6 +2,7 @@
 
 void TimeTask::destroy()
 {
+	base::destroy();
 	mTimePointSystem->destroyTimePoint(mTimePoint);
 }
 

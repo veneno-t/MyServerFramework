@@ -3,7 +3,7 @@
 #include "ClassTypePoolThread.h"
 #include "PacketTCPFactoryManager.h"
 
-class MICRO_LEGEND_FRAME_API PacketTCPThreadPool : public ClassTypePoolThread<PacketTCP, ushort>
+class PacketTCPThreadPool : public ClassTypePoolThread<PacketTCP, ushort>
 {
 protected:
 	PacketTCP* create(const ushort type) override

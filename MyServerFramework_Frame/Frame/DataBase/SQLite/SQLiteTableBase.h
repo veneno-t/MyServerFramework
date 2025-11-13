@@ -13,10 +13,11 @@ public:
 	sqlite3* getSQLite3() const { return mSQLite3; }
 	virtual void init(const string& fullPath);
 	virtual ~SQLiteTableBase();
-	virtual void checkAllData() {}
+	virtual void checkAllData() { checkAllDataDefault(); }
 	void checkColName(const string& colName, int index);
 	virtual void checkDataAllColName() = 0;
 protected:
+	virtual void checkAllDataDefault() {}
 	bool doUpdate(const char* updateString, const char* conditionString) const;
 	bool doInsert(const char* valueString) const;
 	bool executeNonQuery(const char* queryString) const;

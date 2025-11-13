@@ -3,7 +3,7 @@
 #include "DoubleBuffer.h"
 
 template<typename T>
-class MICRO_LEGEND_FRAME_API DoubleBufferReadScope
+class DoubleBufferReadScope
 {
 private:
 	DoubleBuffer<T>* mBuffer = nullptr;

@@ -4,7 +4,7 @@ TASK_STATE DTSequence::start()
 {
 	base::start();
 	mCurChildIndex = 0;
-	if (mChildList == nullptr || mChildList->size() == 0)
+	if (mChildList == nullptr || mChildList->isEmpty())
 	{
 		mState = TASK_STATE::SUCCESS;
 		return mState;

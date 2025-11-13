@@ -2,11 +2,7 @@
 
 void ExcelManager::quit()
 {
-	for (const auto& iter : mTableList)
-	{
-		delete iter.second;
-	}
-	mTableList.clear();
+	DELETE_MAP(mTableList);
 }
 
 void ExcelManager::checkAll()

@@ -23,6 +23,11 @@ public:
 		y(yy),
 		z(zz)
 	{}
+	Vector3(const int xx, const int yy, const int zz) :
+		x((float)xx),
+		y((float)yy),
+		z((float)zz)
+	{}
 	void clear()
 	{
 		x = 0.0f;

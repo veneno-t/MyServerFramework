@@ -14,9 +14,15 @@ class MICRO_LEGEND_FRAME_API ComponentOwner : public CommandReceiver
 	BASE(ComponentOwner, CommandReceiver);
 public:
 	~ComponentOwner() override;
-	virtual void destroy() { destroyAllComponents(); }
+	void destroy() override { destroyAllComponents(); }
 	virtual void update(float elapsedTime);
+	virtual void lateUpdate(float elapsedTime);
 	void destroyComponent(GameComponent* component);
+	template<typename T, typename TypeCheck = typename IsSubClassOf<GameComponent, T>::mType>
+	void addComponent(T*& com, bool active = true)
+	{
+		com = addComponent<T>(active);
+	}
 	// 根据类型添加一个组件,组件类型需要定义staticType的静态函数,来获取此类组件的类型
 	template<typename T, typename TypeCheck = typename IsSubClassOf<GameComponent, T>::mType>
 	T* addComponent(const bool active = true)
@@ -49,6 +55,14 @@ public:
 		component->setActive(active, true);
 		component->setDefaultActive(active);
 		return static_cast<T*>(component);
+	}
+	// 创建组件并且将组件加入到指定下标,该组件需要有ComponentIndex<T>的模板类定义,且指定下标为正数
+	template<typename T,
+		typename TypeCheck0 = typename IsSubClassOf<GameComponent, T>::mType,
+		typename TypeCheck1 = typename IsPositive<ComponentIndex<T>::mIndex>::mType>
+	void addComponentAtIndex(T*& com, const bool active = true)
+	{
+		com = addComponentAtIndex<T>(active);
 	}
 	// 创建组件并且将组件加入到指定下标,该组件需要有ComponentIndex<T>的模板类定义,且指定下标为正数
 	template<typename T,
@@ -94,7 +108,7 @@ public:
 	template<typename T, typename TypeCheck = typename IsSubClassOf<GameComponent, T>::mType>
 	T* getComponent(const bool needActive = false) const
 	{
-		if (mComponentTypeMap == nullptr || mComponentTypeMap->size() == 0)
+		if (mComponentTypeMap == nullptr || mComponentTypeMap->isEmpty())
 		{
 			return nullptr;
 		}
@@ -121,11 +135,11 @@ public:
 		typename TypeCheck2 = typename IsSubClassOf<T, ExceptType>::mType>
 	void breakComponent() const
 	{
-		if (mBreableComponentList == nullptr)
+		if (mBreakbleComponentList == nullptr)
 		{
 			return;
 		}
-		for (GameComponent* component : *mBreableComponentList)
+		for (GameComponent* component : *mBreakbleComponentList)
 		{
 			if (component->isActive() &&
 				dynamic_cast<T*>(component) != nullptr &&
@@ -138,7 +152,9 @@ public:
 	}
 	void resetProperty() override;
 	void registeFrameTick(GameComponent* component, FrameTickCallback callback);
+	void registeLateFrameTick(GameComponent* component, FrameTickCallback callback);
 	void unregisteFrameTick(GameComponent* component, FrameTickCallback callback);
+	void unregisteLateFrameTick(GameComponent* component, FrameTickCallback callback);
 	void registeSecondTick(GameComponent* component, SecondTickCallback callback);
 	void unregisteSecondTick(GameComponent* component, SecondTickCallback callback);
 protected:
@@ -146,13 +162,15 @@ protected:
 protected:
 	// 每帧都tick的组件列表,没有顺序,只有注册了Tick的组件才能执行更新
 	SafeVector<pair<GameComponent*, FrameTickCallback>>* mFrameTickList = nullptr;
+	// 每帧在lateUpdate中执行的组件列表
+	SafeVector<pair<GameComponent*, FrameTickCallback>>* mLateFrameTickList = nullptr;
 	// 每秒tick一次的组件列表,没有顺序,只有注册了Tick的组件才能执行更新
 	SafeVector<pair<GameComponent*, SecondTickCallback>>* mSecondTickList = nullptr;
 	// 组件类型列表,first是组件的类型名,可通过名字进行查找
 	HashMap<ushort, GameComponent*>* mComponentTypeMap = nullptr;
 	Vector<GameComponent*>* mComponentTypeList = nullptr;
 	// 可被其他组件中断的组件列表,因为只有少量类型的组件可被中断,所以为了减少被中断时的遍历次数,只在特定的列表中遍历,而且只有可tick的组件才能被中断
-	Vector<GameComponent*>* mBreableComponentList = nullptr;
+	Vector<GameComponent*>* mBreakbleComponentList = nullptr;
 	// 可直接通过下标访问的组件列表,用于快速获得组件
 	Vector<GameComponent*>* mComponentArray = nullptr;
 	// 每秒tick的计时器

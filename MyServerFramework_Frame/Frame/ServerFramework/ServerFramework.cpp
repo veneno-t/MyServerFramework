@@ -11,12 +11,17 @@ ServerFramework::ServerFramework():
 	gettimeofday(&startTime, nullptr);
 	mStartMiliTime = startTime.tv_sec * 1000 + (int)(startTime.tv_usec * 0.001f);
 #endif
+
+	const auto t1 = readTSC();
+	sleep_for(milliseconds(100));
+	const auto t2 = readTSC();
+	const double mhz = (t2 - t1) / 1e5;
+	mTickToNS = 1e9 / (mhz * 1e6);
 }
 
-// 下面包含自动生成的代码,以FrameSystem Register为起始关键字,以后面的第一个空行或者}为结束
 void ServerFramework::registeComponent()
 {
-	// FrameSystem Register
+	// auto generate start FrameSystem Register
 	registeSystem<CharacterManager>(STR(CharacterManager));
 	registeSystem<VectorPoolManager>(STR(VectorPoolManager));
 	registeSystem<CommandSystem>(STR(CommandSystem));
@@ -31,12 +36,14 @@ void ServerFramework::registeComponent()
 	registeSystem<InputSystem>(STR(InputSystem));
 	registeSystem<KeyframeManager>(STR(KeyframeManager));
 	registeSystem<LogSystem>(STR(LogSystem));
+	registeSystem<HttpManager>(STR(HttpManager));
 	registeSystem<HttpServerSystem>(STR(HttpServerSystem));
 	registeSystem<TCPServerSystem>(STR(TCPServerSystem));
 	registeSystem<UDPServerSystem>(STR(UDPServerSystem));
 	registeSystem<WebSocketServerSystem>(STR(WebSocketServerSystem));
 	registeSystem<FrameStateManager>(STR(FrameStateManager));
 	registeSystem<ThreadManager>(STR(ThreadManager));
+	registeSystem<TickerSystem>(STR(TickerSystem));
 	registeSystem<TimePointSystem>(STR(TimePointSystem));
 	registeSystem<TimeTaskSystem>(STR(TimeTaskSystem));
 	registeSystem<ArrayPool>(STR(ArrayPool));
@@ -63,6 +70,7 @@ void ServerFramework::registeComponent()
 	registeSystem<PacketWebSocketThreadPool>(STR(PacketWebSocketThreadPool));
 	registeSystem<StateParamPool>(STR(StateParamPool));
 	registeSystem<StatePool>(STR(StatePool));
+	registeSystem<TickerPool>(STR(TickerPool));
 	registeSystem<TimePointPool>(STR(TimePointPool));
 	registeSystem<CharacterFactoryManager>(STR(CharacterFactoryManager));
 	registeSystem<CharacterStateFactoryManager>(STR(CharacterStateFactoryManager));
@@ -70,6 +78,7 @@ void ServerFramework::registeComponent()
 	registeSystem<PacketTCPFactoryManager>(STR(PacketTCPFactoryManager));
 	registeSystem<PacketWebSocketFactoryManager>(STR(PacketWebSocketFactoryManager));
 	registeSystem<StateParamFactoryManager>(STR(StateParamFactoryManager));
+	// auto generate end FrameSystem Register
 }
 
 void ServerFramework::constructDone()
@@ -114,6 +123,7 @@ void ServerFramework::init()
 
 void ServerFramework::update(const float elapsedTime)
 {
+	Profiler::resetFrame();
 	++mFrameID;
 	++mCurFrameCount;
 	TICK_LOOP(elapsedTime, 1.0f)
@@ -176,15 +186,29 @@ void ServerFramework::update(const float elapsedTime)
 	{
 		LOG("主线程帧率:" + IToS(mFPS));
 	}
+
+	// 每10秒显示一次帧率,或者按F键时也会打印一次
+	if (mInputSystem->isKeyCurrentDown('p') ||
+		mInputSystem->isKeyCurrentDown('P'))
+	{
+		for (FrameComponent* iterPool : mPoolSystemList)
+		{
+			auto* pool = dynamic_cast<ClassPoolBase*>(iterPool);
+			if (pool != nullptr)
+			{
+				pool->dump();
+			}
+		}
+	}
 	
 	THREAD_LOCK(mLock);
 	const llong time0 = getRealTimeMS();
 	ArrayList<256, int> componentUseTime;
 	// 正常更新
-	FOR_VECTOR(mFrameComponentVector)
+	for (FrameComponent* component : mFrameComponentVector)
 	{
 		const llong componentTime0 = getRealTimeMS();
-		mFrameComponentVector[i]->update(elapsedTime);
+		component->update(elapsedTime);
 		componentUseTime.add((int)(getRealTimeMS() - componentTime0));
 	}
 	// 当这一帧消耗的时间超过80毫秒时,打印出最耗时的
@@ -203,6 +227,10 @@ void ServerFramework::update(const float elapsedTime)
 	{
 		component->lateUpdate(elapsedTime);
 	}
+	TICK_LOOP(elapsedTime, 1.0f)
+	{
+		Profiler::dump(mTickToNS);
+	}
 }
 
 void ServerFramework::destroy()
@@ -214,6 +242,14 @@ void ServerFramework::destroy()
 		if (!mPoolSystemList.contains(system) && !mFactorySystemList.contains(system))
 		{
 			system->quit();
+		}
+	}
+
+	for (FrameComponent* system : mFrameComponentVector)
+	{
+		if (!mPoolSystemList.contains(system) && !mFactorySystemList.contains(system))
+		{
+			system->lateQuit();
 			system->setDestroied(true);
 		}
 	}
@@ -239,17 +275,14 @@ void ServerFramework::destroy()
 
 	// 因为释放内存会出现报错,所以不释放了
 	// 在析构阶段,任何对象都不能再访问其他对象实例,只能访问自己
-	for (FrameComponent* component : mFrameComponentVector)
-	{
-		delete component;
-	}
-	mFrameComponentVector.clear();
+	DELETE_LIST(mFrameComponentVector);
 	mFrameComponentMap.clear();
 	LOG("关闭服务器!");
 }
 
 void ServerFramework::launch()
 {
+	GameLogWrap::setErrorPause(false);
 	if (mTCPServerSystem != nullptr && mTCPServerSystem->isAvailable())
 	{
 		LOG("启动TCP服务器, 端口 : " + IToS(mTCPServerSystem->getPort()));

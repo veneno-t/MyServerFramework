@@ -11,7 +11,7 @@ public:
 	TCPClient();
 	virtual ~TCPClient();
 	void disconnect();
-	void init(const string& ip, const ushort port);
+	void init(const string& ip, ushort port);
 	virtual void update(const float elapsedTime);
 	MY_SOCKET getSocket() const { return mSocket; }
 	bool isAvailable() const { return mSocket != INVALID_SOCKET; }
@@ -22,10 +22,10 @@ protected:
 	static void receiveSendSocket(CustomThread* thread);
 	bool processSend();
 	bool processRecv();
-	void checkSendRecvError(const int successLength) const;
+	void checkSendRecvError(int successLength);
 protected:
 	CustomThread* mSendReceiveThread = nullptr;		// 发送接收线程
-	DoubleBuffer<PacketTCP*> mExecutePacketList;		// 客户端收到消息的列表
+	DoubleBuffer<PacketTCP*> mExecutePacketList;	// 客户端收到消息的列表
 	StreamBuffer* mSendBuffer = nullptr;			// 客户端发送数据缓冲区
 	StreamBuffer* mRecvBuffer = nullptr;			// 客户端接收数据缓冲区
 	SerializerBitWrite* mSendWriter = nullptr;		// 只在发送消息时用将要发送的数据写入到发送缓冲区,避免频繁构造析构

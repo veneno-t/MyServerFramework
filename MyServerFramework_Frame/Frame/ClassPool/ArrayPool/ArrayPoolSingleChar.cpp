@@ -3,12 +3,9 @@
 void ArrayPoolSingleChar::destroy()
 {
 	// 此处也只是释放了已经回收的内存,没有回收的无法释放,所有对象池都是这样
-	for (const auto& item0 : mUnuseMemoryList)
+	for (auto& item0 : mUnuseMemoryList)
 	{
-		for (char* data : item0.second)
-		{
-			delete data;
-		}
+		DELETE_LIST(item0.second);
 	}
 	mUnuseMemoryList.clear();
 }

@@ -7,7 +7,7 @@
 // 双缓冲,线程安全的缓冲区,可在多个线程中写入数据,另一个线程中读取数据
 // 存储的是T类型的列表
 template<typename T>
-class MICRO_LEGEND_FRAME_API DoubleBuffer
+class DoubleBuffer
 {
 public:
 	DoubleBuffer():
@@ -57,7 +57,7 @@ public:
 	// 适用于基础数据类型
 	void add(const Vector<T>& value)
 	{
-		if (value.size() == 0)
+		if (value.isEmpty())
 		{
 			return;
 		}
@@ -77,7 +77,7 @@ public:
 	// 适用于非基础数据类型
 	void addCopy(const Vector<T>& value)
 	{
-		if (value.size() == 0)
+		if (value.isEmpty())
 		{
 			return;
 		}

@@ -42,9 +42,10 @@ namespace FileUtility
 	bool MICRO_LEGEND_FRAME_API moveFile(const string& fileName, const string& newName, bool forceCover = false);
 	bool MICRO_LEGEND_FRAME_API renameFile(const string& fileName, const string& newName, bool forceCover = false);
 	bool MICRO_LEGEND_FRAME_API renameFolder(const string& folderName, const string& newName, bool forceCover = false);
-	string MICRO_LEGEND_FRAME_API generateFileMD5(const string& fileName);
-	string MICRO_LEGEND_FRAME_API generateFileMD5(const string& fileName, char* buffer, int bufferSize);
-	string MICRO_LEGEND_FRAME_API generateFileMD5(const char* buffer, int bufferSize);
+	string MICRO_LEGEND_FRAME_API generateFileMD5(const string& fileName, bool isUpper);
+	string MICRO_LEGEND_FRAME_API generateFileMD5(const string& fileName, char* buffer, int bufferSize, bool isUpper);
+	string MICRO_LEGEND_FRAME_API generateMD5(const char* buffer, int bufferSize, bool isUpper);
+	string MICRO_LEGEND_FRAME_API generateMD5(const string& data, bool isUpper);
 	int MICRO_LEGEND_FRAME_API getFileSize(const string& filePath);
 }
 
@@ -55,3 +56,5 @@ using FileUtility::deleteFile;
 using FileUtility::openBinaryFile;
 using FileUtility::openTxtFileLines;
 using FileUtility::generateFileMD5;
+using FileUtility::generateMD5;
+using FileUtility::createFolder;

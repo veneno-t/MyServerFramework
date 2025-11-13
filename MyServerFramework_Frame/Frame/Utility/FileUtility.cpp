@@ -634,14 +634,14 @@ namespace FileUtility
 		return rename(folderName.c_str(), newName.c_str()) == 0;
 	}
 
-	string generateFileMD5(const string& fileName)
+	string generateFileMD5(const string& fileName, const bool isUpper)
 	{
 		constexpr int bufferSize = 1024 * 8;
 		CharArrayScopeThread buffer(bufferSize);
-		return generateFileMD5(fileName, buffer.mArray, bufferSize);
+		return generateFileMD5(fileName, buffer.mArray, bufferSize, isUpper);
 	}
 
-	string generateFileMD5(const string& fileName, char* buffer, const int bufferSize)
+	string generateFileMD5(const string& fileName, char* buffer, const int bufferSize, const bool isUpper)
 	{
 		FILE* pFile = nullptr;
 #ifdef WINDOWS
@@ -683,15 +683,24 @@ namespace FileUtility
 			md5.update(buffer, remainLength);
 		}
 		fclose(pFile);
-		const string md5Str = md5.finalize().hexdigest();
-		return toUpper(md5Str);
+		string str = md5.finalize().hexdigest();
+		return isUpper ? toUpper(str) : str;
 	}
 
-	string generateFileMD5(const char* buffer, const int bufferSize)
+	string generateMD5(const char* buffer, const int bufferSize, const bool isUpper)
 	{
 		MD5 md5;
 		md5.update(buffer, bufferSize);
-		return toUpper(md5.finalize().hexdigest());
+		string str = md5.finalize().hexdigest();
+		return isUpper ? toUpper(str) : str;
+	}
+
+	string generateMD5(const string& data, const bool isUpper)
+	{
+		MD5 md5;
+		md5.update(data.c_str(), (int)data.length());
+		string str = md5.finalize().hexdigest();
+		return isUpper ? toUpper(str) : str;
 	}
 
 	int getFileSize(const string& filePath)

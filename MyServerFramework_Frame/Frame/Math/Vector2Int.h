@@ -39,3 +39,16 @@ public:
 	bool operator==(const Vector2Int& other) const { return x == other.x && y == other.y; }
 	bool operator!=(const Vector2Int& other) const { return x != other.x || y != other.y; }
 };
+
+namespace std
+{
+	template<>
+	struct hash<Vector2Int>
+	{
+		size_t operator()(const Vector2Int& key) const
+		{
+			// 使用位运算合并哈希值（确保哈希分布均匀）
+			return (hash<int>()(key.x) ^ (hash<int>()(key.y) << 1)) >> 1;
+		}
+	};
+}

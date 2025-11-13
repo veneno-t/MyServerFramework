@@ -28,7 +28,7 @@ public:
 protected:
 	static void leaveStateInternal(CharacterState* state, bool isBreak, bool willDestroy, bool removeByDie);
 	static void destroyState(CharacterState* state, int line);
-	static void destroyStateList(const Vector<CharacterState*>& stateList, int line);
+	static void destroyStateList(Vector<CharacterState*>& stateList, int line);
 	bool canAddState(CharacterState* state, StateParam* param, CharacterState** needRemoveState) const;
 	// 是否因为与当前已存在的同类型的互斥而无法添加此状态,返回值表示是否可以添加新的状态,如果可添加,则needRemoveState返回需要被移除的状态
 	bool mutexWithExistState(CharacterState* state, CharacterState** needRemoveState) const;

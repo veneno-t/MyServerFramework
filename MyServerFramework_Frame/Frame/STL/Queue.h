@@ -29,7 +29,7 @@ public:
 	void add(const T& value) { mQueue.push(value); }
 	T pop(T defaultValue)
 	{
-		if (size() == 0)
+		if (isEmpty())
 		{
 			return defaultValue;
 		}
@@ -40,6 +40,7 @@ public:
 	T& front() { return mQueue.front(); }
 	void popOnly() { mQueue.pop(); }
 	int size() const { return (int)mQueue.size(); }
+	bool isEmpty() const { return (int)mQueue.size() == 0; }
 	void clear() { mQueue.clear(); }
 public:
 	queue<T> mQueue;

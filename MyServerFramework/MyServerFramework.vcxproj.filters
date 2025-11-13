@@ -10,6 +10,12 @@
     <Filter Include="Game\Character">
       <UniqueIdentifier>{e230dc9f-b28f-4fb1-ad61-73b9d924bff1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Character\Component">
+      <UniqueIdentifier>{a7991ba7-8776-4c40-b632-ac0256ea0785}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Character\Component\StateMachine">
+      <UniqueIdentifier>{53631f6d-961d-44c2-b546-d580734a7aba}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Game\Common">
       <UniqueIdentifier>{88bc9997-6838-45f4-8f5e-0bb864042214}</UniqueIdentifier>
     </Filter>
@@ -84,6 +90,12 @@
     </ClInclude>
     <ClInclude Include="Game\Character\CharacterRegister.h">
       <Filter>Game\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Character\Component\StateMachine\StateRegister.cpp">
+      <Filter>Game\Character\Component\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Character\Component\StateMachine\StateRegister.h">
+      <Filter>Game\Character\Component\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="Game\Common\GameBase.cpp">
       <Filter>Game\Common</Filter>

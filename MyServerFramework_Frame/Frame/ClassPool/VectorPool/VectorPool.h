@@ -4,16 +4,12 @@
 #include "Utility.h"
 
 template<typename ClassType>
-class MICRO_LEGEND_FRAME_API VectorPool
+class VectorPool
 {
 public:
 	static void destroy()
 	{
-		for (const Vector<ClassType>* ptr : mUnusedList)
-		{
-			delete ptr;
-		}
-		mUnusedList.clear();
+		DELETE_LIST(mUnusedList);
 	}
 	static Vector<ClassType>* newVector()
 	{
@@ -30,7 +26,7 @@ public:
 		{
 			list = new Vector<ClassType>();
 			++mTotalCount;
-			if (mTotalCount % 5000 == 0)
+			if ((mTotalCount & (4096 - 1)) == 0)
 			{
 				LOG("分配的Vector数量已经达到:" + IToS(mTotalCount) + "个, stack:" + getStackTrace(7));
 			}

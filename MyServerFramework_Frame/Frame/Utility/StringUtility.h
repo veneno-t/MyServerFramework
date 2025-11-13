@@ -4,6 +4,7 @@
 #include "ThreadLock.h"
 #include "CharArrayScopeThread.h"
 #include "Vector.h"
+#include "Set.h"
 #include "ArrayList.h"
 #include "MyString.h"
 
@@ -61,10 +62,11 @@ namespace StringUtility
 	// 获得去除末尾数字以后的字符串
 	string getNotNumberSubString(const string& str) { return str.substr(0, getLastNotNumberPos(str) + 1); }
 	MICRO_LEGEND_FRAME_API int getLastChar(const char* str, char value);
-	MICRO_LEGEND_FRAME_API int getLastNotChar(const char* str, char value);
+	MICRO_LEGEND_FRAME_API int getLastNotChar(const string& str, char value);
 	MICRO_LEGEND_FRAME_API void splitLine(const char* str, Vector<string>& vec, bool removeEmpty = true);
 	MICRO_LEGEND_FRAME_API void splitLine(const char* str, string* stringBuffer, int bufferSize, bool removeEmpty = true);
 	MICRO_LEGEND_FRAME_API void split(const char* str, char key, Vector<string>& vec, bool removeEmpty = true);
+	MICRO_LEGEND_FRAME_API Vector<string> split(const char* str, char key, bool removeEmpty = true);
 	MICRO_LEGEND_FRAME_API int split(const char* str, char key, string* stringBuffer, int bufferSize, bool removeEmpty = true);
 	MICRO_LEGEND_FRAME_API void split(const char* str, const char* key, Vector<string>& vec, bool removeEmpty = true);
 	MICRO_LEGEND_FRAME_API void split(const string& str, const char* key, Vector<string>& vec, bool removeEmpty = true);
@@ -167,9 +169,8 @@ namespace StringUtility
 	void strcat_s(char* destBuffer, const int destSize, const Array<SourceLength, const char*>& sourceArray)
 	{
 		int destIndex = strlength(destBuffer, destSize);
-		FOR_I(SourceLength)
+		for (const char* curSource : sourceArray)
 		{
-			const char* curSource = sourceArray[i];
 			if (curSource == nullptr)
 			{
 				continue;
@@ -194,9 +195,8 @@ namespace StringUtility
 	void strcat_s(MyString<Length>& destBuffer, const Array<SourceLength, const char*>& sourceArray)
 	{
 		int destIndex = destBuffer.length();
-		FOR_I(SourceLength)
+		for (const char* curSource : sourceArray)
 		{
-			const char* curSource = sourceArray[i];
 			if (curSource == nullptr)
 			{
 				continue;
@@ -786,7 +786,7 @@ namespace StringUtility
 	void ULLsToS(MyString<Length>& buffer, const Vector<ullong>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -808,7 +808,7 @@ namespace StringUtility
 	void ULLsToS(char* buffer, const int bufferSize, const Vector<ullong>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -898,7 +898,7 @@ namespace StringUtility
 	void LLsToS(MyString<Length>& buffer, const Vector<llong>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -918,7 +918,7 @@ namespace StringUtility
 	void LLsToS(char* buffer, const int bufferSize, const Vector<llong>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -982,7 +982,7 @@ namespace StringUtility
 	void bytesToString(MyString<Length>& buffer, const Vector<byte>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1003,7 +1003,7 @@ namespace StringUtility
 	void bytesToString(char* buffer, const int bufferSize, const Vector<byte>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1047,7 +1047,7 @@ namespace StringUtility
 	void SsToS(MyString<Length>& buffer, const Vector<short>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1068,7 +1068,7 @@ namespace StringUtility
 	void SsToS(char* buffer, const int bufferSize, const Vector<short>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1090,7 +1090,7 @@ namespace StringUtility
 	template<int Length>
 	string USsToS(const ArrayList<Length, ushort>& valueList, const char* seperate = ",")
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -1136,7 +1136,7 @@ namespace StringUtility
 	void USsToS(MyString<Length>& buffer, const Vector<ushort>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1157,7 +1157,7 @@ namespace StringUtility
 	void USsToS(char* buffer, const int bufferSize, const Vector<ushort>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1275,7 +1275,7 @@ namespace StringUtility
 	void IsToS(MyString<Length>& buffer, const Vector<int>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1296,7 +1296,7 @@ namespace StringUtility
 	void IsToS(char* buffer, int bufferSize, const Vector<int>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1318,7 +1318,7 @@ namespace StringUtility
 	void IsToS(char* buffer, int bufferSize, const ArrayList<Length, int>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1362,7 +1362,7 @@ namespace StringUtility
 	void UIsToS(MyString<Length>& buffer, const Vector<uint>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1383,7 +1383,7 @@ namespace StringUtility
 	void UIsToS(char* buffer, int bufferSize, const Vector<uint>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1428,7 +1428,7 @@ namespace StringUtility
 	void FsToS(MyString<Length>& buffer, const Vector<float>& valueList, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1467,6 +1467,20 @@ namespace StringUtility
 		{
 			totalStr += strList[i];
 			if (i != strList.size() - 1)
+			{
+				totalStr += seperate;
+			}
+		}
+		return totalStr;
+	}
+	string stringsToString(const Set<string>& strList, const char* seperate = ",")
+	{
+		int index = 0;
+		string totalStr;
+		for (const string& str : strList)
+		{
+			totalStr += str;
+			if (index++ != strList.size() - 1)
 			{
 				totalStr += seperate;
 			}
@@ -1557,9 +1571,8 @@ namespace StringUtility
 		Vector<string> strList;
 		split(str, seperate, strList);
 		valueList.clear();
-		FOR_I(strList.size())
+		for (const string& curStr : strList)
 		{
-			const string& curStr = strList[i];
 			if (curStr.length() > 0)
 			{
 				valueList.add(SToI(curStr));
@@ -2023,15 +2036,20 @@ namespace StringUtility
 		}
 	}
 	template<int Length>
-	void split(const string& str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
+	int split(const string& str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
 	{
 		const int sourceLen = (int)str.length();
+		if (sourceLen == 0)
+		{
+			return 0;
+		}
 		const int keyLen = strlength(key);
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		int devidePos = -1;
 		int startPos = 0;
 		bool ret = true;
+		int elementCount = 0;
 		while (ret)
 		{
 			ret = findString(str, key, &devidePos, startPos);
@@ -2040,16 +2058,17 @@ namespace StringUtility
 			if (devidePos - startPos >= STRING_BUFFER)
 			{
 				ERROR("分隔字符串失败,缓冲区太小,当前缓冲区为" + IToS(STRING_BUFFER) + "字节");
-				return;
+				return elementCount;
 			}
 			curString.copy(str, startPos, devidePos - startPos);
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + keyLen;
 			// 放入列表
-			if (curString[0] == '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
 				continue;
 			}
+			++elementCount;
 			if (!stringBuffer.add(curString.str()))
 			{
 				if (showError)
@@ -2059,17 +2078,23 @@ namespace StringUtility
 				break;
 			}
 		}
+		return elementCount;
 	}
 	template<int Length>
-	void split(const char* str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
+	int split(const char* str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
 	{
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return 0;
+		}
 		const int keyLen = strlength(key);
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		int devidePos = -1;
 		int startPos = 0;
 		bool ret = true;
+		int elementCount = 0;
 		while (ret)
 		{
 			ret = findString(str, key, &devidePos, startPos);
@@ -2078,16 +2103,17 @@ namespace StringUtility
 			if (devidePos - startPos >= STRING_BUFFER)
 			{
 				ERROR("分隔字符串失败,缓冲区太小,当前缓冲区为" + IToS(STRING_BUFFER) + "字节");
-				return;
+				return elementCount;
 			}
 			curString.copy(str + startPos, devidePos - startPos);
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + keyLen;
 			// 放入列表
-			if (curString[0] == '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
 				continue;
 			}
+			++elementCount;
 			if (!stringBuffer.add(curString.str()))
 			{
 				if (showError)
@@ -2097,15 +2123,21 @@ namespace StringUtility
 				break;
 			}
 		}
+		return elementCount;
 	}
 	template<int Length>
-	void split(const char* str, const char key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
+	int split(const char* str, const char key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
 	{
-		int startPos = 0;
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return 0;
+		}
+		int startPos = 0;
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		bool ret = true;
+		int elementCount = 0;
 		while (ret)
 		{
 			int devidePos = strchar(str, key, startPos, sourceLen);
@@ -2118,37 +2150,40 @@ namespace StringUtility
 			if (devidePos - startPos >= STRING_BUFFER)
 			{
 				ERROR("分隔字符串失败,缓冲区太小,当前缓冲区为" + IToS(STRING_BUFFER) + "字节");
-				return;
+				return elementCount;
 			}
 			curString.copy(str + startPos, devidePos - startPos);
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + 1;
 			// 放入列表
-			if (curString[0] != '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
-				if (!stringBuffer.add(curString.str()))
+				continue;
+			}
+			++elementCount;
+			if (!stringBuffer.add(curString.str()))
+			{
+				if (showError)
 				{
-					if (showError)
-					{
-						ERROR("string buffer is too small! bufferSize:" + IToS(Length));
-					}
-					break;
+					ERROR("string buffer is too small! bufferSize:" + IToS(Length));
 				}
+				break;
 			}
 		}
+		return elementCount;
 	}
 
 	template<int Length>
 	bool splitFull(const char* str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
 	{
-		split(str, key, stringBuffer, removeEmpty, showError);
-		return stringBuffer.size() == stringBuffer.maxSize();
+		const int elementCount = split(str, key, stringBuffer, removeEmpty, showError);
+		return elementCount == stringBuffer.maxSize();
 	}
 	template<int Length>
 	bool splitFull(const string& str, const char* key, ArrayList<Length, string>& stringBuffer, const bool removeEmpty = true, const bool showError = true)
 	{
-		split(str, key, stringBuffer, removeEmpty, showError);
-		return stringBuffer.size() == stringBuffer.maxSize();
+		const int elementCount = split(str, key, stringBuffer, removeEmpty, showError);
+		return elementCount == stringBuffer.maxSize();
 	}
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// 移除字符串首部的数字
@@ -2199,7 +2234,7 @@ namespace StringUtility
 	bool isUpper(char c) { return c >= 'A' && c <= 'Z'; }
 	bool isLower(char c) { return c >= 'a' && c <= 'z'; }
 	bool isNumber(char c) { return c >= '0' && c <= '9'; }
-	MICRO_LEGEND_FRAME_API bool isNumber(const char* str, int length = 0);
+	MICRO_LEGEND_FRAME_API bool isNumber(const string& str);
 	bool isLetter(char c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
 	char toLower(const char value)
 	{
@@ -2226,6 +2261,7 @@ namespace StringUtility
 	MICRO_LEGEND_FRAME_API string charToHexString(byte value, bool upper = true);
 	MICRO_LEGEND_FRAME_API int getCharCount(const string& str, char key);
 	MICRO_LEGEND_FRAME_API int getCharCount(const char* str, char key);
+	MICRO_LEGEND_FRAME_API void appendWithAlign(string& oriStr, const string& appendStr, int alignWidth);
 	MICRO_LEGEND_FRAME_API bool isPhoneNumber(const char* str);
 	MICRO_LEGEND_FRAME_API string bytesToHexString(const byte* data, int dataCount, bool addSpace = true, bool upper = true);
 	byte hexCharToByte(const char hex)
@@ -2253,9 +2289,9 @@ namespace StringUtility
 		return 0;
 	}
 	// 字符串中是否包含控制字符
-	MICRO_LEGEND_FRAME_API bool hasControlChar(const char* str);
+	MICRO_LEGEND_FRAME_API bool hasControlChar(const string& str);
 	// 字符串中是否包含控制字符,英文空格,中文空格
-	MICRO_LEGEND_FRAME_API bool hasInvisibleChar(const char* str);
+	MICRO_LEGEND_FRAME_API bool hasInvisibleChar(const string& str);
 	// sql语法相关字符串处理
 	// 带任何引号都不允许
 	bool checkSQLString(const char* str) { return strchar(str, '\'') < 0 && strchar(str, '\"') < 0; }
@@ -2692,6 +2728,58 @@ namespace StringUtility
 			strcat_t(condition, col.c_str(), " = \"\"", logicalOperator);
 		}
 	}
+	void sqlConditionStringLike(string& condition, const string& col, const char* str)
+	{
+		if (checkSQLString(str))
+		{
+			condition += col;
+			condition += " LIKE \"%";
+			condition += str;
+			condition += "%\"";
+		}
+		else
+		{
+			// 此处不好处理,如果条件带引号,直接去除的话,会导致查询全表
+			condition += col;
+			condition += " = \"\"";
+		}
+	}
+	void sqlConditionStringLike(string& condition, const string& col, const char* str, const char* logicalOperator)
+	{
+		if (checkSQLString(str))
+		{
+			condition += col;
+			condition += " LIKE \"%";
+			condition += str;
+			condition += "%\"";
+			condition += logicalOperator;
+		}
+		else
+		{
+			condition += col;
+			condition += " = \"\"";
+			condition += logicalOperator;
+		}
+	}
+	void sqlConditionStringLike(string& condition, const string& col, const char* str, const char* logicalOperator, const char* prev, const char* end)
+	{
+		if (checkSQLString(str))
+		{
+			condition += col;
+			condition += " LIKE \"";
+			condition += prev;
+			condition += str;
+			condition += end;
+			condition += "\"";
+			condition += logicalOperator;
+		}
+		else
+		{
+			condition += col;
+			condition += " = \"\"";
+			condition += logicalOperator;
+		}
+	}
 	template<int Length>
 	void sqlConditionInt(MyString<Length>& condition, const string& col, const int value)
 	{
@@ -2710,23 +2798,27 @@ namespace StringUtility
 		INT_STR(temp, value);
 		strcat_t(condition, col.c_str(), relationalOperator, temp.str(), logicalOperator);
 	}
-	template<int Length>
-	void sqlConditionUInt(MyString<Length>& condition, const string& col, const int value)
+	void sqlConditionInt(string& condition, const string& col, const int value)
 	{
-		UINT_STR(temp, value);
-		strcat_t(condition, col.c_str(), "=", temp.str());
+		INT_STR(temp, value);
+		condition += col;
+		condition += "=";
+		condition += temp.str();
 	}
-	template<int Length>
-	void sqlConditionUInt(MyString<Length>& condition, const string& col, const int value, const char* relationalOperator)
+	void sqlConditionInt(string& condition, const string& col, const int value, const char* relationalOperator)
 	{
-		UINT_STR(temp, value);
-		strcat_t(condition, col.c_str(), relationalOperator, temp.str());
+		INT_STR(temp, value);
+		condition += col;
+		condition += relationalOperator;
+		condition += temp.str();
 	}
-	template<int Length>
-	void sqlConditionUInt(MyString<Length>& condition, const string& col, const int value, const char* relationalOperator, const char* logicalOperator)
+	void sqlConditionInt(string& condition, const string& col, const int value, const char* relationalOperator, const char* logicalOperator)
 	{
-		UINT_STR(temp, value);
-		strcat_t(condition, col.c_str(), relationalOperator, temp.str(), logicalOperator);
+		INT_STR(temp, value);
+		condition += col;
+		condition += relationalOperator;
+		condition += temp.str();
+		condition += logicalOperator;
 	}
 	template<int Length>
 	void sqlConditionFloat(MyString<Length>& condition, const string& col, const float value)
@@ -2746,23 +2838,27 @@ namespace StringUtility
 		FLOAT_STR(temp, value);
 		strcat_t(condition, col.c_str(), relationalOperator, temp.str(), logicalOperator);
 	}
-	template<int Length>
-	void sqlConditionULLong(MyString<Length>& condition, const string& col, const ullong value)
+	void sqlConditionFloat(string& condition, const string& col, const float value)
 	{
-		ULLONG_STR(temp, value);
-		strcat_t(condition, col.c_str(), "=", temp.str());
+		FLOAT_STR(temp, value);
+		condition += col;
+		condition += "=";
+		condition += temp.str();
 	}
-	template<int Length>
-	void sqlConditionULLong(MyString<Length>& condition, const string& col, const ullong value, const char* relationalOperator)
+	void sqlConditionFloat(string& condition, const string& col, const float value, const char* relationalOperator)
 	{
-		ULLONG_STR(temp, value);
-		strcat_t(condition, col.c_str(), relationalOperator, temp.str());
+		FLOAT_STR(temp, value);
+		condition += col;
+		condition += relationalOperator;
+		condition += temp.str();
 	}
-	template<int Length>
-	void sqlConditionULLong(MyString<Length>& condition, const string& col, const ullong value, const char* relationalOperator, const char* logicalOperator)
+	void sqlConditionFloat(string& condition, const string& col, const float value, const char* relationalOperator, const char* logicalOperator)
 	{
-		ULLONG_STR(temp, value);
-		strcat_t(condition, col.c_str(), relationalOperator, temp.str(), logicalOperator);
+		FLOAT_STR(temp, value);
+		condition += col;
+		condition += relationalOperator;
+		condition += temp.str();
+		condition += logicalOperator;
 	}
 	template<int Length>
 	void sqlConditionLLong(MyString<Length>& condition, const string& col, const llong value)
@@ -2943,31 +3039,6 @@ namespace StringUtility
 		}
 	}
 	template<int Length>
-	void sqlUpdateUInt(MyString<Length>& updateInfo, const string& col, const uint value, const bool addComma = true)
-	{
-		UINT_STR(temp, value);
-		if (addComma)
-		{
-			strcat_t(updateInfo, col.c_str(), " = ", temp.str(), ",");
-		}
-		else
-		{
-			strcat_t(updateInfo, col.c_str(), " = ", temp.str());
-		}
-	}
-	void sqlUpdateUInt(string& updateInfo, const string& col, const uint value, const bool addComma = true)
-	{
-		updateInfo.reserve(updateInfo.size() + col.length() + 8);
-		UINT_STR(temp, value);
-		updateInfo += col;
-		updateInfo += " = ";
-		updateInfo += temp.str();
-		if (addComma)
-		{
-			updateInfo += ",";
-		}
-	}
-	template<int Length>
 	void sqlUpdateFloat(MyString<Length>& updateInfo, const string& col, const float value, const bool addComma = true)
 	{
 		FLOAT_STR(temp, value);
@@ -2990,19 +3061,6 @@ namespace StringUtility
 		if (addComma)
 		{
 			updateInfo += ",";
-		}
-	}
-	template<int Length>
-	void sqlUpdateULLong(MyString<Length>& updateInfo, const string& col, const ullong value, const bool addComma = true)
-	{
-		ULLONG_STR(temp, value);
-		if (addComma)
-		{
-			strcat_t(updateInfo, col.c_str(), " = ", temp.str(), ",");
-		}
-		else
-		{
-			strcat_t(updateInfo, col.c_str(), " = ", temp.str());
 		}
 	}
 	template<int Length>
@@ -3046,21 +3104,6 @@ namespace StringUtility
 		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
 	}
 	template<int Length>
-	void sqlUpdateUShorts(MyString<Length>& updateInfo, const string& col, const Vector<ushort>& ushortArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(ushortArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		USsToS(charArray.mArray, arrayLen, ushortArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	void sqlUpdateUShorts(string& updateInfo, const string& col, const Vector<ushort>& ushortArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(ushortArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		USsToS(charArray.mArray, arrayLen, ushortArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	template<int Length>
 	void sqlUpdateInts(MyString<Length>& updateInfo, const string& col, const Vector<int>& intArray, bool addComma = true)
 	{
 		const int arrayLen = 16 * greaterPower2(intArray.size());
@@ -3076,21 +3119,6 @@ namespace StringUtility
 		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
 	}
 	template<int Length>
-	void sqlUpdateUInts(MyString<Length>& updateInfo, const string& col, const Vector<uint>& intArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(intArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		UIsToS(charArray.mArray, arrayLen, intArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	void sqlUpdateUInts(string& updateInfo, const string& col, const Vector<uint>& intArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(intArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		UIsToS(charArray.mArray, arrayLen, intArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	template<int Length>
 	void sqlUpdateFloats(MyString<Length>& updateInfo, const string& col, const Vector<float>& floatArray, const bool addComma = true)
 	{
 		const int arrayLen = 16 * greaterPower2(floatArray.size());
@@ -3103,21 +3131,6 @@ namespace StringUtility
 		const int arrayLen = 16 * greaterPower2(floatArray.size());
 		CharArrayScopeThread charArray(arrayLen);
 		FsToS(charArray.mArray, arrayLen, floatArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	template<int Length>
-	void sqlUpdateULLongs(MyString<Length>& updateInfo, const string& col, const Vector<ullong>& longArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(longArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		ULLsToS(charArray.mArray, arrayLen, longArray);
-		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
-	}
-	void sqlUpdateULLongs(string& updateInfo, const string& col, const Vector<ullong>& longArray, const bool addComma = true)
-	{
-		const int arrayLen = 16 * greaterPower2(longArray.size());
-		CharArrayScopeThread charArray(arrayLen);
-		ULLsToS(charArray.mArray, arrayLen, longArray);
 		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
 	}
 	template<int Length>
@@ -3174,11 +3187,12 @@ namespace StringUtility
 		V2USToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
-	MICRO_LEGEND_FRAME_API int base64_encode(const byte* str, int length, char* encode);
-	// base64编码,返回值是encode的长度
-	MICRO_LEGEND_FRAME_API int base64_encode(const string& str, char* encode);
-	// base64解码,返回值是dest的长度
-	MICRO_LEGEND_FRAME_API int base64_decode(const char* code, int codeLen, byte* dest);
+	// base64编码
+	MICRO_LEGEND_FRAME_API string base64_encode(const byte* str, int length);
+	MICRO_LEGEND_FRAME_API string base64_encode(const string& str);
+	// base64解码
+	MICRO_LEGEND_FRAME_API string base64_decode(const string& code);
+	MICRO_LEGEND_FRAME_API string base64_decode(const char* code, int codeLen);
 	// 计算一个字符串的SHA-1值
 	MICRO_LEGEND_FRAME_API uint32_t rotate_left(uint32_t value, int shift);
 	MICRO_LEGEND_FRAME_API vector<uint8_t> pad_message(const string& message);
@@ -3191,9 +3205,7 @@ namespace StringUtility
 using StringUtility::sqlConditionInt;
 using StringUtility::sqlConditionFloat;
 using StringUtility::sqlConditionString;
-using StringUtility::sqlConditionUInt;
 using StringUtility::sqlConditionLLong;
-using StringUtility::sqlConditionULLong;
 using StringUtility::sqlConditionStringLike;
 using StringUtility::sqlUpdateInt;
 using StringUtility::sqlUpdateString;
@@ -3288,3 +3300,4 @@ using StringUtility::SToV3s;
 using StringUtility::SToV3Is;
 using StringUtility::base64_encode;
 using StringUtility::sha1;
+using StringUtility::appendWithAlign;

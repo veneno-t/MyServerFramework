@@ -16,6 +16,8 @@ public:
 	virtual void finalInit() {}
 	// 程序退出前调用,表示即将销毁所有组件
 	virtual void quit() {}
+	// 延迟的退出,在所有系统的quit调用完以后再调用lateQuit
+	virtual void lateQuit() {}
 	// 程序全部初始化完成后,启动时调用
 	virtual void launch() {}
 	// 每一帧调用

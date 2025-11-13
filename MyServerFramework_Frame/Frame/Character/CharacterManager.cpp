@@ -12,14 +12,21 @@ void CharacterManager::update(const float elapsedTime)
 	}
 }
 
+void CharacterManager::lateUpdate(const float elapsedTime)
+{
+	for (const auto& iter : mCharacterUpdateList)
+	{
+		Character* character = iter.second;
+		if (character != nullptr)
+		{
+			character->lateUpdate(elapsedTime);
+		}
+	}
+}
+
 void CharacterManager::quit()
 {
-	for (const auto& iter : mCharacterIDList)
-	{
-		iter.second->destroy();
-	}
 	mCharacterPool->destroyClassList(mCharacterIDList);
-	mCharacterIDList.clear();
 	mCharacterUpdateList.clear();
 	mCharacterTypeList.clear();
 }
@@ -36,7 +43,6 @@ Character* CharacterManager::createCharacter(const string& name, const byte type
 	if (!mCharacterIDList.insert(guid, newChar))
 	{
 		ERROR("there is a character id : " + LLToS(guid));
-		newChar->destroy();
 		mCharacterPool->destroyClass(newChar);
 		return nullptr;
 	}
@@ -67,7 +73,6 @@ void CharacterManager::destroyCharacter(Character* character)
 	mCharacterUpdateList.erase(character->getGUID());
 	// 从角色分类列表中移除
 	mCharacterTypeList.insertOrGet(character->getType()).erase(character->getGUID());
-	character->destroy();
 	mCharacterPool->destroyClass(character);
 }
 

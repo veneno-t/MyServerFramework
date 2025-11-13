@@ -2,19 +2,21 @@
 
 #include "GameDefine.h"
 
-// 下面包含自动生成的代码,以// FrameSystem,// MySQL,// SQLite为起始,以第一个空行或者};为结束
 namespace GameBase
 {
 	void constructGameDone();
 	void clearGameSystem();
 
-	// FrameSystem
+	// auto generate start FrameSystem Extern
 	extern GameConfigSystem* mGameConfigSystem;
+	// auto generate end FrameSystem Extern
 
-	// MySQL
+	// auto generate start MySQL Extern
 	extern MySQLAccount* mMySQLAccount;
+	// auto generate end MySQL Extern
 
-	// SQLite
+	// auto generate start SQLite Extern
+	// auto generate end SQLite Extern
 };
 
 using namespace GameBase;

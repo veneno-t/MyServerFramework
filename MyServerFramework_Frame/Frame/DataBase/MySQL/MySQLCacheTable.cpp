@@ -7,7 +7,7 @@ MySQLCacheTable::MySQLCacheTable(MySQLTable* table) :
 
 void MySQLCacheTable::destroy()
 {
-	deleteAllCacheData();
+	deleteAllData();
 }
 
 ullong MySQLCacheTable::columnToFlag(const int colName) const
@@ -27,7 +27,7 @@ ullong MySQLCacheTable::columnsToFlag(const Vector<int>& colNames) const
 	return flag;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnLLong2Or(const int column0, const llong value0, const int column1, const llong value1)
+MySQLData* MySQLCacheTable::getDataByLLong2Or(const int column0, const llong value0, const int column1, const llong value1)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -39,7 +39,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnLLong2Or(const int column0, cons
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnLLong2And(const int column0, const llong value0, const int column1, const llong value1)
+MySQLData* MySQLCacheTable::getDataByLLong2And(const int column0, const llong value0, const int column1, const llong value1)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -51,7 +51,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnLLong2And(const int column0, con
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnInt(const int column, const int value)
+MySQLData* MySQLCacheTable::getDataByInt(const int column, const int value)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -63,7 +63,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnInt(const int column, const int 
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnLLong(const int column, const llong value)
+MySQLData* MySQLCacheTable::getDataByLLong(const int column, const llong value)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -75,7 +75,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnLLong(const int column, const ll
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnString(const int column, const string& value)
+MySQLData* MySQLCacheTable::getDataByString(const int column, const string& value)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -87,7 +87,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnString(const int column, const s
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnString2And(const int column0, const string& value0, const int column1, const string& value1)
+MySQLData* MySQLCacheTable::getDataByString2And(const int column0, const string& value0, const int column1, const string& value1)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -99,7 +99,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnString2And(const int column0, co
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnLLongIntAnd(const int column0, const llong value0, const int column1, const int value1)
+MySQLData* MySQLCacheTable::getDataByLLongIntAnd(const int column0, const llong value0, const int column1, const int value1)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -111,7 +111,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnLLongIntAnd(const int column0, c
 	return nullptr;
 }
 
-MySQLData* MySQLCacheTable::getCacheDataByColumnLLongStringAnd(const int column0, const llong value0, const int column1, const string& value1)
+MySQLData* MySQLCacheTable::getDataByLLongStringAnd(const int column0, const llong value0, const int column1, const string& value1)
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -123,7 +123,7 @@ MySQLData* MySQLCacheTable::getCacheDataByColumnLLongStringAnd(const int column0
 	return nullptr;
 }
 
-void MySQLCacheTable::getCacheDataListByColumnInt(const int column0, int value0, Vector<MySQLData*>& dataList)
+void MySQLCacheTable::getCacheDataListByInt(const int column0, int value0, Vector<MySQLData*>& dataList)
 {
 	dataList.clear();
 	for (const auto& item : mCacheDataList)
@@ -135,7 +135,7 @@ void MySQLCacheTable::getCacheDataListByColumnInt(const int column0, int value0,
 	}
 }
 
-void MySQLCacheTable::updateCacheInt(const llong id, const int value, const int colName) const
+void MySQLCacheTable::updateInt(const llong id, const int value, const int colName) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -143,7 +143,7 @@ void MySQLCacheTable::updateCacheInt(const llong id, const int value, const int 
 	}
 }
 
-void MySQLCacheTable::updateCacheBool(const llong id, const bool value, const int colName) const
+void MySQLCacheTable::updateBool(const llong id, const bool value, const int colName) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -151,7 +151,7 @@ void MySQLCacheTable::updateCacheBool(const llong id, const bool value, const in
 	}
 }
 
-void MySQLCacheTable::updateCacheInt2(const llong id, const int value0, const int colName0, const int value1, const int colName1) const
+void MySQLCacheTable::updateInt2(const llong id, const int value0, const int colName0, const int value1, const int colName1) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -160,7 +160,7 @@ void MySQLCacheTable::updateCacheInt2(const llong id, const int value0, const in
 	}
 }
 
-void MySQLCacheTable::updateCacheFloat(const llong id, const float value, const int colName) const
+void MySQLCacheTable::updateFloat(const llong id, const float value, const int colName) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -168,7 +168,7 @@ void MySQLCacheTable::updateCacheFloat(const llong id, const float value, const 
 	}
 }
 
-void MySQLCacheTable::updateCacheLLong(const llong id, const llong value, const int colName) const
+void MySQLCacheTable::updateLLong(const llong id, const llong value, const int colName) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -176,7 +176,7 @@ void MySQLCacheTable::updateCacheLLong(const llong id, const llong value, const 
 	}
 }
 
-void MySQLCacheTable::updateCacheLLongInt(const llong id, const llong value0, const int colName0, const int value1, const int column1) const
+void MySQLCacheTable::updateLLongInt(const llong id, const llong value0, const int colName0, const int value1, const int column1) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -185,7 +185,7 @@ void MySQLCacheTable::updateCacheLLongInt(const llong id, const llong value0, co
 	}
 }
 
-void MySQLCacheTable::updateCacheLLongBool(const llong id, const llong value0, const int colName0, const bool value1, const int column1) const
+void MySQLCacheTable::updateLLongBool(const llong id, const llong value0, const int colName0, const bool value1, const int column1) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -194,7 +194,7 @@ void MySQLCacheTable::updateCacheLLongBool(const llong id, const llong value0, c
 	}
 }
 
-void MySQLCacheTable::updateCacheString(const llong id, const string& value, const int colName) const
+void MySQLCacheTable::updateString(const llong id, const string& value, const int colName) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -202,7 +202,7 @@ void MySQLCacheTable::updateCacheString(const llong id, const string& value, con
 	}
 }
 
-void MySQLCacheTable::updateCacheString2(const llong id, const string& value0, const int colName0, const string& value1, const int colName1) const
+void MySQLCacheTable::updateString2(const llong id, const string& value0, const int colName0, const string& value1, const int colName1) const
 {
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(id))
 	{
@@ -211,7 +211,7 @@ void MySQLCacheTable::updateCacheString2(const llong id, const string& value0, c
 	}
 }
 
-void MySQLCacheTable::updateCacheAllString(const int colName, const string& value) const
+void MySQLCacheTable::updateAllString(const int colName, const string& value) const
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -219,7 +219,7 @@ void MySQLCacheTable::updateCacheAllString(const int colName, const string& valu
 	}
 }
 
-void MySQLCacheTable::updateCacheAllInt(const int colName, const int value) const
+void MySQLCacheTable::updateAllInt(const int colName, const int value) const
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -227,7 +227,7 @@ void MySQLCacheTable::updateCacheAllInt(const int colName, const int value) cons
 	}
 }
 
-void MySQLCacheTable::updateCacheAllLLong(const int colName, const llong value) const
+void MySQLCacheTable::updateAllLLong(const int colName, const llong value) const
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -235,7 +235,7 @@ void MySQLCacheTable::updateCacheAllLLong(const int colName, const llong value) 
 	}
 }
 
-void MySQLCacheTable::updateCacheAllFloat(const int colName, const float value) const
+void MySQLCacheTable::updateAllFloat(const int colName, const float value) const
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -243,7 +243,7 @@ void MySQLCacheTable::updateCacheAllFloat(const int colName, const float value) 
 	}
 }
 
-void MySQLCacheTable::updateCacheAllBool(const int colName, const bool value) const
+void MySQLCacheTable::updateAllBool(const int colName, const bool value) const
 {
 	for (const auto& item : mCacheDataList)
 	{
@@ -251,8 +251,12 @@ void MySQLCacheTable::updateCacheAllBool(const int colName, const bool value) co
 	}
 }
 
-void MySQLCacheTable::addCacheData(const MySQLData* data, const ullong validFlag)
+void MySQLCacheTable::addOrUpdateData(const MySQLData* data, const ullong validFlag)
 {
+	if (data == nullptr)
+	{
+		return;
+	}
 	// 数据已经有了,则更新数据
 	if (MySQLCacheData* curData = mCacheDataList.tryGet(data->mID))
 	{
@@ -270,7 +274,7 @@ void MySQLCacheTable::addCacheData(const MySQLData* data, const ullong validFlag
 	}
 }
 
-void MySQLCacheTable::addCacheDataList(const Vector<MySQLData*>& dataList, const ullong validFlag)
+void MySQLCacheTable::addOrUpdateDataList(const Vector<MySQLData*>& dataList, const ullong validFlag)
 {
 	for (const MySQLData* data : dataList)
 	{
@@ -296,33 +300,26 @@ void MySQLCacheTable::addCacheDataList(const Vector<MySQLData*>& dataList, const
 	}
 }
 
-void MySQLCacheTable::deleteAllCacheData()
+void MySQLCacheTable::deleteAllData()
 {
-	for (const auto& item : mCacheDataList)
-	{
-		item.second->destroy();
-	}
 	mMySQLCacheDataPool->destroyClassList(mCacheDataList);
-	mCacheDataList.clear();
 }
 
-void MySQLCacheTable::deleteCacheData(const llong id)
+void MySQLCacheTable::deleteData(const llong id)
 {
 	MySQLCacheData* data = nullptr;
 	if (mCacheDataList.erase(id, data))
 	{
-		data->destroy();
 		mMySQLCacheDataPool->destroyClass(data);
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataInIDRange(const llong minID, const llong maxID)
+void MySQLCacheTable::deleteDataInIDRange(const llong minID, const llong maxID)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		if (iter->first >= minID && iter->first <= maxID)
 		{
-			iter->second->destroy();
 			mMySQLCacheDataPool->destroyClass(iter->second);
 			iter = mCacheDataList.erase(iter);
 		}
@@ -333,14 +330,13 @@ void MySQLCacheTable::deleteCacheDataInIDRange(const llong minID, const llong ma
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnBool(const int column, const bool value, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnBool(const int column, const bool value, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasBool(column, value))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -355,14 +351,13 @@ void MySQLCacheTable::deleteCacheDataByColumnBool(const int column, const bool v
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnInt(const int column, const int value, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnInt(const int column, const int value, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasInt(column, value))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -377,14 +372,13 @@ void MySQLCacheTable::deleteCacheDataByColumnInt(const int column, const int val
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnFloat(const int column, const float value, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnFloat(const int column, const float value, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasFloat(column, value))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -399,14 +393,13 @@ void MySQLCacheTable::deleteCacheDataByColumnFloat(const int column, const float
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnLLong(const int column, const llong value, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnLLong(const int column, const llong value, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasLLong(column, value))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -421,14 +414,13 @@ void MySQLCacheTable::deleteCacheDataByColumnLLong(const int column, const llong
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnString(const int column, const string& value, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnString(const int column, const string& value, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasString(column, value))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -443,14 +435,13 @@ void MySQLCacheTable::deleteCacheDataByColumnString(const int column, const stri
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnLLong2And(const int column0, const llong value0, const int column1, const llong value1, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnLLong2And(const int column0, const llong value0, const int column1, const llong value1, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasLLong(column0, value0) && cacheData->hasLLong(column1, value1))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)
@@ -465,14 +456,34 @@ void MySQLCacheTable::deleteCacheDataByColumnLLong2And(const int column0, const 
 	}
 }
 
-void MySQLCacheTable::deleteCacheDataByColumnLLong2Or(const int column0, const llong value0, const int column1, const llong value1, bool onlyOnce)
+void MySQLCacheTable::deleteDataByColumnLLongIntAnd(const int column0, const llong value0, const int column1, const int value1, bool onlyOnce)
+{
+	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
+	{
+		MySQLCacheData* cacheData = iter->second;
+		if (cacheData->hasLLong(column0, value0) && cacheData->hasInt(column1, value1))
+		{
+			mMySQLCacheDataPool->destroyClass(cacheData);
+			iter = mCacheDataList.erase(iter);
+			if (onlyOnce)
+			{
+				break;
+			}
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+void MySQLCacheTable::deleteDataByColumnLLong2Or(const int column0, const llong value0, const int column1, const llong value1, bool onlyOnce)
 {
 	for (auto iter = mCacheDataList.begin(); iter != mCacheDataList.end(); )
 	{
 		MySQLCacheData* cacheData = iter->second;
 		if (cacheData->hasLLong(column0, value0) || cacheData->hasLLong(column1, value1))
 		{
-			cacheData->destroy();
 			mMySQLCacheDataPool->destroyClass(cacheData);
 			iter = mCacheDataList.erase(iter);
 			if (onlyOnce)

@@ -8,9 +8,9 @@ namespace SystemUtility
 {
 	llong mIDSeedMain;
 	atomic<llong> mIDSeedThread;
+	llong mTimeMSecondUTC = 0;
+	llong mTimeSecondUTC = 0;
 	int mMainThread = 0;
-	llong mTimeMS = 0;
-	llong mTimeS = 0;
 
 	void stop()
 	{
@@ -41,6 +41,68 @@ namespace SystemUtility
 		hour = date.tm_hour;
 		minute = date.tm_min;
 		second = date.tm_sec;
+#endif
+	}
+
+	int getYear()
+	{
+#ifdef WINDOWS
+		SYSTEMTIME sys;
+		GetLocalTime(&sys);
+		return sys.wYear;
+#elif defined LINUX
+		time_t tt;
+		time(&tt);
+		struct tm date;
+		localtime_r(&tt, &date);
+		return date.tm_year + 1900;
+#endif
+	}
+
+	int getMonth()
+	{
+#ifdef WINDOWS
+		SYSTEMTIME sys;
+		GetLocalTime(&sys);
+		return sys.wMonth;
+#elif defined LINUX
+		time_t tt;
+		time(&tt);
+		struct tm date;
+		localtime_r(&tt, &date);
+		return date.tm_mon + 1;
+#endif
+	}
+
+	void getYearMonth(int& year, int& month)
+	{
+#ifdef WINDOWS
+		SYSTEMTIME sys;
+		GetLocalTime(&sys);
+		year = sys.wYear;
+		month = sys.wMonth;
+#elif defined LINUX
+		time_t tt;
+		time(&tt);
+		struct tm date;
+		localtime_r(&tt, &date);
+		year = date.tm_year + 1900;
+		month = date.tm_mon + 1;
+#endif
+	}
+
+	int getDay()
+	{
+#ifdef WINDOWS
+		SYSTEMTIME sys;
+		GetLocalTime(&sys);
+		return sys.wDay;
+#elif defined LINUX
+		time_t tt;
+		time(&tt);
+		struct tm date;
+		localtime_r(&tt, &date);
+		return date.tm_mday;
 #endif
 	}
 
@@ -134,6 +196,23 @@ namespace SystemUtility
 		return timeBuffer.str();
 	}
 
+	llong getTodayEnd()
+	{
+		return getTodayBegin() + daysToSeconds(1);
+	}
+
+	llong getTodayBegin()
+	{
+		int year = 0;
+		int month = 0;
+		int day = 0;
+		int hour = 0;
+		int minute = 0;
+		int second = 0;
+		getTime(year, month, day, hour, minute, second);
+		return convertToTimestamp(year, month, day, 0, 0, 0);
+	}
+
 	int getDayOfWeek()
 	{
 #ifdef WINDOWS
@@ -149,20 +228,68 @@ namespace SystemUtility
 #endif
 	}
 
-	bool isSameDay(const time_t& timeStamp0, const time_t& timeStamp1)
+	bool isSameDay(time_t timeStamp0, time_t timeStamp1)
 	{
-		struct tm dateTime0;
-		struct tm dateTime1;
-#ifdef WINDOWS
-		localtime_s(&dateTime0, &timeStamp0);
-		localtime_s(&dateTime1, &timeStamp1);
-#elif defined LINUX
-		localtime_r(&timeStamp0, &dateTime0);
-		localtime_r(&timeStamp1, &dateTime1);
-#endif
+		struct tm dateTime0 = getTimeStruct(timeStamp0);
+		struct tm dateTime1 = getTimeStruct(timeStamp1);
 		return dateTime0.tm_year == dateTime1.tm_year &&
 			   dateTime0.tm_mon == dateTime1.tm_mon &&
 			   dateTime0.tm_mday == dateTime1.tm_mday;
+	}
+
+	tm getTimeStruct(const time_t timeStamp)
+	{
+		struct tm dateTime;
+#ifdef WINDOWS
+		localtime_s(&dateTime, &timeStamp);
+#elif defined LINUX
+		localtime_r(&timeStamp, &dateTime);
+#endif
+		// 转换为绝对的年份,以及从1开始的月份
+		dateTime.tm_year += 1900;
+		dateTime.tm_mon += 1;
+		return dateTime;
+	}
+
+	time_t convertToTimestamp(int year, int month, int day, int hour, int minute, int second)
+	{
+		struct tm tm_struct = {};
+		tm_struct.tm_year = year - 1900; // 年份从1900开始计算
+		tm_struct.tm_mon = month - 1;    // 月份0-11
+		tm_struct.tm_mday = day;
+		tm_struct.tm_hour = hour;
+		tm_struct.tm_min = minute;
+		tm_struct.tm_sec = second;
+		tm_struct.tm_isdst = -1;
+		return mktime(&tm_struct);
+	}
+
+	int getDaysInMonth()
+	{
+		int year = 0;
+		int month = 0;
+		getYearMonth(year, month);
+		return getDaysInMonth(year, month);
+	}
+
+	int getDaysInMonth(int year, int month)
+	{
+		switch (month) 
+		{
+		case 1: 
+		case 3: 
+		case 5: 
+		case 7: 
+		case 8: 
+		case 10: 
+		case 12: return 31;
+		case 4: 
+		case 6: 
+		case 9: 
+		case 11: return 30;
+		case 2: return isLeapYear(year) ? 29 : 28;
+		default: return 0;
+		}
 	}
 
 	// 获得cpu核心数
@@ -465,17 +592,13 @@ namespace SystemUtility
 				oss += getFileName(line.FileName);
 				oss += ":";
 				// 这里不能使用IToS,容易造成死循环
-				char lineStr[20]{ 0 };
-				::_itoa_s(line.LineNumber, lineStr, 10);
-				oss += lineStr;
+				oss += to_string(line.LineNumber);
 				oss += "\n";
 			}
 			else
 			{
 				oss += "error: ";
-				char lineStr[20]{ 0 };
-				::_itoa_s(GetLastError(), lineStr, 10);
-				oss += lineStr;
+				oss += to_string(GetLastError());
 				oss += "\n";
 			}
 		}

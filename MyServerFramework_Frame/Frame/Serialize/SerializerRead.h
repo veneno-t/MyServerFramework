@@ -8,7 +8,7 @@ class MICRO_LEGEND_FRAME_API SerializerRead
 {
 public:
 	SerializerRead(const char* buffer, int bufferSize);
-	template<typename T>
+	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	bool read(T& value)
 	{
 		return BinaryUtility::read<T>(mBuffer, mBufferSize, mIndex, value);
@@ -25,6 +25,10 @@ public:
 	{
 		return BinaryUtility::readVector3(mBuffer, mBufferSize, mIndex, vec);
 	}
+	bool readVector3Int(Vector3Int& vec)
+	{
+		return BinaryUtility::readVector3Int(mBuffer, mBufferSize, mIndex, vec);
+	}
 	bool readVector4(Vector4& vec)
 	{
 		return BinaryUtility::readVector4(mBuffer, mBufferSize, mIndex, vec);
@@ -35,12 +39,12 @@ public:
 	{
 		return value.readFromBuffer(this);
 	}
-	template<typename T>
+	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	T read()
 	{
 		return BinaryUtility::read<T>(mBuffer, mBufferSize, mIndex);
 	}
-	template<typename T>
+	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	bool readList(Vector<T>& list)
 	{
 		int count;
@@ -56,6 +60,10 @@ public:
 		}
 		return result;
 	}
+	bool readVector2List(Vector<Vector2>& list);
+	bool readVector2IntList(Vector<Vector2Int>& list);
+	bool readVector3List(Vector<Vector3>& list);
+	bool readVector3IntList(Vector<Vector3Int>& list);
 	bool readStringList(Vector<string>& list);
 	// 自定义数据类型,需要继承SerializableData才能通过此方法读取数据
 	template<typename T, typename TypeCheck = typename IsSubClassOf<SerializableData, T>::mType>

@@ -8,6 +8,8 @@
 template<typename T>
 class MySQLDataHashMapScopeT
 {
+    typedef typename unordered_map<llong, T*>::iterator iterator;
+    typedef typename unordered_map<llong, T*>::const_iterator const_iterator;
 private:
     HashMap<llong, T*> mList;       // 原始数据
     Counter* mCounter = nullptr;    // 引用计数
@@ -16,7 +18,7 @@ public:
     MySQLDataHashMapScopeT() {}
     explicit MySQLDataHashMapScopeT(HashMap<llong, T*>&& list)
     {
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             return;
         }
@@ -28,7 +30,7 @@ public:
     MySQLDataHashMapScopeT(const MySQLDataHashMapScopeT& other) :
         mCounter(other.mCounter)
     {
-        if (other.mList.size() == 0)
+        if (other.mList.isEmpty())
         {
             return;
         }
@@ -62,6 +64,12 @@ public:
     {
         release();
     }
+    iterator begin()                { return mList.begin(); }
+    iterator end()                  { return mList.end(); }
+    const_iterator begin() const    { return mList.begin(); }
+    const_iterator end()  const     { return mList.end(); }
+    const_iterator cbegin() const   { return mList.cbegin(); }
+    const_iterator cend() const     { return mList.cend(); }
     // 指针访问操作符,只允许左值调用,右值不能调用,因为容易产生析构后才返回的问题
     const HashMap<llong, T*>& get() const& { return mList; }
     const HashMap<llong, T*>& get() const&& = delete;
@@ -82,7 +90,6 @@ public:
         {
             mMySQLDataPool->destroyClassList(mList);
             mCounterThreadPool->destroyClass(mCounter);
-            mCounter = nullptr;
         }
     }
     void releaseNoDestroy()
@@ -94,7 +101,6 @@ public:
             {
                 mList.clear();
                 mCounterThreadPool->destroyClass(mCounter);
-                mCounter = nullptr;
             }
             else
             {

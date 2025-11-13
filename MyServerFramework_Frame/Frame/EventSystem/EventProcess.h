@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "GameEvent.h"
 
 class EventProcessBase

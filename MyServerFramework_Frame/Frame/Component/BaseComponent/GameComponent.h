@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 
-class MICRO_LEGEND_FRAME_API GameComponent : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API GameComponent : public ClassObject
 {
-	BASE(GameComponent, ClassPooledObject);
+	BASE(GameComponent, ClassObject);
 public:
 	virtual void init(ComponentOwner* owner) { mComponentOwner = owner; }
-	virtual void destroy() {}
+	void destroy() override { base::destroy(); }
 	virtual void setActive(bool active, bool isInit = false);
 	void setType(ushort type)						{ mComponentType = type; }
 	void setDefaultActive(const bool defaultActive)	{ mDefaultActive = defaultActive; }

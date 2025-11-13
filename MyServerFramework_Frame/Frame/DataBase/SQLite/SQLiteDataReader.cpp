@@ -13,21 +13,3 @@ SQLiteDataReader::~SQLiteDataReader()
 		mStmt = nullptr;
 	}
 }
-
-string SQLiteDataReader::getString(const int col, const bool toANSI) const
-{
-	if (toANSI)
-	{
-		return UTF8ToANSI((char*)sqlite3_column_text(mStmt, col));
-	}
-	else
-	{
-		return (char*)sqlite3_column_text(mStmt, col);
-	}
-}
-
-const char* SQLiteDataReader::getBlob(const int col, int& length) const
-{
-	length = sqlite3_column_bytes(mStmt, col);
-	return (const char*)sqlite3_column_blob(mStmt, col);
-}

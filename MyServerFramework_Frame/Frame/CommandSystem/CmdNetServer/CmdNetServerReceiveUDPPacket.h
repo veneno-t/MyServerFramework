@@ -14,6 +14,6 @@ public:
 	}
 	void execute() override;
 public:
-	sockaddr_in mAddress;
+	sockaddr_in mAddress{};
 	HashMap<llong, Vector<PacketTCP*>> mPacketList;		// first是ClientGUID
 };

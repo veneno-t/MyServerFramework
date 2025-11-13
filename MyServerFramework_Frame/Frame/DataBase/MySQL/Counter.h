@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 
-class Counter : public ClassPooledObject
+class Counter : public ClassObject
 {
-	BASE(Counter, ClassPooledObject);
+	BASE(Counter, ClassObject);
 protected:
     atomic<int> mCount;
 public:

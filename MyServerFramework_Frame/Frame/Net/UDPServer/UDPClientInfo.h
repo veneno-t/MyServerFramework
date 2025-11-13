@@ -7,7 +7,7 @@ class MICRO_LEGEND_FRAME_API UDPClientInfo
 {
 protected:
 	Vector<pair<char*, int>> mSendList;	// 待发送的消息列表
-	sockaddr_in mAddress;				// 发送的地址
+	sockaddr_in mAddress{};				// 发送的地址
 	llong mToken = 0;					// 客户端凭证,一般是角色ID
 public:
 	~UDPClientInfo() { clear(); }

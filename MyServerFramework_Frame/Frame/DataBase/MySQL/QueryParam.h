@@ -7,15 +7,12 @@ class MICRO_LEGEND_FRAME_API QueryParam
 public:
 	virtual ~QueryParam()
 	{
-		if (mIDList != nullptr)
-		{
-			delete mIDList;
-			mIDList = nullptr;
-		}
+		DELETE(mIDList);
 	}
 public:
 	Vector<llong>* mIDList = nullptr;			// 要查询的ID列表,优先判断mCondition,mCondition为空时才会判断mIDList
-	string mCondition;							// 查询的条件
+	MyString<128> mConditionStack;				// 查询的条件,如果条件比较短的就用栈字符串存储
+	string mConditionHeap;						// 查询的条件,如果条件比较长的就用普通字符串
 	llong mLimitStart = 0;						// 返回结果在查询结果中的起始下标,0表示从查询结果的第一个开始返回
 	llong mLimitCount = 0;						// 返回结果的最大数量
 	string mOrderColumn;						// 排序的列

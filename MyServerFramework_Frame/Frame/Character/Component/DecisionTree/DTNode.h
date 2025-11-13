@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "FrameDefine.h"
 
-class MICRO_LEGEND_FRAME_API DTNode : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API DTNode : public ClassObject
 {
-	BASE(DTNode, ClassPooledObject);
+	BASE(DTNode, ClassObject);
 public:
 	~DTNode() override;
 	// 节点创建时执行一次init

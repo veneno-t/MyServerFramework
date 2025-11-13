@@ -21,6 +21,6 @@ void ArrayPool::onHour(void* userData)
 
 ArrayPool::~ArrayPool()
 {
-	delete mArrayPoolSingle;
-	delete mArrayPoolSingleChar;
+	DELETE(mArrayPoolSingle);
+	DELETE(mArrayPoolSingleChar);
 }

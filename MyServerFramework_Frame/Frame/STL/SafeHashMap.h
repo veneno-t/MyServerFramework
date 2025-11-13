@@ -47,6 +47,7 @@ public:
 	const Value& tryGet(const Key& key) const							{ return mMainList.tryGet(key); }
 	bool contains(const Key& key) const									{ return mMainList.contains(key); }
 	int size() const													{ return mMainList.size(); }
+	bool isEmpty() const												{ return mMainList.isEmpty(); }
 	bool insert(const Key& key, const Value& value)
 	{
 		if (!mMainList.insert(key, value))

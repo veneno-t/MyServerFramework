@@ -11,53 +11,61 @@ class SQLiteTable : public SQLiteTableBase
 public:
 	~SQLiteTable() override
 	{
-		for (const auto& iter : mDataList)
-		{
-			delete iter.second;
-		}
-		mDataList.clear();
+		DELETE_MAP(mDataMap);
 	}
 	T* query(const int id, const bool showError = true)
 	{
-		THREAD_LOCK(mThreadLock);
-		if (!mDataList.contains(id))
+		if (mDataMap.isEmpty())
 		{
-			T* item = new T();
-			// 如果找不到则销毁,并且提示错误信息
-			if (!queryData(id, *item))
-			{
-				if (showError)
-				{
-					ERROR("can not find item id:" + IToS(id) + " in " + mTableName);
-				}
-				delete item;
-			}
-			// 查找成功则加入缓存列表
-			else
-			{
-				mDataList.insert(id, item);
-			}
+			queryAll();
 		}
-		return mDataList.tryGet(id);
+		if (id > 0 && mDataList.size() > id)
+		{
+			return mDataList[id];
+		}
+		return mDataMap.tryGet(id);
 	}
 	const HashMap<int, T*>& queryAll()
 	{
 		// 如果没有查询过,或者数据的数量与已查询数量不一致才会查询全部
 		THREAD_LOCK(mThreadLock);
-		if (mDataList.size() == 0 || doQueryCount() != mDataList.size())
+		if (mDataMap.isEmpty() || doQueryCount() != mDataMap.size())
 		{
 			Vector<T*> list;
 			queryAllData(list);
+			int maxID = 0;
 			for(T*& value : list)
 			{
 				// 没有查询过的数据才插入列表,已经查询过的则不再需要,直接释放
-				if (!mDataList.insert(value->mID, value))
+				if (!mDataMap.insert(value->mID, value))
 				{
-					delete value;
+					DELETE(value);
+					continue;
+				}
+				maxID = getMax(maxID, value->mID);
+				mDataList.resize(maxID + 1);
+				for (const auto& item : mDataMap)
+				{
+					mDataList[item.first] = item.second;
 				}
 			}
 		}
+		return mDataMap;
+	}
+	const Vector<T*>& getDataVector()
+	{
+		if (mDataList.isEmpty())
+		{
+			queryAll();
+		}
 		return mDataList;
+	}
+	void checkEnumResult(bool result, const char* varName, int dataID)
+	{
+		if (!result)
+		{
+			ERROR(string("enum value error,name:") + varName + " in " + mTableName + ", ID:" + IToS(dataID) + ", Table:" + getTableName());
+		}
 	}
 	void checkData(const int checkID, const int dataID, SQLiteTableBase* refTable)
 	{
@@ -80,11 +88,11 @@ public:
 	template<typename T0, int Length>
 	void checkData(const ArrayList<Length, T0>& checkIDList, const int dataID, SQLiteTableBase* refTable)
 	{
-		FOR_I(checkIDList.size())
+		for (const T0 id : checkIDList)
 		{
-			if (query(checkIDList[i], false) == nullptr)
+			if (query(id, false) == nullptr)
 			{
-				ERROR("can not find item id:" + IToS(checkIDList[i]) + " in " + mTableName + ", ref ID:" + IToS(dataID) + ", ref Table:" + refTable->getTableName());
+				ERROR("can not find item id:" + IToS(id) + " in " + mTableName + ", ref ID:" + IToS(dataID) + ", ref Table:" + refTable->getTableName());
 			}
 		}
 	}
@@ -108,7 +116,7 @@ protected:
 	bool queryData(const int id, T& data)
 	{
 		MyString<128> conditionString;
-		sqlConditionUInt(conditionString, "ID", id);
+		sqlConditionInt(conditionString, "ID", id);
 		return doSelect(data, conditionString.str());
 	}
 	int doQueryCount()
@@ -145,26 +153,7 @@ protected:
 		}
 		return SQLiteDataReader(mSQLite3, queryStr.str()).parseReader(data);
 	}
-	void queryAllToList(Vector<T*>& dataList)
-	{
-		auto& allList = queryAll();
-		if (allList.size() == 0)
-		{
-			return;
-		}
-		int maxCount = 0;
-		for (const auto& iter : allList)
-		{
-			maxCount = getMax(maxCount, iter.second->mID);
-		}
-		// 因为ID都是从1开始的,所以数量会比下标多1
-		dataList.resize(++maxCount);
-		memset(dataList.data(), 0, sizeof(T*)* maxCount);
-		for (const auto& iter : allList)
-		{
-			dataList[iter.first] = iter.second;
-		}
-	}
 protected:
-	HashMap<int, T*> mDataList;
+	HashMap<int, T*> mDataMap;
+	Vector<T*> mDataList;			// 由于使用map进行查询仍然不够快速,而ID恰好适合作为下标,所以直接根据ID进行下标定位最快
 };

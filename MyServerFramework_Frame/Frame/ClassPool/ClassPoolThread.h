@@ -3,12 +3,12 @@
 #include "ThreadLock.h"
 #include "ThreadLockScope.h"
 #include "ClassPoolBase.h"
-#include "ClassPooledObject.h"
-#include "FrameMySQLUtility.h"
+#include "ClassObject.h"
+#include "ErrorProfile.h"
 
 // 固定类型的对象池
 // 线程安全
-template<typename ClassType, typename TypeCheck = typename IsSubClassOf<ClassPooledObject, ClassType>::mType>
+template<typename ClassType, typename TypeCheck = typename IsSubClassOf<ClassObject, ClassType>::mType>
 class ClassPoolThread : public ClassPoolBase
 {
 	BASE(ClassPoolThread, ClassPoolBase);
@@ -32,12 +32,9 @@ public:
 	void quit() override
 	{
 		THREAD_LOCK(mLock);
-		for (ClassType* obj : mUnusedList)
-		{
-			delete obj;
-		}
-		mUnusedList.clear();
+		DELETE_LIST(mUnusedList);
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	ClassType* newClassTemp()
 	{
 		ClassType* obj = newClass();
@@ -63,7 +60,8 @@ public:
 		{
 			obj = new ClassType();
 			obj->resetProperty();
-			if (++mTotalCount % 5000 == 0 && mShowCountLog)
+			++mTotalCount;
+			if (mShowCountLog && (mTotalCount & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount) + "个");
 			}
@@ -73,7 +71,7 @@ public:
 		obj->markUsable(this, ++mAssignIDSeed);
 		return obj;
 	}
-	void destroyClass(ClassType* obj)
+	void destroyClass(ClassType*& obj)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
 		if (mDestroied || obj == nullptr)
@@ -81,6 +79,7 @@ public:
 			return;
 		}
 
+		obj->destroy();
 		if (!obj->markDispose(this))
 		{
 			ERROR_PROFILE((string("0重复销毁对象:") + typeid(ClassType).name()).c_str());
@@ -98,11 +97,12 @@ public:
 			// 添加到未使用列表中
 			mUnusedList.push_back(obj);
 		}
+		obj = nullptr;
 	}
-	void destroyClassList(const Vector<ClassType*>& objList)
+	void destroyClassList(Vector<ClassType*>& objList)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		if (mDestroied || objList.size() == 0)
+		if (mDestroied || objList.isEmpty())
 		{
 			return;
 		}
@@ -119,6 +119,7 @@ public:
 			{
 				continue;
 			}
+			obj->destroy();
 			if (!obj->markDispose(this))
 			{
 				ERROR_PROFILE((string("1重复销毁对象:") + typeid(ClassType).name()).c_str());
@@ -129,12 +130,13 @@ public:
 #endif
 			mUnusedList.push_back(obj);
 		}
+		objList.clear();
 	}
 	template<typename T0>
-	void destroyClassList(const HashMap<T0, ClassType*>& objMap)
+	void destroyClassList(HashMap<T0, ClassType*>& objMap)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		if (mDestroied || objMap.size() == 0)
+		if (mDestroied || objMap.isEmpty())
 		{
 			return;
 		}
@@ -152,6 +154,7 @@ public:
 			{
 				continue;
 			}
+			obj->destroy();
 			if (!obj->markDispose(this))
 			{
 				ERROR_PROFILE((string("2重复销毁对象:") + typeid(ClassType).name()).c_str());
@@ -162,28 +165,59 @@ public:
 #endif
 			mUnusedList.push_back(obj);
 		}
+		objMap.clear();
+	}
+	template<int Length>
+	void destroyClassList(ArrayList<Length, ClassType*>& objList)
+	{
+		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
+		if (mDestroied || objList.isEmpty())
+		{
+			return;
+		}
+
+		// 再添加到列表
+		THREAD_LOCK(mLock);
+#ifdef WINDOWS
+		THREAD_LOCK(mRemainTimeLock);
+#endif
+		mUnusedList.reserve(mUnusedList.size() + objList.size());
+		for (ClassType* obj : objList)
+		{
+			if (obj == nullptr)
+			{
+				continue;
+			}
+			obj->destroy();
+			if (!obj->markDispose(this))
+			{
+				ERROR_PROFILE((string("1重复销毁对象:") + typeid(ClassType).name()).c_str());
+				continue;
+			}
+#ifdef WINDOWS
+			mClassRemainTimeList.erase(obj);
+#endif
+			mUnusedList.push_back(obj);
+		}
+		objList.clear();
 	}
 	void clearPool()
 	{
 		THREAD_LOCK(mLock);
-		FOR_VECTOR(mUnusedList)
-		{
-			delete mUnusedList[i];
-		}
-		mUnusedList.clear(true);
+		DELETE_LIST(mUnusedList);
 #ifdef WINDOWS
 		THREAD_LOCK(mRemainTimeLock);
 		mClassRemainTimeList.clear(true);
 #endif
 	}
-protected:
-	void onHour() override
+	void dump() override
 	{
 		if (mTotalCount > 1000)
 		{
-			LOG("ClassPoolThread: " + string(typeid(ClassType).name()) + "的数量:" + IToS(mTotalCount));
+			LOG("ClassPoolThread: " + string(typeid(ClassType).name()) + "的数量:" + IToS(mTotalCount) + ",总大小:" + LLToS(mTotalCount * sizeof(ClassType) / 1024) + "KB" + ", 未使用数量:" + IToS(mUnusedList.size()));
 		}
 	}
+protected:
 	void onSecond() override
 	{
 #ifdef WINDOWS

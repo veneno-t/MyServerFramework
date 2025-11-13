@@ -2,11 +2,7 @@
 
 DTNode::~DTNode()
 {
-	if (mChildList != nullptr)
-	{
-		delete mChildList;
-		mChildList = nullptr;
-	}
+	DELETE(mChildList);
 }
 
 TASK_STATE DTNode::start()

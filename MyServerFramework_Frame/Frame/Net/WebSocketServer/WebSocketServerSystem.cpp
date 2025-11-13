@@ -14,29 +14,13 @@ void WebSocketServerSystem::quit()
 	mThreadManager->destroyThread(mReceiveThread);
 	mThreadManager->destroyThread(mAcceptThread);
 	// 销毁所有客户端
-	for (const auto& iterClient : mClientList)
-	{
-		delete iterClient.second;
-	}
-	mClientList.clear();
+	DELETE_MAP(mClientList);
 #ifdef WINDOWS
 	WSACleanup();
 #endif
-	if (mSocket != INVALID_SOCKET)
-	{
-		CLOSE_SOCKET(mSocket);
-		mSocket = INVALID_SOCKET;
-	}
-	if (mPacketDataBuffer != nullptr)
-	{
-		delete mPacketDataBuffer;
-		mPacketDataBuffer = nullptr;
-	}
-	if (mRecvBuffer != nullptr)
-	{
-		delete[] mRecvBuffer;
-		mRecvBuffer = nullptr;
-	}
+	CLOSE_SOCKET(mSocket);
+	DELETE(mPacketDataBuffer);
+	DELETE_ARRAY(mRecvBuffer);
 }
 
 void WebSocketServerSystem::init()
@@ -166,7 +150,7 @@ void WebSocketServerSystem::acceptThread(CustomThread* thread)
 
 void WebSocketServerSystem::processSend()
 {
-	if (mSendClientList.size() == 0)
+	if (mSendClientList.isEmpty())
 	{
 		return;
 	}
@@ -252,7 +236,7 @@ void WebSocketServerSystem::processSend()
 
 void WebSocketServerSystem::processRecv()
 {
-	if (mRecvClientList.size() == 0)
+	if (mRecvClientList.isEmpty())
 	{
 		return;
 	}
@@ -323,11 +307,11 @@ void WebSocketServerSystem::checkSendRecvError(WebSocketServerClient* client, co
 	// 客户端可能已经与服务器断开了连接,先立即标记该客户端已断开,然后再移除
 	if (successLength == 0)
 	{
-		client->setDeadClient("客户端主动关闭连接");
+		client->setDeadClient("客户端主动关闭连接", DEAD_TYPE::MANUAL_QUIT);
 	}
 	else
 	{
-		client->setDeadClient("recv或send返回值小于0");
+		client->setDeadClient("recv或send返回值小于0", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 	const int errorCode = errno;
 	if (errorCode == 0)
@@ -345,7 +329,7 @@ void WebSocketServerSystem::checkSendRecvError(WebSocketServerClient* client, co
 	}
 	else if (errorCode == EBADMSG)
 	{
-		client->setDeadClient("客户端已经关闭了Socket");
+		client->setDeadClient("客户端已经关闭了Socket", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 }
 
@@ -422,7 +406,7 @@ void WebSocketServerSystem::writePacket(PacketWebSocket* packet)
 	mWritePacketBytes += mPacketDataBuffer->getDataSize();
 }
 
-int WebSocketServerSystem::notifyAcceptClient(const MY_SOCKET socket, const string& ip)
+int WebSocketServerSystem::notifyAcceptClient(MY_SOCKET socket, const string& ip)
 {
 	// 加入主线程的客户端列表
 	const int clientGUID = generateSocketGUID();
@@ -481,25 +465,17 @@ void WebSocketServerSystem::disconnectSocket(const int clientGUID, const string&
 	// 退出账号的登录
 	CmdNetServerLogoutAccount::execute(client);
 	// 销毁客户端
-	delete client;
-}
-
-void WebSocketServerSystem::notifyAccountLogin(WebSocketServerClient* client)
-{
-	mClientAccountIDList.insert(client->getAccountGUID(), client);
-}
-
-void WebSocketServerSystem::notifyAccountLogout(WebSocketServerClient* client)
-{
-	mClientAccountIDList.erase(client->getAccountGUID());
+	DELETE(client);
 }
 
 void WebSocketServerSystem::logoutAll()
 {
 	// 复制一份列表出来
-	auto tempList = mClientList;
+	HashMap<int, WebSocketServerClient*> tempList;
+	mClientList.clone(tempList);
 	for (const auto& iter : tempList)
 	{
+		iter.second->setDeadClient("全部退出登录", DEAD_TYPE::SERVER_KICK_OUT);
 		CmdNetServerLogoutAccount::execute(iter.second);
 	}
 }

@@ -25,16 +25,11 @@ void TCPServerClient::init()
 
 TCPServerClient::~TCPServerClient()
 {
-	delete mSendBuffer;
-	mSendBuffer = nullptr;
-	delete mRecvBuffer;
-	mRecvBuffer = nullptr;
-	delete mSendWriter;
-	mSendWriter = nullptr;
-	delete mPacketTempBuffer0;
-	mPacketTempBuffer0 = nullptr;
-	delete mPacketTempBuffer1;
-	mPacketTempBuffer1 = nullptr;
+	DELETE(mSendBuffer);
+	DELETE(mRecvBuffer);
+	DELETE(mSendWriter);
+	DELETE(mPacketTempBuffer0);
+	DELETE(mPacketTempBuffer1);
 	// 关闭客户端套接字,并从列表移除
 	CLOSE_SOCKET(mSocket);
 	mSequenceNumber = 0;
@@ -67,7 +62,7 @@ void TCPServerClient::update(const float elapsedTime)
 	}
 	if (tickTimerOnce(mHeartBeatTime, elapsedTime))
 	{
-		setDeadClient("客户端心跳超时");
+		setDeadClient("客户端心跳超时", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 }
 
@@ -214,7 +209,7 @@ void TCPServerClient::writeToSendBuffer()
 		// 放入到缓存列表中,因为要保证发送消息的顺序,所以只能都先放到二级缓冲区
 		if (!mSendBuffer->addDataToBack(mSendWriter->getBuffer(), mSendWriter->getByteCount()))
 		{
-			setDeadClient("客户端发送缓冲区已满");
+			setDeadClient("客户端发送缓冲区已满", DEAD_TYPE::SERVER_KICK_OUT);
 		}
 	}
 	mPacketTempBuffer1->clear();
@@ -298,7 +293,7 @@ void TCPServerClient::recvData(const char* data, const int dataCount)
 	if (ret != PARSE_RESULT::SUCCESS)
 	{
 		// 先设置为断开连接的客户端
-		setDeadClient("消息解析错误:" + IToS((int)ret));
+		setDeadClient("消息解析错误:" + IToS((int)ret), DEAD_TYPE::SERVER_KICK_OUT);
 	}
 	// 将解析后的消息列表同步到列表中
 	mExecutePacketList.add(mTempPacketList);
@@ -399,7 +394,7 @@ PARSE_RESULT TCPServerClient::packetRead(int& bitIndex, PacketTCP*& packet, stri
 	packet->setSequenceNumber(sequenceNumber);
 	if (sequenceNumber != mLastReceiveNumber + 1 && mPlayerGUID > 0 && mLastReceiveNumber != 0x7FFFFFFF)
 	{
-		const string info = "丢包:" + IToS(sequenceNumber - mLastReceiveNumber - 1) + 
+		string info = "丢包:" + IToS(sequenceNumber - mLastReceiveNumber - 1) + 
 							", 角色ID:" + LLToS(mPlayerGUID) + ", 已接收包数量:" + UIToS(mParsedCount) +
 							", 当前包序列号:" + IToS(sequenceNumber);
 		LOG(info);
@@ -558,7 +553,7 @@ void TCPServerClient::notifyPing()
 		// 每次心跳是2秒,如果3次心跳的时间小于17秒,留15%的误差空间,则可认为是开了加速外挂,加速了客户端的全局时间
 		if (mLastPingList[mLastPingList.size() - 1] - mLastPingList[0] < (mLastPingList.size() - 1) * (mClientPingTime * 1000 * 0.85f))
 		{
-			const string info = "触发了异常心跳检测, 心跳时间列表:" + LLsToS(mLastPingList) +
+			string info = "触发了异常心跳检测, 心跳时间列表:" + LLsToS(mLastPingList) +
 				", 账号ID:" + LLToS(mAccountGUID) +
 				", 角色ID:" + LLToS(mPlayerGUID);
 			LOG(info);

@@ -2,11 +2,7 @@
 
 MovableObject::~MovableObject()
 {
-	if (mDestroyCallbackList != nullptr)
-	{
-		delete mDestroyCallbackList;
-		mDestroyCallbackList = nullptr;
-	}
+	DELETE(mDestroyCallbackList);
 }
 
 void MovableObject::destroy()
@@ -20,6 +16,7 @@ void MovableObject::destroy()
 		}
 		mDestroyCallbackList->clear();
 	}
+	mComMove = nullptr;
 }
 
 void MovableObject::resetProperty()
@@ -29,6 +26,7 @@ void MovableObject::resetProperty()
 	{
 		mDestroyCallbackList->clear();
 	}
+	mComMove = nullptr;
 	mLastPosition.clear();
 	mPosition.clear();
 	mEnableLastPosition = false;
@@ -41,16 +39,28 @@ void MovableObject::update(const float elapsedTime)
 	base::update(elapsedTime);
 	if (mEnableLastPosition)
 	{
-		const Vector3& curPos = getPosition();
-		mMovedDuringFrame = mHasLastPosition && !isVectorEqual(curPos, mLastPosition);
-		mLastPosition = curPos;
+		mMovedDuringFrame = mHasLastPosition && !isVectorEqual(mPosition, mLastPosition);
+		mLastPosition = mPosition;
 		mHasLastPosition = true;
 	}
 }
 
+MovableObjectComponentMove* MovableObject::getComponentMove()
+{
+	if (mComMove == nullptr)
+	{
+		mComMove = getComponent<MovableObjectComponentMove>();
+		if (mComMove == nullptr)
+		{
+			mComMove = addComponent<MovableObjectComponentMove>();
+		}
+	}
+	return mComMove;
+}
+
 void MovableObject::removeDestroyCallback(const OnObjectDestroy callback, const void* userData)
 {
-	if (mDestroyCallbackList == nullptr || mDestroyCallbackList->size() == 0)
+	if (mDestroyCallbackList == nullptr || mDestroyCallbackList->isEmpty())
 	{
 		return;
 	}

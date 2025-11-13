@@ -1,30 +1,36 @@
 ﻿#include "GameHeader.h"
 
-// 下面包含自动生成的代码,以// FrameSystem,// MySQL,// SQLite为起始,以第一个空行或者}为结束
 namespace GameBase
 {
-	// FrameSystem Define
+	// auto generate start FrameSystem Define
 	GameConfigSystem* mGameConfigSystem;
+	// auto generate end FrameSystem Define
 
-	// MySQL Define
+	// auto generate start MySQL Define
 	MySQLAccount* mMySQLAccount;
+	// auto generate end MySQL Define
 
-	// SQLite Define
+	// auto generate start SQLite Define
+	// auto generate end SQLite Define
 
 	void constructGameDone()
 	{
-		// FrameSystem Get
+		// auto generate start FrameSystem Get
 		mServerFramework->getSystem(STR(GameConfigSystem), mGameConfigSystem);
+		// auto generate end FrameSystem Get
 	}
 
 	void clearGameSystem()
 	{
-		// FrameSystem Clear
+		// auto generate start FrameSystem Clear
 		mGameConfigSystem = nullptr;
+		// auto generate end FrameSystem Clear
 
-		// MySQL Clear
+		// auto generate start MySQL Clear
 		mMySQLAccount = nullptr;
+		// auto generate end MySQL Clear
 
-		// SQLite Clear
+		// auto generate start SQLite Clear
+		// auto generate end SQLite Clear
 	}
 }

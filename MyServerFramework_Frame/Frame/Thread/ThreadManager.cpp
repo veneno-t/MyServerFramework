@@ -7,11 +7,7 @@ ThreadManager::~ThreadManager()
 		print(("有" + UIToS(mThreadList.size()) + "个线程未正常关闭").c_str());
 	}
 	// 强制关闭所有线程
-	for (const auto& iter : mThreadList)
-	{
-		delete iter.second;
-	}
-	mThreadList.clear();
+	DELETE_MAP(mThreadList);
 }
 
 CustomThread* ThreadManager::createThread(const string& name, CustomThreadCallback callback, void* args, CustomThreadCallback preCmdCallback, CustomThreadCallback endCmdCallback)
@@ -28,5 +24,5 @@ void ThreadManager::destroyThread(CustomThread*& thread)
 		return;
 	}
 	mThreadList.erase(thread->getThreadHandle());
-	delete thread;
+	DELETE(thread);
 }

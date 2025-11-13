@@ -2,12 +2,7 @@
 
 void TimeTaskSystem::quit()
 {
-	for (TimeTask* task : mTimeTaskList)
-	{
-		task->destroy();
-		delete task;
-	}
-	mTimeTaskList.clear();
+	DELETE_LIST(mTimeTaskList);
 }
 
 void TimeTaskSystem::update(const float elapsedTime)

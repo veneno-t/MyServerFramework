@@ -159,60 +159,60 @@ namespace BinaryUtility
 	constexpr byte getByte(T value, const int pos) { return ((value) & (0xFFLL << (8 * pos))) >> (8 * pos); }
 	// 指定下标的位是否为1
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr bool hasBit(T value, const int pos) { return (value & (1LL << pos)) != 0; }
+	constexpr bool hasBit(T value, const int pos) { return (value & ((T)1 << pos)) != 0; }
 	// 获取指定位的值
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr int getBit(T value, const int pos) { return (value & (1LL << pos)) >> pos; }
+	constexpr int getBit(T value, const int pos) { return (value & ((T)1 << pos)) >> pos; }
 	// 设置指定位的值
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
 	constexpr void setBit(T& value, const int pos, const int bit)
 	{
 		if (bit != 0)
 		{
-			value |= 1LL << pos;
+			value |= (T)1 << pos;
 		}
 		else
 		{
-			value &= ~(1LL << pos);
+			value &= ~((T)1 << pos);
 		}
 	}
 	// 注意,负数由于存储是使用补码存储的,所以不能直接按位或
 	// 将指定下标的位设置为1
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr void setBitOne(T& value, const int pos) { value |= 1LL << pos; }
+	constexpr void setBitOne(T& value, const int pos) { value |= (T)1 << pos; }
 	// 将指定下标的位设置为0
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr void setBitZero(T& value, const int pos) { value &= ~(1LL << pos); }
+	constexpr void setBitZero(T& value, const int pos) { value &= ~((T)1 << pos); }
 	// 获取最高位
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr int getHighestBit(T value) { return (value & (1LL << (sizeof(T) * 8 - 1))) >> (sizeof(T) * 8 - 1); }
+	constexpr int getHighestBit(T value) { return (value & ((T)1 << (sizeof(T) * 8 - 1))) >> (sizeof(T) * 8 - 1); }
 	// 设置最高位
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
 	constexpr void setHighestBit(T& value, const bool bit)
 	{
 		if (bit)
 		{
-			value |= 1LL << (sizeof(T) * 8 - 1);
+			value |= (T)1 << (sizeof(T) * 8 - 1);
 		}
 		else
 		{
-			value &= ~(1LL << (sizeof(T) * 8 - 1));
+			value &= ~((T)1 << (sizeof(T) * 8 - 1));
 		}
 	}
 	// 获取最低位
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
-	constexpr int getLowestBit(T value) { return value & 1LL; }
+	constexpr int getLowestBit(T value) { return value & (T)1; }
 	// 设置最低位
 	template<typename T, typename TypeCheck = typename IsPodIntegerType<T>::mType>
 	constexpr void setLowestBit(T& value, const bool bit)
 	{
 		if (bit)
 		{
-			value |= 1LL;
+			value |= (T)1;
 		}
 		else
 		{
-			value &= ~1LL;
+			value &= ~(T)1;
 		}
 	}
 	// 将value中截取从start开始的count个位的值
@@ -232,15 +232,120 @@ namespace BinaryUtility
 	}
 	constexpr void copyBits(byte& destValue, const byte destStart, const byte sourceValue) { destValue |= (sourceValue << destStart); }
 	constexpr void copyBits(char& destValue, const byte destStart, const byte sourceValue) { destValue |= (sourceValue << destStart); }
-	// 计算最高位1的下标+1,比如输入8,返回值就是4,意义是可以使用4个bit就可以表示数字8
-	byte MICRO_LEGEND_FRAME_API generateBitCount(char value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(byte value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(short value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(ushort value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(int value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(uint value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(llong value);
-	byte MICRO_LEGEND_FRAME_API generateBitCount(ullong value);
+	void MICRO_LEGEND_FRAME_API logErrorInternal(string&& info);
+	// 计算有效位数,也就是最高位1的下标+1,比如输入8,返回值就是4,意义是可以使用4个bit就可以表示数字8
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(char value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		if (value < 0)
+		{
+			logErrorInternal("无法计算负数的位数量");
+			return 0;
+		}
+		return mBitCountTable[(byte)value];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(byte value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		return mBitCountTable[value];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(short value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		if (value < 0)
+		{
+			logErrorInternal("无法计算负数的位数量");
+			return 0;
+		}
+		return mBitCountTable[value];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(ushort value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		return mBitCountTable[value];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(int value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		if (value < 0)
+		{
+			logErrorInternal("无法计算负数的位数量");
+			return 0;
+		}
+		const ushort part1 = (ushort)((value & 0xFFFF0000) >> 16);
+		return part1 > 0 ? mBitCountTable[part1] + 16 : mBitCountTable[value & 0x0000FFFF];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(uint value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		const ushort part1 = (ushort)((value & 0xFFFF0000) >> 16);
+		return part1 > 0 ? mBitCountTable[part1] + 16 : mBitCountTable[value & 0x0000FFFF];
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(llong value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		if (value < 0)
+		{
+			logErrorInternal("无法计算负数的位数量");
+			return 0;
+		}
+		if ((value & 0xFFFFFFFF00000000) > 0)
+		{
+			const ushort part3 = (ushort)((value & 0xFFFF000000000000) >> 48);
+			if (part3 > 0)
+			{
+				return mBitCountTable[part3] + 16 * 3;
+			}
+			return mBitCountTable[(ushort)((value & 0x0000FFFF00000000) >> 32)] + 16 * 2;
+		}
+		else
+		{
+			const ushort part1 = (ushort)((value & 0x00000000FFFF0000) >> 16);
+			return part1 > 0 ? mBitCountTable[part1] + 16 * 1 : mBitCountTable[value & 0x000000000000FFFF];
+		}
+	}
+	inline byte MICRO_LEGEND_FRAME_API generateBitCount(ullong value)
+	{
+		if (mBitCountTable[1] == 0)
+		{
+			initBitCountTable();
+		}
+		if ((value & 0xFFFFFFFF00000000) > 0)
+		{
+			const ushort part3 = (ushort)((value & 0xFFFF000000000000) >> 48);
+			if (part3 > 0)
+			{
+				return mBitCountTable[part3] + 16 * 3;
+			}
+			return mBitCountTable[(ushort)((value & 0x0000FFFF00000000) >> 32)] + 16 * 2;
+		}
+		else
+		{
+			const ushort part1 = (ushort)((value & 0x00000000FFFF0000) >> 16);
+			return part1 > 0 ? mBitCountTable[part1] + 16 * 1 : mBitCountTable[value & 0x000000000000FFFF];
+		}
+	}
 	// 从buffer的bitIndex的位下标处读取writeBitCount个位,位数最多不超过8位
 	void readByteBits(const char* buffer, int& bitIndex, byte& value, const byte readBitCount)
 	{
@@ -308,7 +413,7 @@ namespace BinaryUtility
 	// 计算 16进制的c中1的个数
 	constexpr int MICRO_LEGEND_FRAME_API crc_check(const char c);
 	ushort MICRO_LEGEND_FRAME_API crc16(ushort crc, const char* buffer, int len, int bufferOffset = 0);
-	ushort crc16_byte(ushort crc, byte data) { return (ushort)((crc >> 8) ^ crc16_table[(crc ^ data) & 0xFF]); }
+	inline ushort MICRO_LEGEND_FRAME_API crc16_byte(ushort crc, byte data) { return (ushort)((crc >> 8) ^ crc16_table[(crc ^ data) & 0xFF]); }
 	template<typename T>
 	void zeroArray(T* ptr, int size) { memset(ptr, 0, sizeof(T) * size); }
 	bool MICRO_LEGEND_FRAME_API readBuffer(const char* buffer, int bufferSize, int& index, char* dest, int destSize, int readSize);
@@ -1091,6 +1196,7 @@ namespace BinaryUtility
 	bool MICRO_LEGEND_FRAME_API readVector2Int(const char* buffer, int bufferSize, int& index, Vector2Int& value);
 	bool MICRO_LEGEND_FRAME_API readVector2IntInverse(const char* buffer, int bufferSize, int& index, Vector2Int& value);
 	bool MICRO_LEGEND_FRAME_API readVector3(const char* buffer, int bufferSize, int& index, Vector3& value);
+	bool MICRO_LEGEND_FRAME_API readVector3Int(const char* buffer, int bufferSize, int& index, Vector3Int& value);
 	bool MICRO_LEGEND_FRAME_API readVector3Inverse(const char* buffer, int bufferSize, int& index, Vector3& value);
 	bool MICRO_LEGEND_FRAME_API readVector4(const char* buffer, int bufferSize, int& index, Vector4& value);
 	bool MICRO_LEGEND_FRAME_API readVector4Inverse(const char* buffer, int bufferSize, int& index, Vector4& value);
@@ -1152,6 +1258,7 @@ using BinaryUtility::setBitZero;
 using BinaryUtility::getByte;
 using BinaryUtility::bitCountToByteCount;
 using BinaryUtility::setBit;
+using BinaryUtility::getBit;
 using BinaryUtility::setString;
 using BinaryUtility::crc16;
 using BinaryUtility::writeBuffer;

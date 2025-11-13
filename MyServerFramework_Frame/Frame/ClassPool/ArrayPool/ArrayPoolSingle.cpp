@@ -3,14 +3,11 @@
 void ArrayPoolSingle::destroy()
 {
 	// 此处也只是释放了已经回收的内存,没有回收的无法释放,所有对象池都是这样
-	for (const auto& item0 : mUnuseMemoryList)
+	for (auto& item0 : mUnuseMemoryList)
 	{
-		for (const auto& item1 : item0.second)
+		for (auto& item1 : item0.second)
 		{
-			for (char* data : item1.second)
-			{
-				delete data;
-			}
+			DELETE_LIST(item1.second);
 		}
 	}
 	mUnuseMemoryList.clear();

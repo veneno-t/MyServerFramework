@@ -37,11 +37,11 @@ void ParamSet::initFromCopy(ParamSet* other)
 
 void ParamSet::valueDirty(void* pointer)
 {
-	FOR_VECTOR(*mParamMemberList)
+	for (auto& item : * mParamMemberList)
 	{
-		if ((*mParamMemberList)[i].getPointer() == pointer)
+		if (item.getPointer() == pointer)
 		{
-			(*mParamMemberList)[i].valueDirty();
+			item.valueDirty();
 			break;
 		}
 	}
@@ -49,7 +49,7 @@ void ParamSet::valueDirty(void* pointer)
 
 void ParamSet::initAllowMemberType()
 {
-	if (mAllowMemberType.size() == 0)
+	if (mAllowMemberType.isEmpty())
 	{
 		mAllowMemberType.insert(mIntType);
 		mAllowMemberType.insert(mFloatType);

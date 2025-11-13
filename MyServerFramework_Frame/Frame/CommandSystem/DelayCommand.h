@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 
-class MICRO_LEGEND_FRAME_API DelayCommand : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API DelayCommand : public ClassObject
 {
-	BASE(DelayCommand, ClassPooledObject);
+	BASE(DelayCommand, ClassObject);
 public:
 	void init(CommandReceiver* receiver, CustomThread* thread, GameCommand* cmd, const float delayTime)
 	{

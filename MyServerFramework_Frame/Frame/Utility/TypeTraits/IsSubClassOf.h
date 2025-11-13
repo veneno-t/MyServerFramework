@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "FrameDefine.h"
+#include "UsingSTD.h"
 
 // 判断是否为一个类的子类
 template<typename BaseClass, typename ChildClass>
-struct MICRO_LEGEND_FRAME_API IsSubClassOf
+struct IsSubClassOf
 {
 	static constexpr bool test(BaseClass* type) { return true; }
 	static constexpr bool test(const BaseClass* type) { return true; }

@@ -7,10 +7,18 @@ class MDAccount : public MySQLData
 {
 	BASE(MDAccount, MySQLData);
 public:
-	static const int ID;
-	static const int Account;
-	static const int Password;
-	static const int CharacterGUID;
+	enum class Column : short
+	{
+		NONE = -1,
+		ID,
+		Account,
+		Password,
+		CharacterGUID,
+	};
+	static constexpr Column ID = Column::ID;
+	static constexpr Column Account = Column::Account;
+	static constexpr Column Password = Column::Password;
+	static constexpr Column CharacterGUID = Column::CharacterGUID;
 	static const string Name_ID;
 	static const string Name_Account;
 	static const string Name_Password;

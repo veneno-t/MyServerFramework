@@ -3,7 +3,7 @@
 void MovableObjectComponentMoveCurve::setKeyPosList(const Vector<Vector3>& posList)
 {
 	posList.clone(mKeyPosList);
-	if (mKeyPosList.size() == 0)
+	if (mKeyPosList.isEmpty())
 	{
 		setActive(false);
 		return;
@@ -24,7 +24,7 @@ void MovableObjectComponentMoveCurve::setKeyPosList(const Vector<Vector3>& posLi
 
 void MovableObjectComponentMoveCurve::applyTrembling(float value)
 {
-	if (mKeyPosList.size() == 0)
+	if (mKeyPosList.isEmpty())
 	{
 		return;
 	}

@@ -36,6 +36,7 @@ public:
 	// 当确定遍历过程中列表不会被修改时,才会使用getMainList进行过遍历
 	const Set<T>& getMainList() const	{ return mMainList; }
 	int size() const					{ return mMainList.size(); }
+	bool isEmpty() const				{ return mMainList.isEmpty(); }
 	T* data() const						{ return mMainList.data(); }
 	bool contains(const T& value) const { return mMainList.contains(value); }
 	bool insert(const T& value)

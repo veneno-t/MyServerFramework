@@ -100,6 +100,7 @@ enum class STATE_MUTEX : byte
 	REMOVE_OLD,				// 添加新状态,移除互斥的旧状态
 	COEXIST,				// 新旧状态可共存
 	KEEP_HIGH_PRIORITY,		// 保留新旧状态中优先级最高的
+	OVERLAP_LAYER,			// 会进行状态叠加的通知,但是同一时间只会保留一个状态,且层数要么清零,要么增加,层数不会出现逐渐减少的情况,因为持续时间只有一个,可以在状态内自己添加根据一定条件减少层数的逻辑
 };
 
 // 同一状态组中的状态互斥选项
@@ -111,4 +112,13 @@ enum class GROUP_MUTEX : byte
 	MUTEX_WITH_MAIN,		// 仅与主状态互斥,添加主状态时移除其他所有状态,有主状态时不可添加其他状态,没有主状态时可任意添加其他状态
 	MUTEX_WITH_MAIN_ONLY,   // 仅与主状态互斥,添加主状态时移除其他所有状态,无论是否有主状态都可以添加其他状态
 	MUTEX_INVERSE_MAIN,		// 主状态反向互斥,有其他状态时,不允许添加主状态,添加其他状态时,立即将主状态移除
+};
+
+// 连接断开的类型
+enum class DEAD_TYPE : byte
+{
+	NONE,				// 无效值
+	MANUAL_QUIT,		// 客户端主动退出
+	SERVER_KICK_OUT,	// 服务器踢下线
+	NET_ERROR,			// 网络原因导致掉线
 };

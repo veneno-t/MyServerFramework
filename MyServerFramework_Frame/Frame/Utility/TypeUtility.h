@@ -1,8 +1,6 @@
 ﻿#pragma once
 
 #include "FrameDefine.h"
-#include "IsPODType.h"
-#include "IsSubClassOf.h"
 
 // 跟类型,模板元编程相关的工具函数
 namespace TypeUtility

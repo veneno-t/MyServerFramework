@@ -2,13 +2,12 @@
 
 #include "FrameDefine.h"
 
-// 下面包含自动生成的代码,以// FrameSystem为起始,以第一个空行或者};为结束
 namespace FrameBase
 {
 	MICRO_LEGEND_FRAME_API void constructFrameDone();
 	MICRO_LEGEND_FRAME_API void clearFrameSystem();
 
-	// FrameSystem
+	// auto generate start FrameSystem Extern
 	MICRO_LEGEND_FRAME_API extern ServerFramework* mServerFramework;
 	MICRO_LEGEND_FRAME_API extern CharacterManager* mCharacterManager;
 	MICRO_LEGEND_FRAME_API extern VectorPoolManager* mVectorPoolManager;
@@ -24,12 +23,14 @@ namespace FrameBase
 	MICRO_LEGEND_FRAME_API extern InputSystem* mInputSystem;
 	MICRO_LEGEND_FRAME_API extern KeyframeManager* mKeyframeManager;
 	MICRO_LEGEND_FRAME_API extern LogSystem* mLogSystem;
+	MICRO_LEGEND_FRAME_API extern HttpManager* mHttpManager;
 	MICRO_LEGEND_FRAME_API extern HttpServerSystem* mHttpServerSystem;
 	MICRO_LEGEND_FRAME_API extern TCPServerSystem* mTCPServerSystem;
 	MICRO_LEGEND_FRAME_API extern UDPServerSystem* mUDPServerSystem;
 	MICRO_LEGEND_FRAME_API extern WebSocketServerSystem* mWebSocketServerSystem;
 	MICRO_LEGEND_FRAME_API extern FrameStateManager* mFrameStateManager;
 	MICRO_LEGEND_FRAME_API extern ThreadManager* mThreadManager;
+	MICRO_LEGEND_FRAME_API extern TickerSystem* mTickerSystem;
 	MICRO_LEGEND_FRAME_API extern TimePointSystem* mTimePointSystem;
 	MICRO_LEGEND_FRAME_API extern TimeTaskSystem* mTimeTaskSystem;
 	MICRO_LEGEND_FRAME_API extern ArrayPool* mArrayPool;
@@ -56,6 +57,7 @@ namespace FrameBase
 	MICRO_LEGEND_FRAME_API extern PacketWebSocketThreadPool* mPacketWebSocketThreadPool;
 	MICRO_LEGEND_FRAME_API extern StateParamPool* mStateParamPool;
 	MICRO_LEGEND_FRAME_API extern StatePool* mStatePool;
+	MICRO_LEGEND_FRAME_API extern TickerPool* mTickerPool;
 	MICRO_LEGEND_FRAME_API extern TimePointPool* mTimePointPool;
 	MICRO_LEGEND_FRAME_API extern CharacterFactoryManager* mCharacterFactoryManager;
 	MICRO_LEGEND_FRAME_API extern CharacterStateFactoryManager* mCharacterStateFactoryManager;
@@ -63,6 +65,7 @@ namespace FrameBase
 	MICRO_LEGEND_FRAME_API extern PacketTCPFactoryManager* mPacketTCPFactoryManager;
 	MICRO_LEGEND_FRAME_API extern PacketWebSocketFactoryManager* mPacketWebSocketFactoryManager;
 	MICRO_LEGEND_FRAME_API extern StateParamFactoryManager* mStateParamFactoryManager;
+	// auto generate end FrameSystem Extern
 };
 
 using namespace FrameBase;

@@ -12,7 +12,8 @@
 
 namespace FrameUtility
 {
-	MICRO_LEGEND_FRAME_API bool tickTimerLoop(float& time, float elapsedTime, float interval, bool ensureInterval = false);
+	MICRO_LEGEND_FRAME_API bool tickTimerLoop(float& time, float elapsedTime, float interval);
+	MICRO_LEGEND_FRAME_API bool tickTimerLoopEnsure(float& time, float elapsedTime, float interval);
 	MICRO_LEGEND_FRAME_API bool tickTimerOnce(float& time, float elapsedTime);
 	template<typename T>
 	void setToVector(const Set<T>& valueSet, Vector<T>& valueVec)
@@ -22,6 +23,17 @@ namespace FrameUtility
 		{
 			valueVec.push_back(iter);
 		}
+	}
+	template<typename T>
+	Vector<T> setToVector(const Set<T>& valueSet)
+	{
+		Vector<T> valueVec;
+		valueVec.clearAndReserve(valueSet.size());
+		for (const auto& iter : valueSet)
+		{
+			valueVec.push_back(iter);
+		}
+		return valueVec;
 	}
 	template<typename T, int Length>
 	int setToArray(const Set<T>& set, Array<Length, T>& arr, const int startIndex)
@@ -221,7 +233,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void mapKeyToVector(const Map<Key, Value>& map, Vector<Key>& keyList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -234,7 +246,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void hashMapKeyToVector(const HashMap<Key, Value>& map, Vector<Key>& keyList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -247,7 +259,7 @@ namespace FrameUtility
 	template<typename Key, typename Value, int Length>
 	void hashMapKeyToArrayList(const HashMap<Key, Value>& map, ArrayList<Length, Key>& keyList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -260,7 +272,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	bool mapKeyToList(const Map<Key, Value>& map, Value* keyList, const int maxCount)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return true;
 		}
@@ -278,7 +290,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	bool hashMapKeyToList(const HashMap<Key, Value>& map, Value* keyList, const int maxCount)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return true;
 		}
@@ -296,7 +308,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void mapValueToVector(const Map<Key, Value>& map, Vector<Value>& valueList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -309,7 +321,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void hashMapValueToVector(const HashMap<Key, Value>& map, Vector<Value>& valueList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -322,7 +334,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void hashMapToVector(const HashMap<Key, Value>& map, Vector<pair<Key, Value>>& valueList)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -335,7 +347,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void mapValueToVectorFilter(const Map<Key, Value>& map, Vector<Value>& valueList, const Value& exceptValue)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -348,7 +360,7 @@ namespace FrameUtility
 	template<typename Key, typename Value>
 	void hashMapValueToVectorFilter(const HashMap<Key, Value>& map, Vector<Value>& valueList, const Value& exceptValue)
 	{
-		if (map.size() == 0)
+		if (map.isEmpty())
 		{
 			return;
 		}
@@ -406,6 +418,22 @@ namespace FrameUtility
 		// 先复制一份,然后删除其中相同的元素,剩下的就是两个列表的差异元素
 		diffInArray0.addRange(array0, count0);
 		diffInArray1.addRange(array1, count1);
+		for (int i = count0 - 1; i >= 0; --i)
+		{
+			if (diffInArray1.eraseFirstElement(diffInArray0[i]))
+			{
+				diffInArray0.eraseAt(i);
+			}
+		}
+	}
+	template<typename T, typename TypeCheck = typename IsPodOrPointerType<T>::mType, int Length0, int Length1, int Length2, int Length3>
+	void getListDiffPod(const ArrayList<Length0, T>& array0, const ArrayList<Length1, T>& array1, ArrayList<Length2, T>& diffInArray0, ArrayList<Length3, T>& diffInArray1)
+	{
+		const int count0 = array0.size();
+		const int count1 = array1.size();
+		// 先复制一份,然后删除其中相同的元素,剩下的就是两个列表的差异元素
+		diffInArray0.addRange(array0.data(), count0);
+		diffInArray1.addRange(array1.data(), count1);
 		for (int i = count0 - 1; i >= 0; --i)
 		{
 			if (diffInArray1.eraseFirstElement(diffInArray0[i]))

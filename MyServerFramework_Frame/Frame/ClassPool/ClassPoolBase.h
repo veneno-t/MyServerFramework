@@ -10,8 +10,9 @@ public:
 	void init() override;
 	void quit() override;
 	bool isClassPool() const override { return true; }
+	virtual void dump() {}
 protected:
-	virtual void onHour(){}
+	virtual void onHour() { dump(); }
 	virtual void onSecond(){}
 private:
 	static void onHourInternal(void* userData);

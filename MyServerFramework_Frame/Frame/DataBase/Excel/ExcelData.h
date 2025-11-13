@@ -5,6 +5,7 @@
 class MICRO_LEGEND_FRAME_API ExcelData
 {
 public:
+	virtual void clone(ExcelData* target);
 	virtual void read(SerializerRead* reader);
 	virtual ~ExcelData() = default;
 public:

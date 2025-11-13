@@ -1,19 +1,18 @@
 ﻿#pragma once
 
-#include <set>
+#include <unordered_set>
 #include "Array.h"
 #include "ArrayList.h"
 #include "Vector.h"
 
-using std::set;
+using std::unordered_set;
 
 template<typename T>
 class Set
 {
 public:
-	typedef typename set<T>::iterator iterator;
-	typedef typename set<T>::reverse_iterator reverse_iterator;
-	typedef typename set<T>::const_iterator const_iterator;
+	typedef typename unordered_set<T>::iterator iterator;
+	typedef typename unordered_set<T>::const_iterator const_iterator;
 public:
 	virtual ~Set() { mSet.clear(); }
 	Set() = default;
@@ -48,8 +47,6 @@ public:
 	iterator end()						{ return mSet.end(); }
 	const_iterator begin() const		{ return mSet.begin(); }
 	const_iterator end() const			{ return mSet.end(); }
-	reverse_iterator rbegin()			{ return mSet.rbegin(); }
-	reverse_iterator rend()				{ return mSet.rend(); }
 	const_iterator cbegin() const		{ return mSet.cbegin(); }
 	const_iterator cend() const			{ return mSet.cend(); }
 	// 返回第一个元素,并且将该元素移除
@@ -71,9 +68,9 @@ public:
 	template<int Length>
 	void setData(const ArrayList<Length, T>& values)
 	{
-		FOR_I(values.size())
+		for (const T& item : values)
 		{
-			mSet.insert(values[i]);
+			mSet.insert(item);
 		}
 	}
 	void setData(const T* values, const int count)
@@ -81,6 +78,13 @@ public:
 		FOR_I(count)
 		{
 			mSet.insert(values[i]);
+		}
+	}
+	void setData(const Vector<T>& values)
+	{
+		for (const auto& value : values)
+		{
+			mSet.insert(value);
 		}
 	}
 	bool insert(const T& elem)
@@ -91,7 +95,7 @@ public:
 	template<typename TElement>
 	void insert(const Set<TElement>& other)
 	{
-		if (other.size() == 0)
+		if (other.isEmpty())
 		{
 			return;
 		}
@@ -104,7 +108,7 @@ public:
 	template<typename TElement>
 	void insert(const Vector<TElement>& other)
 	{
-		if (other.size() == 0)
+		if (other.isEmpty())
 		{
 			return;
 		}
@@ -130,20 +134,21 @@ public:
 	bool contains(const T& value) const { return mSet.find(value) != mSet.end(); }
 	void clear()
 	{
-		if (mSet.size() == 0)
+		if (mSet.empty())
 		{
 			return;
 		}
 		mSet.clear();
 	}
 	int size() const { return (int)mSet.size(); }
+	bool isEmpty() const { return (int)mSet.size() == 0; }
 	// 添加克隆函数的目的是为了显式调用拷贝,而非自动调用拷贝,可以避免可以使用移动构造而没有使用的情况
 	void clone(Set<T>& target) const
 	{
 		target.mSet = mSet;
 	}
 public:
-	set<T> mSet;
+	unordered_set<T> mSet;
 private:
 	static const Set<T> mDefaultList;
 };

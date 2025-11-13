@@ -2,9 +2,9 @@
 
 void UDPClientInfo::clear()
 {
-	for (const auto& item : mSendList)
+	for (auto& item : mSendList)
 	{
-		delete[] item.first;
+		DELETE_ARRAY(item.first);
 	}
 	mSendList.clear();
 }

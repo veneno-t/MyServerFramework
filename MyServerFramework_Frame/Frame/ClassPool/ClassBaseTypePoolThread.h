@@ -3,13 +3,13 @@
 #include "ThreadLock.h"
 #include "ThreadLockScope.h"
 #include "ClassPoolBase.h"
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
-#include "FrameMySQLUtility.h"
+#include "ErrorProfile.h"
 
 // 传入的参数就是模板类型
 // 线程安全的
-template<typename BaseClassType, typename TypeCheck = typename IsSubClassOf<ClassPooledObject, BaseClassType>::mType>
+template<typename BaseClassType, typename TypeCheck = typename IsSubClassOf<ClassObject, BaseClassType>::mType>
 class ClassBaseTypePoolThread : public ClassPoolBase
 {
 	BASE(ClassBaseTypePoolThread, ClassPoolBase);
@@ -39,15 +39,13 @@ public:
 	void quit() override
 	{
 		THREAD_LOCK(mLock);
-		for (const auto& item : mUnusedList)
+		for (auto& item : mUnusedList)
 		{
-			for (BaseClassType* obj : item.second)
-			{
-				delete obj;
-			}
+			DELETE_LIST(item.second);
 		}
 		mUnusedList.clear();
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	template<typename T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
 	void newClassListTemp(Vector<BaseClassType*>& classList, const int dataCount)
 	{
@@ -97,7 +95,7 @@ public:
 			THREAD_LOCK(mTotalCountLock);
 			auto& totalCount = mTotalCount.insertOrGet(typeHash, make_pair(typeid(T).name(), 0));
 			totalCount.second += needCreateCount;
-			if (mShowCountLog && totalCount.second % 5000 == 0)
+			if (mShowCountLog && (totalCount.second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*classList[0]).name()) + "的数量已经达到了" + IToS(totalCount.second) + "个");
 			}
@@ -108,6 +106,7 @@ public:
 			item->markUsable(this, ++mAssignIDSeed);
 		}
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	template<typename T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
 	void newClassListTemp(Vector<T*>& classList, const int dataCount)
 	{
@@ -157,7 +156,7 @@ public:
 			THREAD_LOCK(mTotalCountLock);
 			auto& totalCount = mTotalCount.insertOrGet(typeHash, make_pair(typeid(T).name(), 0));
 			totalCount.second += needCreateCount;
-			if (mShowCountLog && totalCount.second % 5000 == 0)
+			if (mShowCountLog && (totalCount.second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*classList[0]).name()) + "的数量已经达到了" + IToS(totalCount.second) + "个");
 			}
@@ -168,6 +167,7 @@ public:
 			item->markUsable(this, ++mAssignIDSeed);
 		}
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	template<class T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
 	T* newClassTemp()
 	{
@@ -201,7 +201,7 @@ public:
 			THREAD_LOCK(mTotalCountLock);
 			auto& totalCount = mTotalCount.insertOrGet(typeid(T).hash_code(), make_pair(typeid(T).name(), 0));
 			++totalCount.second;
-			if (mShowCountLog && totalCount.second % 5000 == 0)
+			if (mShowCountLog && (totalCount.second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(totalCount.second) + "个");
 			}
@@ -213,13 +213,14 @@ public:
 	}
 	// 由于允许传入BaseClassType子类的列表,所以重新定义了一个类型
 	template<typename T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
-	void destroyClass(T* obj)
+	void destroyClass(T*& obj)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
 		if (mDestroied || obj == nullptr)
 		{
 			return;
 		}
+		obj->destroy();
 		if (!obj->markDispose(this))
 		{
 			ERROR_PROFILE((string("0重复销毁对象:") + typeid(T).name()).c_str());
@@ -236,85 +237,14 @@ public:
 			THREAD_LOCK(mLock);
 			mUnusedList.insertOrGet(typeid(*obj).hash_code()).push_back(obj);
 		}
-	}
-	// 由于允许传入BaseClassType子类的列表,所以重新定义了一个类型
-	template<typename T, int Length, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
-	void destroyClassArray(const Array<Length, T*>& objList, int count = -1)
-	{
-		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		if (count == 0 || mDestroied)
-		{
-			return;
-		}
-		if (count < 0)
-		{
-			count = Length;
-		}
-
-		// 添加到列表,并重置属性
-		THREAD_LOCK(mLock);
-#ifdef WINDOWS
-		THREAD_LOCK(mRemainTimeLock);
-#endif
-		FOR_I(count)
-		{
-			T* obj = objList[i];
-			if (obj == nullptr)
-			{
-				continue;
-			}
-			if (!obj->markDispose(this))
-			{
-				ERROR_PROFILE((string("1重复销毁对象:") + typeid(T).name()).c_str());
-				continue;
-			}
-			// 添加到未使用列表中
-			mUnusedList.insertOrGet(typeid(*obj).hash_code()).push_back(obj);
-#ifdef WINDOWS
-			mClassRemainTimeList.erase(obj);
-#endif
-		}
-	}
-	// 由于允许传入BaseClassType子类的列表,所以重新定义了一个类型
-	template<typename T, int Length, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
-	void destroyClassArray(const ArrayList<Length, T*>& objList)
-	{
-		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		const int count = objList.size();
-		if (count == 0 || mDestroied)
-		{
-			return;
-		}
-		// 添加到列表,并重置属性
-		THREAD_LOCK(mLock);
-#ifdef WINDOWS
-		THREAD_LOCK(mRemainTimeLock);
-#endif
-		FOR_I(count)
-		{
-			T* obj = objList[i];
-			if (obj == nullptr)
-			{
-				continue;
-			}
-			if (!obj->markDispose(this))
-			{
-				ERROR_PROFILE((string("1重复销毁对象:") + typeid(T).name()).c_str());
-				continue;
-			}
-			// 添加到未使用列表中
-			mUnusedList.insertOrGet(typeid(*obj).hash_code()).push_back(obj);
-#ifdef WINDOWS
-			mClassRemainTimeList.erase(obj);
-#endif
-		}
+		obj = nullptr;
 	}
 	// 由于允许传入BaseClassType子类的列表,所以重新定义了一个类型
 	template<typename T0, typename T1, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T1>::mType>
-	void destroyClassList(const HashMap<T0, T1*>& objMap)
+	void destroyClassList(HashMap<T0, T1*>& objMap)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		if (objMap.size() == 0|| mDestroied)
+		if (objMap.isEmpty() || mDestroied)
 		{
 			return;
 		}
@@ -331,6 +261,7 @@ public:
 			{
 				continue;
 			}
+			obj->destroy();
 			if (!obj->markDispose(this))
 			{
 				ERROR_PROFILE((string("2重复销毁对象:") + typeid(T1).name()).c_str());
@@ -341,13 +272,14 @@ public:
 			mClassRemainTimeList.erase(obj);
 #endif
 		}
+		objMap.clear();
 	}
 	// 由于允许传入BaseClassType子类的列表,所以重新定义了一个类型
 	template<typename T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
-	void destroyClassList(const Vector<T*>& objList)
+	void destroyClassList(Vector<T*>& objList)
 	{
 		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
-		if (objList.size() == 0 || mDestroied)
+		if (objList.isEmpty() || mDestroied)
 		{
 			return;
 		}
@@ -363,6 +295,7 @@ public:
 			{
 				continue;
 			}
+			obj->destroy();
 			if (!obj->markDispose(this))
 			{
 				ERROR_PROFILE((string("3重复销毁对象:") + typeid(T).name()).c_str());
@@ -373,17 +306,48 @@ public:
 			mClassRemainTimeList.erase(obj);
 #endif
 		}
+		objList.clear();
+	}
+	template<int Length, typename T, typename TypeCheck0 = typename IsSubClassOf<BaseClassType, T>::mType>
+	void destroyClassList(ArrayList<Length, T*>& objList)
+	{
+		// 如果当前对象池已经被销毁,则不能再重复销毁任何对象
+		if (objList.isEmpty() || mDestroied)
+		{
+			return;
+		}
+
+		// 加入到列表,并重置所有属性
+		THREAD_LOCK(mLock);
+#ifdef WINDOWS
+		THREAD_LOCK(mRemainTimeLock);
+#endif
+		for (T* obj : objList)
+		{
+			if (obj == nullptr)
+			{
+				continue;
+			}
+			obj->destroy();
+			if (!obj->markDispose(this))
+			{
+				ERROR_PROFILE((string("4重复销毁对象:") + typeid(T).name()).c_str());
+				continue;
+			}
+			mUnusedList.insertOrGet(typeid(*obj).hash_code()).push_back(obj);
+#ifdef WINDOWS
+			mClassRemainTimeList.erase(obj);
+#endif
+		}
+		objList.clear();
 	}
 	void clearPool()
 	{
 		THREAD_LOCK(mLock);
 		THREAD_LOCK(mTotalCountLock);
-		for (const auto& item : mUnusedList)
+		for (auto& item : mUnusedList)
 		{
-			for (BaseClassType* obj : item.second)
-			{
-				delete obj;
-			}
+			DELETE_LIST(item.second);
 		}
 		mUnusedList.clear(true);
 		mTotalCount.clear(true);
@@ -398,18 +362,20 @@ public:
 		mEnableStackTrace = enable;
 		return last;
 	}
-protected:
-	void onHour() override
+	void dump() override
 	{
 		THREAD_LOCK(mTotalCountLock);
 		for (const auto& item : mTotalCount)
 		{
-			if (item.second.second > 1000)
+			const int itemCount = item.second.second;
+			if (itemCount > 1000)
 			{
-				LOG("ClassBaseTypePoolThread: " + item.second.first + "的数量:" + IToS(item.second.second));
+				const int unuseCount = mUnusedList.tryGet(item.first).size();
+				LOG("ClassBaseTypePoolThread: " + item.second.first + "的数量:" + IToS(itemCount) + ",总大小:" + LLToS(itemCount * sizeof(BaseClassType) / 1024) + "KB" + ", 未使用数量:" + IToS(unuseCount));
 			}
 		}
 	}
+protected:
 	void onSecond() override
 	{
 #ifdef WINDOWS

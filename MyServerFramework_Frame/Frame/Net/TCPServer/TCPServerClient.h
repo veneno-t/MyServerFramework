@@ -22,13 +22,19 @@ public:
 	void setPlayerGUID(const llong guid)		{ mPlayerGUID = guid; }
 	void setAccountGUID(const llong guid)		{ mAccountGUID = guid; }
 	void setUDPAddress(const sockaddr_in& addr)	{ mUDPAddress = addr; }
-	void setDeadClient(string&& reason)			{ mDeadReason = move(reason); mIsDeadClient = true;}
+	void setDeadClient(string&& reason, DEAD_TYPE type)
+	{
+		mDeadReason = move(reason);
+		mIsDeadClient = true;
+		mDeadType = type;
+	}
 	// 获得成员变量
 	int getClientGUID() const					{ return mClientGUID; }
 	llong getAccountGUID() const				{ return mAccountGUID; }
 	llong getPlayerGUID() const					{ return mPlayerGUID; }
 	MY_SOCKET getSocket() const					{ return mSocket; }
 	bool isDeadClient() const					{ return mIsDeadClient; }
+	DEAD_TYPE getDeadType() const				{ return mDeadType; }
 	const string& getDeadReason() const			{ return mDeadReason;}
 	StreamBuffer* getSendBuffer() const			{ return mSendBuffer; }
 	int getRecvDataCount()	const				{ return mRecvBuffer->getDataLength(); }
@@ -67,7 +73,8 @@ protected:
 	float mConnectTime = 0.0f;						// 客户端连接到服务器的时间,秒
 	int mClientGUID = 0;							// 客户端唯一ID
 	int mParsedCount = 0;							// 已成功解析的消息包数量
-	string mDeadReason;								// 客户端断开的原因
+	string mDeadReason;								// 客户端断开的原因详细说明
+	DEAD_TYPE mDeadType = DEAD_TYPE::NONE;			// 客户端断开的原因类型
 	atomic<bool> mIsDeadClient;						// 该客户端是否已经断开连接或者心跳超
 	static constexpr float mClientPingTime = 2.0f;	// 客户端主动心跳的间隔时间
 	static constexpr float mServerPingTime = 2.0f;	// 服务器主动心跳的间隔时间

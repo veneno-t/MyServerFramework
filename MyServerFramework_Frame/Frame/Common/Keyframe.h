@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class MICRO_LEGEND_FRAME_API KEYFRAME
+class KEYFRAME
 {
 public:
 	static constexpr int NONE = 0;

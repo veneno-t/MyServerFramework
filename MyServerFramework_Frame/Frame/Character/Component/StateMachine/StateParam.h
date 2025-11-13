@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "FrameCallback.h"
 #include "StateParamMember.h"
 #include "FrameDefine.h"
 #include "ParamSet.h"
 
-class MICRO_LEGEND_FRAME_API StateParam : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API StateParam : public ClassObject
 {
-	BASE(StateParam, ClassPooledObject);
+	BASE(StateParam, ClassObject);
 public:
 	// 这里拷贝原始参数是为了同步到客户端时使用
 	virtual void initFromCopy(StateParam* other)				{ mParamSet.initFromCopy(&(other->mParamSet)); }

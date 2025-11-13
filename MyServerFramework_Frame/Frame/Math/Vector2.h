@@ -19,6 +19,10 @@ public:
 		x(xx),
 		y(yy)
 	{}
+	Vector2(const int xx, const int yy) :
+		x((float)xx),
+		y((float)yy)
+	{}
 	void clear()
 	{
 		x = 0.0f;

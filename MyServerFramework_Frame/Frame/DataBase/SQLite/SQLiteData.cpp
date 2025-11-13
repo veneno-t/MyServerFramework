@@ -2,11 +2,7 @@
 
 SQLiteData::~SQLiteData()
 {
-	for (const auto& item : mParameters)
-	{
-		delete item.second;
-	}
-	mParameters.clear();
+	DELETE_MAP(mParameters);
 }
 
 void SQLiteData::parse(SQLiteDataReader* reader)

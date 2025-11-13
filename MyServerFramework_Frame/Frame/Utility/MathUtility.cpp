@@ -15,7 +15,7 @@ namespace MathUtility
 			{
 				return;
 			}
-			FOR_I(mGreaterPow2.size())
+			FOR_VECTOR(mGreaterPow2)
 			{
 				mGreaterPow2[i] = i > 1 ? getGreaterPowerValue(i, 2) : 2;
 			}
@@ -138,7 +138,7 @@ namespace MathUtility
 		}
 		const float random = randomFloat(0.0f, max);
 		float curValue = 0.0f;
-		FOR_I(oddsList.size())
+		FOR_VECTOR(oddsList)
 		{
 			curValue += oddsList[i];
 			if (random <= curValue)
@@ -320,7 +320,7 @@ namespace MathUtility
 		}
 		const int random = randomInt(0, max);
 		int curValue = 0;
-		FOR_I(oddsList.size())
+		FOR_VECTOR(oddsList)
 		{
 			curValue += oddsList[i];
 			if (random <= curValue)
@@ -522,7 +522,7 @@ namespace MathUtility
 		{
 			// 表示是否还有乘除表达式
 			bool hasMS = false;
-			FOR_I(factors.size())
+			FOR_VECTOR(factors)
 			{
 				// 先遍历到哪个就先计算哪个
 				if (factors[i] == '*' || factors[i] == '/')
@@ -541,7 +541,7 @@ namespace MathUtility
 					}
 					// 删除第i + 1个数,然后将第i个数替换为计算结果
 					numbers.eraseAt(i + 1);
-					if (numbers.size() == 0)
+					if (numbers.isEmpty())
 					{
 						// 计算错误
 						return 0;
@@ -561,7 +561,7 @@ namespace MathUtility
 		// 再计算加减法
 		while (true)
 		{
-			if (factors.size() == 0)
+			if (factors.isEmpty())
 			{
 				break;
 			}
@@ -581,7 +581,7 @@ namespace MathUtility
 				}
 				// 删除第1个数,然后将第0个数替换为计算结果
 				numbers.eraseAt(1);
-				if (numbers.size() == 0)
+				if (numbers.isEmpty())
 				{
 					// 计算错误
 					return 0;
@@ -706,7 +706,7 @@ namespace MathUtility
 		{
 			// 表示是否还有乘除表达式
 			bool hasMS = false;
-			FOR_I(factors.size())
+			FOR_VECTOR(factors)
 			{
 				// 先遍历到哪个就先计算哪个
 				if (factors[i] == '*' || factors[i] == '/' || factors[i] == '%')
@@ -729,7 +729,7 @@ namespace MathUtility
 					}
 					// 删除第i + 1个数,然后将第i个数替换为计算结果
 					numbers.eraseAt(i + 1);
-					if (numbers.size() == 0)
+					if (numbers.isEmpty())
 					{
 						// 计算错误
 						return 0;
@@ -749,7 +749,7 @@ namespace MathUtility
 		// 再计算加减法
 		while (true)
 		{
-			if (factors.size() == 0)
+			if (factors.isEmpty())
 			{
 				break;
 			}
@@ -769,7 +769,7 @@ namespace MathUtility
 				}
 				// 删除第1个数,然后将第0个数替换为计算结果
 				numbers.eraseAt(1);
-				if (numbers.size() == 0)
+				if (numbers.isEmpty())
 				{
 					// 计算错误
 					return 0;

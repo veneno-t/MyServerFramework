@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 
-class MICRO_LEGEND_FRAME_API LogInfo : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API LogInfo : public ClassObject
 {
-	BASE(LogInfo, ClassPooledObject);
+	BASE(LogInfo, ClassObject);
 public:
 	void resetProperty() override;
 public:

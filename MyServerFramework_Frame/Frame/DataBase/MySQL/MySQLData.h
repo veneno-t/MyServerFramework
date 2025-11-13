@@ -1,12 +1,12 @@
 ﻿#pragma once
 
 #ifdef _MYSQL
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
 
-class MICRO_LEGEND_FRAME_API MySQLData : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API MySQLData : public ClassObject
 {
-	BASE(MySQLData, ClassPooledObject);
+	BASE(MySQLData, ClassObject);
 public:
 	// 解析查询结果
 	virtual void parseResult(const HashMap<int, char*>& resultRow) = 0;

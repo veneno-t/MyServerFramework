@@ -33,7 +33,7 @@ void CustomThread::destroy()
 	while (!mIsBackground && !mFinish) {}
 	CLOSE_THREAD(mThread);
 	mCallback = nullptr;
-	delete mTimeLock;
+	DELETE(mTimeLock);
 	LOG("线程退出完成! 线程名:" + mName);
 }
 
@@ -117,8 +117,6 @@ void CustomThread::updateThread()
 						CommandSystem::destroyCmd(cmd);
 					}
 				}
-				mDelayCommandPool->destroyClassList(*readScope.mReadList);
-
 				if (mCmdDebug)
 				{
 					const llong endTime = getRealTimeMS();
@@ -141,6 +139,7 @@ void CustomThread::updateThread()
 							", 数量:" + IToS(maxCount));
 					}
 				}
+				mDelayCommandPool->destroyClassList(*readScope.mReadList);
 				CALL(mEndCmdCallback, this);
 			}
 			CALL(mCallback, this);

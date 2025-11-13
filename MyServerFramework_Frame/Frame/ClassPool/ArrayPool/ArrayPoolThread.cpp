@@ -17,11 +17,7 @@ void ArrayPoolThread::quit()
 
 ArrayPoolThread::~ArrayPoolThread()
 {
-	for (const auto& iter : mArrayPoolSingleList)
-	{
-		delete iter.second;
-	}
-	mArrayPoolSingleList.clear();
+	DELETE_MAP(mArrayPoolSingleList);
 }
 
 char* ArrayPoolThread::newCharArray(const int count, const bool zeroMemory)

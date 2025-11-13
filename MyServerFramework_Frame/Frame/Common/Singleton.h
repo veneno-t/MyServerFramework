@@ -3,7 +3,7 @@
 #include "FrameDefine.h"
 
 template<typename T> 
-class MICRO_LEGEND_FRAME_API Singleton
+class Singleton
 {
 protected:
 	static T* ms_Singleton;

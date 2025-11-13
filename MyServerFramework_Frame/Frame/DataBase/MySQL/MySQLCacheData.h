@@ -1,17 +1,17 @@
 ﻿#pragma once
 
 #ifdef _MYSQL
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "FrameBase.h"
 #include "MySQLData.h"
 #include "MySQLTable.h"
 
-class MICRO_LEGEND_FRAME_API MySQLCacheData : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API MySQLCacheData : public ClassObject
 {
-	BASE(MySQLCacheData, ClassPooledObject);
+	BASE(MySQLCacheData, ClassObject);
 public:
 	void setTable(MySQLTable* table);
-	void destroy();
+	void destroy() override;
 	void resetProperty() override;
 	llong getID() const { return mData->mID; }
 	MySQLData* getData() const { return mData; }

@@ -82,7 +82,7 @@ namespace BinaryUtility
 		0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
 		0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
 	};
-	// 计算 16进制的c中1的个数
+	// 计算 16进制的c中1的个数,此处可使用查表法进行优化,但是由于几乎没有哪个地方在用,所以不做实际修改
 	constexpr int crc_check(const char c)
 	{
 		int count = 0;
@@ -729,6 +729,13 @@ namespace BinaryUtility
 			read(buffer, bufferSize, index, value.z);
 	}
 
+	bool readVector3Int(const char* buffer, const int bufferSize, int& index, Vector3Int& value)
+	{
+		return read(buffer, bufferSize, index, value.x) && 
+			read(buffer, bufferSize, index, value.y) &&
+			read(buffer, bufferSize, index, value.z);
+	}
+
 	bool readVector3Inverse(const char* buffer, const int bufferSize, int& index, Vector3& value)
 	{
 		return readInverse(buffer, bufferSize, index, value.x) &&
@@ -828,125 +835,8 @@ namespace BinaryUtility
 		return 0;
 	}
 
-	byte generateBitCount(const char value)
+	void logErrorInternal(string&& info) 
 	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		if (value < 0)
-		{
-			ERROR("无法计算负数的位数量");
-			return 0;
-		}
-		return mBitCountTable[(byte)value];
-	}
-
-	byte generateBitCount(const byte value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		return mBitCountTable[value];
-	}
-
-	byte generateBitCount(const short value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		if (value < 0)
-		{
-			ERROR("无法计算负数的位数量");
-			return 0;
-		}
-		return mBitCountTable[value];
-	}
-
-	byte generateBitCount(const ushort value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		return mBitCountTable[value];
-	}
-
-	byte generateBitCount(const int value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		if (value < 0)
-		{
-			ERROR("无法计算负数的位数量");
-			return 0;
-		}
-		const ushort part1 = (ushort)((value & 0xFFFF0000) >> 16);
-		return part1 > 0 ? mBitCountTable[part1] + 16 : mBitCountTable[value & 0x0000FFFF];
-	}
-
-	byte generateBitCount(const uint value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		const ushort part1 = (ushort)((value & 0xFFFF0000) >> 16);
-		return part1 > 0 ? mBitCountTable[part1] + 16 : mBitCountTable[value & 0x0000FFFF];
-	}
-
-	byte generateBitCount(const llong value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		if (value < 0)
-		{
-			ERROR("无法计算负数的位数量");
-			return 0;
-		}
-		if ((value & 0xFFFFFFFF00000000) > 0)
-		{
-			const ushort part3 = (ushort)((value & 0xFFFF000000000000) >> 48);
-			if (part3 > 0)
-			{
-				return mBitCountTable[part3] + 16 * 3;
-			}
-			const ushort part2 = (ushort)((value & 0x0000FFFF00000000) >> 32);
-			return mBitCountTable[part2] + 16 * 2;
-		}
-		else
-		{
-			const ushort part1 = (ushort)((value & 0x00000000FFFF0000) >> 16);
-			return part1 > 0 ? mBitCountTable[part1] + 16 * 1 : mBitCountTable[value & 0x000000000000FFFF];
-		}
-	}
-
-	byte generateBitCount(const ullong value)
-	{
-		if (mBitCountTable[1] == 0)
-		{
-			initBitCountTable();
-		}
-		if ((value & 0xFFFFFFFF00000000) > 0)
-		{
-			const ushort part3 = (ushort)((value & 0xFFFF000000000000) >> 48);
-			if (part3 > 0)
-			{
-				return mBitCountTable[part3] + 16 * 3;
-			}
-			const ushort part2 = (ushort)((value & 0x0000FFFF00000000) >> 32);
-			return mBitCountTable[part2] + 16 * 2;
-		}
-		else
-		{
-			const ushort part1 = (ushort)((value & 0x00000000FFFF0000) >> 16);
-			return part1 > 0 ? mBitCountTable[part1] + 16 * 1 : mBitCountTable[value & 0x000000000000FFFF];
-		}
+		ERROR(info);
 	}
 }

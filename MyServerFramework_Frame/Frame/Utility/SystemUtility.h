@@ -7,8 +7,8 @@ namespace SystemUtility
 {
 	MICRO_LEGEND_FRAME_API extern llong mIDSeedMain;			// 用于生成唯一ID的种子,仅用于主线程
 	MICRO_LEGEND_FRAME_API extern atomic<llong> mIDSeedThread;	// 用于生成唯一ID的种子,用于多线程
-	MICRO_LEGEND_FRAME_API extern llong mTimeMS;				// 系统从启动到现在所经过的毫秒,每帧获取一次,避免频繁获取造成性能下降
-	MICRO_LEGEND_FRAME_API extern llong mTimeS;					// 从1970年1月1日到现在的秒数,每帧获取一次,避免频繁获取造成性能下降
+	MICRO_LEGEND_FRAME_API extern llong mTimeMSecondUTC;		// 系统从启动到现在所经过的毫秒,每帧获取一次,避免频繁获取造成性能下降
+	MICRO_LEGEND_FRAME_API extern llong mTimeSecondUTC;			// 从1970年1月1日到现在的秒数,每帧获取一次,避免频繁获取造成性能下降
 	MICRO_LEGEND_FRAME_API extern int mMainThread;				// 主线程的线程ID
 	//------------------------------------------------------------------------------------------------------------------------------
 	MICRO_LEGEND_FRAME_API void stop();
@@ -21,8 +21,8 @@ namespace SystemUtility
 #endif
 	}
 	// 获取系统从启动到现在所经过的毫秒,每帧更新一次的
-	llong getTimeMS() { return mTimeMS; }
-	void setTimeMS(const llong timeMS) { mTimeMS = timeMS; }
+	llong getTimeMSecondUTC() { return mTimeMSecondUTC; }
+	void setTimeMSecondUTC(const llong timeMS) { mTimeMSecondUTC = timeMS; }
 	// 获取系统从启动到现在所经过的毫秒,实时的
 	llong getRealTimeMS()
 	{
@@ -37,6 +37,20 @@ namespace SystemUtility
 		return tv.tv_sec * 1000 + (llong)(tv.tv_usec * 0.001f);
 #endif
 	}
+	// 是否为闰年
+	constexpr bool isLeapYear(int year) { return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0); }
+	// 获取当前这个月有多少天
+	MICRO_LEGEND_FRAME_API int getDaysInMonth();
+	// 获取一个月有多少天
+	MICRO_LEGEND_FRAME_API int getDaysInMonth(int year, int month);
+	// 获取年份,从1970开始
+	MICRO_LEGEND_FRAME_API int getYear();
+	// 获取月份,从1开始
+	MICRO_LEGEND_FRAME_API int getMonth();
+	// 获取年月份,从1开始
+	MICRO_LEGEND_FRAME_API void getYearMonth(int& year, int& month);
+	// 获取天,从1开始
+	MICRO_LEGEND_FRAME_API int getDay();
 	// 获取当前时间的周几(从1开始),年(从1970开始),月(从1开始),天(从1开始),时(从0开始),分,秒
 	MICRO_LEGEND_FRAME_API void getTime(int& weekDay, int& year, int& month, int& day, int& hour, int& minute, int& second);
 	// 获取当前时间的年,月,天,时,分,秒
@@ -47,13 +61,22 @@ namespace SystemUtility
 	MICRO_LEGEND_FRAME_API int getTimeHourInDay();
 	// 获取当前时间,以字符串形式表示
 	MICRO_LEGEND_FRAME_API string getTime(bool timeStamp = false);
-	// 获取从1970年1月1日到现在的秒数,本地时间,非UTC时间
-	llong getTimeSecond() { return mTimeS; }
-	void setTimeSecond(llong timeS) { mTimeS = timeS; }
+	// 获取从1970年1月1日到现在的秒数,本地时间,UTC时间
+	llong getTimeSecondUTC() { return mTimeSecondUTC; }
+	void setTimeSecondUTC(llong timeS) { mTimeSecondUTC = timeS; }
+	constexpr int daysToSeconds(int days) { return 24 * 60 * 60 * days; }
+	// 获取今天24点的时间戳
+	MICRO_LEGEND_FRAME_API llong getTodayEnd();
+	// 获取今天0点的时间戳
+	MICRO_LEGEND_FRAME_API llong getTodayBegin();
 	// 获得今天是周几,0表示周日,1表示周一
 	MICRO_LEGEND_FRAME_API int getDayOfWeek();
 	// 判断两次时间戳是否是在同一天
-	MICRO_LEGEND_FRAME_API bool isSameDay(const time_t& timeStamp0, const time_t& timeStamp1);
+	MICRO_LEGEND_FRAME_API bool isSameDay(time_t timeStamp0, time_t timeStamp1);
+	// 根据时间戳获取时间结构体
+	MICRO_LEGEND_FRAME_API struct tm getTimeStruct(time_t timeStamp);
+	// 获取指定时间的时间戳
+	MICRO_LEGEND_FRAME_API time_t convertToTimestamp(int year, int month, int day, int hour, int minute, int second);
 	// 获得cpu核心数
 	MICRO_LEGEND_FRAME_API int getCPUCoreCount();
 	// 获取外网IP
@@ -124,13 +147,17 @@ namespace SystemUtility
 	MICRO_LEGEND_FRAME_API string getStackTrace(int depth);
 }
 
-using SystemUtility::getTimeSecond;
-using SystemUtility::getTimeMS;
+using SystemUtility::getTimeSecondUTC;
+using SystemUtility::getTimeMSecondUTC;
 using SystemUtility::getRealTimeMS;
 using SystemUtility::checkMainThread;
 using SystemUtility::isMainThread;
 using SystemUtility::getThreadID;
 using SystemUtility::getTime;
+using SystemUtility::getYear;
+using SystemUtility::getMonth;
+using SystemUtility::getYearMonth;
+using SystemUtility::getDay;
 using SystemUtility::makeIDMain;
 using SystemUtility::getDayOfWeek;
 using SystemUtility::print;
@@ -141,7 +168,13 @@ using SystemUtility::getTimeHourInDay;
 using SystemUtility::makeSockAddr;
 using SystemUtility::getPID;
 using SystemUtility::setMainThread;
-using SystemUtility::setTimeMS;
-using SystemUtility::setTimeSecond;
+using SystemUtility::setTimeMSecondUTC;
+using SystemUtility::setTimeSecondUTC;
 using SystemUtility::makeIDThread;
 using SystemUtility::sleep;
+using SystemUtility::getTimeStruct;
+using SystemUtility::convertToTimestamp;
+using SystemUtility::daysToSeconds;
+using SystemUtility::getTodayEnd;
+using SystemUtility::getTodayBegin;
+using SystemUtility::getDaysInMonth;

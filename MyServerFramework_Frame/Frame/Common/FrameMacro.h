@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+//#define VIRTUAL_CLIENT_TEST
+
 // 最大并发连接数为128,需要在winsock.h之前进行定义
 #ifdef FD_SETSIZE
 #undef FD_SETSIZE
@@ -11,6 +13,14 @@
 // 链接静态库
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
+#ifdef _LIBEVENT
+#pragma comment(lib, "event.lib")
+#pragma comment(lib, "event_core.lib")
+#pragma comment(lib, "event_extra.lib")
+#pragma comment(lib, "event_openssl.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "libcrypto.lib")
+#endif
 #ifdef _MYSQL
 #pragma comment(lib, "libmysql.lib")
 #endif
@@ -22,6 +32,9 @@
 #include "event2/event.h"
 #include "event2/buffer.h"
 #include "event2/http.h"
+#include "event2/bufferevent_ssl.h"
+#include "event2/thread.h"
+#include "openssl/ssl.h"
 #endif
 #include <windows.h>
 #include <mmsystem.h>
@@ -55,6 +68,9 @@
 #include "event2/event.h"
 #include "event2/buffer.h"
 #include "event2/http.h"
+#include "event2/bufferevent_ssl.h"
+#include "event2/thread.h"
+#include "openssl/ssl.h"
 #endif
 #endif
 #include <string>
@@ -62,6 +78,9 @@
 #include <vector>
 #include <set>
 #include <list>
+#include <bitset>
+#include <chrono>
+#include <thread>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -80,6 +99,7 @@
 #include <type_traits>
 #include <fstream>
 #include <array>
+#include <sstream>
 // 部分平台未安装mysql,所以需要使用宏来判断是否需要编译mysql相关代码
 #ifdef _MYSQL
 #include <mysql.h>
@@ -88,10 +108,14 @@
 #include "sqlite3.h"
 #include "md5.h"
 // json只能带相对路径,否则在linux上会编译报错
+#define JSON_DLL_BUILD
 #include "json/json.h"
 #include "lz4.h"
 #ifdef BUILDING_LIBCURL
-#include "curl.h"
+#include "curl/curl.h"
+#if WINDOWS
+#pragma comment(lib, "libcurl.lib")
+#endif
 #endif
 
 #ifdef WINDOWS
@@ -122,7 +146,12 @@ if (thread != NULL_THREAD)			\
 	CloseHandle(thread);			\
 	thread = NULL_THREAD;			\
 }
-#define CLOSE_SOCKET(socket)						closesocket(socket);
+#define CLOSE_SOCKET(socket)		\
+if (socket != INVALID_SOCKET)		\
+{									\
+	closesocket(socket);			\
+	socket = INVALID_SOCKET;		\
+}
 #define SPRINTF(buffer, bufferSize, ...)			sprintf_s(buffer, bufferSize, __VA_ARGS__)
 #define MEMCPY(dest, bufferSize, src, count)		memcpy_s((void*)(dest), (bufferSize), (void*)(src), (count))
 #define MEMMOV(dest, bufferSize, src, count)		memmove_s((void*)(dest), (bufferSize), (void*)(src), (count))
@@ -145,7 +174,12 @@ if (thread != NULL_THREAD)		\
 	pthread_cancel(thread);		\
 	thread = NULL_THREAD;		\
 }
-#define CLOSE_SOCKET(socket)				close(socket);
+#define CLOSE_SOCKET(socket)		\
+if (socket != INVALID_SOCKET)		\
+{									\
+	close(socket);					\
+	socket = INVALID_SOCKET;		\
+}
 #ifdef __GNUC__
 #define CSET_GBK							"GBK"
 #define CSET_UTF8							"UTF-8"
@@ -174,6 +208,14 @@ if (thread != NULL_THREAD)		\
 #define MAKE_LABEL2(label, L) label##L
 #define MAKE_LABEL1(label, L) MAKE_LABEL2(label, L)
 #define UNIQUE_IDENTIFIER(label) MAKE_LABEL1(label, __LINE__)
+#if defined(_MSC_VER)
+#define FUNCTION_NAME __FUNCSIG__
+#elif defined(__GNUC__)
+#define FUNCTION_NAME __PRETTY_FUNCTION__
+#else
+#define FUNCTION_NAME __FUNCTION__
+#endif
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // 基础数据类型转字符串
@@ -199,27 +241,27 @@ MyString<32> strBuffer;								\
 ULLToS(strBuffer, value)
 
 #define USHORTS_STR(strBuffer, valueArray, bufferCount, count)	\
-MyString<16 * bufferCount> strBuffer;								\
+MyString<16 * bufferCount> strBuffer;							\
 USsToS(strBuffer, valueArray, count)
 
 #define INTS_STR(strBuffer, valueArray, bufferCount, count)		\
-MyString<16 * bufferCount> strBuffer;								\
+MyString<16 * bufferCount> strBuffer;							\
 IsToS(strBuffer, valueArray, count)
 
 #define UINTS_STR(strBuffer, valueArray, bufferCount, count)	\
-MyString<16 * bufferCount> strBuffer;								\
+MyString<16 * bufferCount> strBuffer;							\
 UIsToS(strBuffer, valueArray, count)
 
 #define FLOATS_STR(strBuffer, valueArray, bufferCount, count)	\
-MyString<16 * bufferCount> strBuffer;								\
+MyString<16 * bufferCount> strBuffer;							\
 FsToS(strBuffer, valueArray, count)
 
 #define ULLONGS_STR(strBuffer, valueArray, bufferCount, count)	\
-MyString<20 * bufferCount> strBuffer;								\
+MyString<20 * bufferCount> strBuffer;							\
 ULLsToS(strBuffer, valueArray, count)
 
 #define LLONGS_STR(strBuffer, valueArray, bufferCount, count)	\
-MyString<20 * bufferCount> strBuffer;								\
+MyString<20 * bufferCount> strBuffer;							\
 LLsToS(strBuffer, valueArray, count)
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -250,6 +292,13 @@ LLsToS(strBuffer, valueArray, count)
 		SafeHashMapScope<UNIQUE_IDENTIFIER(KeyType), UNIQUE_IDENTIFIER(ValueType)> UNIQUE_IDENTIFIER(a)(UNIQUE_IDENTIFIER(temp));								\
 		auto& readList = UNIQUE_IDENTIFIER(temp).startForeach()
 
+// ProfilerScope
+#ifdef WINDOWS
+#define PROFILE() ProfilerScope UNIQUE_IDENTIFIER(temp)(__FILE__, FUNCTION_NAME, __LINE__)
+#else
+#define PROFILE()
+#endif
+
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // 日志打印相关宏
 #ifdef ERROR
@@ -259,7 +308,7 @@ LLsToS(strBuffer, valueArray, count)
 #define ERROR_NO_WRITE(info)						GameLogWrap::logError(info + string(" | ") + _FILE_LINE_, 0, false)
 #ifdef _MYSQL
 // info应该传入一个char*类型的字符串
-#define ERROR_PROFILE(content)  UNIFIED_UTF8_STRING(UNIQUE_IDENTIFIER(info), content); FrameMySQLUtility::errorProfile(move(UNIQUE_IDENTIFIER(info)), __FILE__)
+#define ERROR_PROFILE(content)  UNIFIED_UTF8_STRING(UNIQUE_IDENTIFIER(info), content); ErrorProfile::errorProfile(move(UNIQUE_IDENTIFIER(info)), __FILE__)
 #else
 #define ERROR_PROFILE(content)
 #endif
@@ -275,26 +324,12 @@ GameLogWrap::logInfo(UNIQUE_IDENTIFIER(str), 0, true, true)
 #define PLAYER_LOG(info, playerGUID)				GameLogWrap::logInfo(info, playerGUID, true, true)
 #define PLAYER_LOG_NO_PRINT(info, playerGUID)		GameLogWrap::logInfo(info, playerGUID, false, true)
 
-//---------------------------------------------------------------------------------------------------------------------
-#define CMD_THREAD(classType, cmd)						\
-auto* cmd = mCommandThreadPool->newClass<classType>();	\
-cmd->setThreadCommand(true)
-
-#define CMD_DELAY(classType, cmd)						\
-auto* cmd = mCommandPool->newClass<classType>();		\
-cmd->setDelayCommand(true)
-
-#define CMD_THREAD_DELAY(classType, cmd)				\
-auto* cmd = mCommandThreadPool->newClass<classType>();	\
-cmd->setThreadCommand(true);							\
-cmd->setDelayCommand(true)
-
 // 为了简化代码书写而添加的宏
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // 使用下标遍历列表
-#define FOR_VECTOR(stl)			const int UNIQUE_IDENTIFIER(Count) = (stl).size(); for(int i = 0; i < UNIQUE_IDENTIFIER(Count); ++i)
-#define FOR_VECTOR_J(stl)		const int UNIQUE_IDENTIFIER(Count) = (stl).size(); for(int j = 0; j < UNIQUE_IDENTIFIER(Count); ++j)
-#define FOR_VECTOR_K(stl)		const int UNIQUE_IDENTIFIER(Count) = (stl).size(); for(int k = 0; k < UNIQUE_IDENTIFIER(Count); ++k)
+#define FOR_VECTOR(stl)			const int UNIQUE_IDENTIFIER(Count) = (int)(stl).size(); for(int i = 0; i < UNIQUE_IDENTIFIER(Count); ++i)
+#define FOR_VECTOR_J(stl)		const int UNIQUE_IDENTIFIER(Count) = (int)(stl).size(); for(int j = 0; j < UNIQUE_IDENTIFIER(Count); ++j)
+#define FOR_VECTOR_K(stl)		const int UNIQUE_IDENTIFIER(Count) = (int)(stl).size(); for(int k = 0; k < UNIQUE_IDENTIFIER(Count); ++k)
 #define FOR_VECTOR_INVERSE(stl) for(int i = (stl).size() - 1; i >= 0; --i)
 
 // 简单的for循环
@@ -313,8 +348,33 @@ cmd->setDelayCommand(true)
 #define ThisParamT1(T, Suffix) ThisParamT0(T, Suffix)
 #define ThisClassParam ThisParamT1(ThisClass, Param)
 
-// 调用一个回调函数,只是为了简化代码,减少大括号的书写
-#define CALL(callback, ...) if (callback != nullptr){ callback(__VA_ARGS__); }
+#define DELETE(ptr)			\
+if (ptr != nullptr)			\
+{							\
+	delete ptr;				\
+	ptr = nullptr;			\
+}
+
+#define DELETE_ARRAY(ptr)	\
+if (ptr != nullptr)			\
+{							\
+	delete[] ptr;			\
+	ptr = nullptr;			\
+}
+
+#define DELETE_LIST(list)	\
+for (auto* item : list)		\
+{							\
+	delete item;			\
+}							\
+list.clear(true)
+
+#define DELETE_MAP(list)	\
+for (auto& item : list)		\
+{							\
+	delete item.second;		\
+}							\
+list.clear(true)
 
 // 在update中执行,每隔interval秒执行一次逻辑,由于使用了静态变量,只适合用于单例
 #define TICK_LOOP(elapsedTime, interval)									\

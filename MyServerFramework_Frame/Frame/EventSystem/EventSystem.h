@@ -2,8 +2,6 @@
 
 #include "FrameComponent.h"
 #include "SafeVector.h"
-#include "HashMap.h"
-#include "Vector.h"
 #include "EventInfo.h"
 
 // 事件系统,一个逻辑的处理非常分散时,则需要写为事件的方式

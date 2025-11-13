@@ -6,8 +6,8 @@ void OT::MOVE(MovableObject* obj, const Vector3& start)
 	{
 		return;
 	}
-	auto* component = obj->getComponent<MovableObjectComponentMove>();
-	if (component != nullptr && component->isActive())
+	MovableObjectComponentMove* component = obj->getComponentMove();
+	if (component->isActive())
 	{
 		component->setDoingCallback(nullptr, nullptr);
 		component->setDoneCallback(nullptr, nullptr);
@@ -22,12 +22,8 @@ void OT::MOVE_EX(MovableObject* obj, const int keyframe, const Vector3& startPos
 	{
 		return;
 	}
-	
-	auto* component = obj->getComponent<MovableObjectComponentMove>();
-	if (component == nullptr)
-	{
-		component = obj->addComponent<MovableObjectComponentMove>(false);
-	}
+
+	MovableObjectComponentMove* component = obj->getComponentMove();
 	// 停止其他移动组件
 	obj->breakComponent<IComponentModifyPosition, MovableObjectComponentMove>();
 	component->setDoingCallback(doingCallback, doingUserData);
@@ -63,7 +59,7 @@ void OT::MOVE_CURVE_EX(MovableObject* obj, const int keyframe, const Vector<Vect
 	auto* component = obj->getComponent<MovableObjectComponentMoveCurve>();
 	if (component == nullptr)
 	{
-		component = obj->addComponent<MovableObjectComponentMoveCurve>(false);
+		obj->addComponent(component, false);
 	}
 	// 停止其他移动组件
 	obj->breakComponent<IComponentModifyPosition, MovableObjectComponentMoveCurve>();
@@ -100,7 +96,7 @@ void OT::TRACK_TARGET_EX(MovableObject* obj, MovableObject* target, const float 
 	auto* component = obj->getComponent<MovableObjectComponentTrackTarget>();
 	if (component == nullptr)
 	{
-		component = obj->addComponent<MovableObjectComponentTrackTarget>(false);
+		obj->addComponent(component, false);
 	}
 	// 停止其他移动组件
 	obj->breakComponent<IComponentModifyPosition, MovableObjectComponentTrackTarget>();

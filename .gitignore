@@ -6,3 +6,5 @@ Release
 /media/Log
 /ToolProject/GenerateMakeLists/.vs
 /ToolProject/GenerateVSProject/.vs
+/MyServerFramework/MyServerFramework.vcxproj.user
+/MyServerFramework_Frame/MyServerFramework_Frame.vcxproj.user

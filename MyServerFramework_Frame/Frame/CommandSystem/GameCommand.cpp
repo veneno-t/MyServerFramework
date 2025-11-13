@@ -2,16 +2,8 @@
 
 GameCommand::~GameCommand()
 {
-	if (mStartCallback != nullptr)
-	{
-		delete mStartCallback;
-		mStartCallback = nullptr;
-	}
-	if (mEndCallback != nullptr)
-	{
-		delete mEndCallback;
-		mEndCallback = nullptr;
-	}
+	DELETE(mStartCallback);
+	DELETE(mEndCallback);
 }
 
 void GameCommand::resetProperty()

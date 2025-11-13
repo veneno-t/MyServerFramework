@@ -6,6 +6,7 @@
 #include "CharacterPlayer.h"
 #include "CharacterPlayerData.h"
 #include "CharacterRegister.h"
+#include "StateRegister.h"
 #include "GameBase.h"
 #include "GameCallback.h"
 #include "GameClassDeclare.h"

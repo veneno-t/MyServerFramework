@@ -14,25 +14,16 @@ void LogSystem::init()
 
 void LogSystem::quit()
 {
-	for (const auto& item : mErrorWriteInfoList)
-	{
-		delete item.second;
-	}
-	mErrorWriteInfoList.clear();
-	for (const auto& item : mLogWriteInfoList)
-	{
-		delete item.second;
-	}
-	mLogWriteInfoList.clear();
+	DELETE_MAP(mErrorWriteInfoList);
+	DELETE_MAP(mLogWriteInfoList);
 	mThreadManager->destroyThread(mLogThread);
-	mLogThread = nullptr;
 }
 
 void LogSystem::writeLogFile()
 {
 	// 普通日志
 	DoubleBufferReadScope<LogInfo*> readScope(mLogBuffer);
-	if (readScope.mReadList == nullptr || readScope.mReadList->size() == 0)
+	if (readScope.mReadList == nullptr || readScope.mReadList->isEmpty())
 	{
 		return;
 	}
@@ -95,7 +86,7 @@ void LogSystem::writeErrorFile()
 {
 	// 错误信息
 	DoubleBufferReadScope<LogInfo*> readScope(mErrorBuffer);
-	if (readScope.mReadList == nullptr || readScope.mReadList->size() == 0)
+	if (readScope.mReadList == nullptr || readScope.mReadList->isEmpty())
 	{
 		return;
 	}

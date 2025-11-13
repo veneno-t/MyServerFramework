@@ -34,6 +34,7 @@ public:
 	bool connectDataBase();
 	void destroyMySQL();
 	bool checkReconnect(const char* str) const;
+	static void backup();
 protected:
 	static void onThreadPreCmd(CustomThread* thread);
 	static void onThreadEndCmd(CustomThread* thread);

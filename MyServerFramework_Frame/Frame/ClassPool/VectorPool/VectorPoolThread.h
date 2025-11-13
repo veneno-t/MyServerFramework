@@ -13,12 +13,7 @@ public:
 	void destroy()
 	{
 		THREAD_LOCK(mNewLock);
-
-		for (Vector<ClassType>* ptr : mUnusedList)
-		{
-			delete ptr;
-		}
-		mUnusedList.clear();
+		DELETE_LIST(mUnusedList);
 	}
 	Vector<ClassType>* newVector()
 	{
@@ -40,7 +35,7 @@ public:
 		{
 			list = new Vector<ClassType>();
 			++mTotalCount;
-			if (mTotalCount % 5000 == 0)
+			if ((mTotalCount & (4096 - 1)) == 0)
 			{
 				LOG("多线程中分配的Vector数量已经达到:" + IToS(mTotalCount) + "个");
 			}

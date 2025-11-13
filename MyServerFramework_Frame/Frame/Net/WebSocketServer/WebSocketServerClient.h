@@ -24,7 +24,12 @@ public:
 	void setPlayerGUID(const llong guid)						{ mPlayerGUID = guid; }
 	void setAccountGUID(const llong guid)						{ mAccountGUID = guid; }
 	void setUDPAddress(const sockaddr_in& addr)					{ mUDPAddress = addr; }
-	void setDeadClient(string&& reason)							{ mDeadReason = move(reason); mIsDeadClient = true;}
+	void setDeadClient(string&& reason, DEAD_TYPE type)
+	{
+		mDeadReason = move(reason);
+		mIsDeadClient = true;
+		mDeadType = type;
+	}
 	// 获得成员变量
 	int getClientGUID() const									{ return mClientGUID; }
 	llong getAccountGUID() const								{ return mAccountGUID; }
@@ -39,6 +44,7 @@ public:
 	const string& getIP() const									{ return mIP; }
 	const sockaddr_in& getUDPAddress() const					{ return mUDPAddress; }
 	bool isClientHighLag() const								{ return mServerPingWaitTime >= mHighLagTime; }
+	DEAD_TYPE getDeadType() const								{ return mDeadType; }
 	void notifyPing();
 	void notifyServerPing(int index);
 protected:
@@ -79,6 +85,7 @@ protected:
 	bool mHttpResponsed = false;							// 连接后的第一个包会收到http请求头
 	bool mIsFragmented = false;								// 是否正在处理分片数据
 	string mDeadReason;										// 客户端断开的原因
+	DEAD_TYPE mDeadType = DEAD_TYPE::NONE;					// 客户端断开的原因类型
 	atomic<bool> mIsDeadClient;								// 该客户端是否已经断开连接或者心跳超
 	static constexpr float mClientPingTime = 2.0f;			// 客户端主动心跳的间隔时间
 	static constexpr float mServerPingTime = 2.0f;			// 服务器主动心跳的间隔时间

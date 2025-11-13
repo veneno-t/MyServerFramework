@@ -7,21 +7,13 @@ CharacterState::CharacterState()
 
 CharacterState::~CharacterState()
 {
-	if (mWillRemoveCallbackList != nullptr)
-	{
-		delete mWillRemoveCallbackList;
-		mWillRemoveCallbackList = nullptr;
-	}
-	if (mParamMemberList != nullptr)
-	{
-		delete mParamMemberList;
-		mParamMemberList = nullptr;
-	}
+	DELETE(mWillRemoveCallbackList);
+	DELETE(mParamMemberList);
 }
 
 void CharacterState::enter(StateParam* param)
 {
-	if (param == nullptr || param->getParamMemberList().size() == 0)
+	if (param == nullptr || param->getParamMemberList().isEmpty())
 	{
 		return;
 	}

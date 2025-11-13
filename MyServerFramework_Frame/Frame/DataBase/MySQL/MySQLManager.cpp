@@ -67,12 +67,7 @@ void MySQLManager::quit()
 	// 先销毁线程
 	mThreadManager->destroyThread(mMySQLWriteThread);
 	mMySQLWriteThread = nullptr;
-
-	for (MySQLTable* table : mTableList)
-	{
-		delete table;
-	}
-	mTableList.clear();
+	DELETE_LIST(mTableList);
 	// 销毁MySQL
 	destroyMySQL();
 }
@@ -175,6 +170,23 @@ bool MySQLManager::checkReconnect(const char* str) const
 		return true;
 	}
 	return false;
+}
+
+void MySQLManager::backup()
+{
+	LOG("开始备份数据库");
+	createFolder(FrameDefine::MYSQL_BACKUP_PATH);
+	const string backupFile = FrameDefine::MYSQL_BACKUP_PATH + "backup.sql";
+	const string cmd = "mysqldump -u" + mFrameConfigSystem->getMySQLUser() + " -p" + mFrameConfigSystem->getMySQLPassword() + " " + mFrameConfigSystem->getMySQLDataBase() + " > " + backupFile;
+	int ret = std::system(cmd.c_str());
+	if (ret == 0)
+	{
+		LOG("备份数据库完成");
+	}
+	else
+	{
+		LOG("备份数据库失败!!");
+	}
 }
 
 #endif

@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "MyString.h"
 
-class MICRO_LEGEND_FRAME_API Packet : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API Packet : public ClassObject
 {
-	BASE(Packet, ClassPooledObject);
+	BASE(Packet, ClassObject);
 public:
 	virtual void execute(){}
 	virtual void debugInfo(MyString<1024>& buffer) {}

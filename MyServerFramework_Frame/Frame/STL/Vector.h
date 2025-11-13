@@ -4,11 +4,6 @@
 #include "ArrayList.h"
 #include "IsPODType.h"
 
-using std::forward;
-using std::move;
-using std::vector;
-using std::initializer_list;
-
 template<typename T, typename TypeCheck = typename IsNotPodAndPointerType<T>::mType>
 static void copyVector(const vector<T>& source, const int sourceCount, vector<T>& target, const int targetOldCount)
 {
@@ -54,11 +49,15 @@ public:
 	typedef typename vector<T>::reverse_iterator reverse_iterator;
 	typedef typename vector<T>::const_iterator const_iterator;
 public:
-	Vector(const int reserveSize = 4)
+	Vector()
+	{
+		mVector.reserve(4);
+	}
+	explicit Vector(const int reserveSize)
 	{
 		mVector.reserve(reserveSize);
 	}
-	Vector(const Vector<T>& other):
+	Vector(const Vector<T>& other) :
 		mVector(other.mVector)
 	{
 		mSize = other.size();
@@ -69,7 +68,7 @@ public:
 		}
 #endif
 	}
-	Vector(Vector<T>&& other) noexcept:
+	Vector(Vector<T>&& other) noexcept :
 		mVector(move(other.mVector))
 	{
 		mSize = other.size();
@@ -96,7 +95,7 @@ public:
 #endif
 		return *this;
 	}
-	bool operator==(const Vector<llong>& other)
+	bool operator==(const Vector<T>& other)
 	{
 		if (mSize != other.size())
 		{
@@ -111,7 +110,7 @@ public:
 		}
 		return true;
 	}
-	bool operator!=(const Vector<llong>& other)
+	bool operator!=(const Vector<T>& other)
 	{
 		if (mSize != other.size())
 		{
@@ -129,6 +128,7 @@ public:
 	virtual ~Vector()				{ mVector.clear(); }
 	T* data() const					{ return (T*)mVector.data(); }
 	int size() const				{ return mSize; }
+	bool isEmpty() const			{ return mSize <= 0; }
 	iterator begin()				{ return mVector.begin(); }
 	iterator end()					{ return mVector.end(); }
 	const_iterator begin() const	{ return mVector.begin(); }
@@ -249,6 +249,22 @@ public:
 		memcpyVector(values.data(), count, mVector, mSize);
 		mSize += count;
 	}
+	// 通过直接内存拷贝的方式进行添加,允许T是指针,且T0是T的子类
+	template<typename T0>
+	void addRangePtr(const Vector<T0*>& values)
+	{
+		const int sourceCount = values.size();
+		if (sourceCount == 0)
+		{
+			return;
+		}
+		// 这里如果调用memcpyVector,会匹配失败,即使加了重载,也会使编译器无法识别调用哪个函数,所以直接写上了
+		const int newSize = mSize + sourceCount;
+		mVector.resize(newSize);
+		MEMCPY((char*)mVector.data() + mSize * sizeof(T0*), newSize * sizeof(T0*), values.mVector.data(), sizeof(T0*) * sourceCount);
+
+		mSize += sourceCount;
+	}
 	// 通过直接内存拷贝的方式进行添加,仅限基础数据类型
 	void addRange(const Vector<T>& values)
 	{
@@ -346,7 +362,7 @@ public:
 	void push_back(T&& elem)
 	{
 		++mSize;
-		mVector.emplace_back(elem);
+		mVector.emplace_back(move(elem));
 	}
 	void push_back(const T& elem0, const T& elem1)
 	{
@@ -405,7 +421,17 @@ public:
 		mSize = (int)mVector.size();
 		return retIter;
 	}
-	iterator eraseAt(const int index, const int count = 1)
+	iterator eraseAt(const int index)
+	{
+		if (index < 0 || index >= mSize)
+		{
+			return mVector.end();
+		}
+		iterator iter = mVector.erase(mVector.begin() + index);
+		mSize = (int)mVector.size();
+		return iter;
+	}
+	iterator eraseAt(const int index, const int count)
 	{
 		if (index < 0 || index >= mSize)
 		{
@@ -414,6 +440,17 @@ public:
 		iterator iter = mVector.erase(mVector.begin() + index, mVector.begin() + (index + count));
 		mSize = (int)mVector.size();
 		return iter;
+	}
+	const T& eraseAtAndGet(const int index)
+	{
+		if (index < 0 || index >= mSize)
+		{
+			return mDefaultValue;
+		}
+		const T& value = mVector[index];
+		mVector.erase(mVector.begin() + index);
+		mSize = (int)mVector.size();
+		return value;
 	}
 	void eraseLast()
 	{
@@ -439,16 +476,9 @@ public:
 	}
 	int eraseAllElement(const T& value)
 	{
-		int eraseCount = 0;
-		for (int i = mSize - 1; i >= 0; --i)
-		{
-			if (mVector[i] == value)
-			{
-				mVector.erase(mVector.begin() + i);
-				++eraseCount;
-			}
-		}
-		mSize -= eraseCount;
+		mVector.erase(std::remove(mVector.begin(), mVector.end(), value), mVector.end());
+		const int eraseCount = mSize - (int)mVector.size();
+		mSize = (int)mVector.size();
 		return eraseCount;
 	}
 	// 将指定值的元素替换为默认值
@@ -458,13 +488,13 @@ public:
 		{
 			if (mVector[i] == value)
 			{
-				mVector[i]= mDefaultValue;
+				mVector[i] = mDefaultValue;
 				return true;
 			}
 		}
 		return false;
 	}
-	bool resetElementAt(const int index) const
+	bool resetElementAt(const int index)
 	{
 		if (index < 0 || index >= mSize)
 		{
@@ -510,6 +540,11 @@ public:
 		mVector.emplace(mVector.begin() + index, elem);
 		++mSize;
 	}
+	void insert(const int index, T&& elem)
+	{
+		mVector.emplace(mVector.begin() + index, move(elem));
+		++mSize;
+	}
 	void insert(const iterator& iter, const T& elem)
 	{
 		mVector.emplace(iter, elem);
@@ -519,7 +554,7 @@ public:
 	{
 		if (i < 0 || i >= mSize)
 		{
-			ERROR("vector index out of range!");
+			ERROR("vector index out of range! index:" + to_string(i) + ", vector size:" + to_string(mSize));
 		}
 		return mVector[i];
 	}
@@ -544,7 +579,7 @@ public:
 	{
 		if (i < 0 || i >= mSize)
 		{
-			ERROR("vector index out of range!");
+			ERROR("vector index out of range! index:" + to_string(i) + ", vector size:" + to_string(mSize));
 		}
 		return mVector[i];
 	}
@@ -569,7 +604,7 @@ public:
 	}
 	int findFirstIndex(const T& value, const int startIndex = 0) const
 	{
-		for(int i = startIndex; i < mSize; ++i)
+		for (int i = startIndex; i < mSize; ++i)
 		{
 			if (mVector[i] == value)
 			{
@@ -589,6 +624,12 @@ public:
 			}
 		}
 		return elementCount;
+	}
+	void swapIndex(int index0, int index1)
+	{
+		T temp = move(mVector[index0]);
+		mVector[index0] = move(mVector[index1]);
+		mVector[index1] = move(temp);
 	}
 	// 添加克隆函数的目的是为了显式调用拷贝,而非自动调用拷贝,可以避免可以使用移动构造而没有使用的情况
 	void clone(Vector<T>& target) const

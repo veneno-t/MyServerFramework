@@ -231,7 +231,7 @@ public:
 	// 因为clear本身会执行元素的析构,即使列表为空,也会执行较多的指令,所以先排除空列表的不必要的清空操作
 	void clear(bool disposeMemory = false)
 	{
-		if (mMap.size() == 0)
+		if (mMap.empty())
 		{
 			return;
 		}
@@ -256,6 +256,7 @@ public:
 		return success;
 	}
 	int size() const { return (int)mMap.size(); }
+	bool isEmpty() const { return (int)mMap.size() == 0; }
 	Value& operator[](const Key& k) { return mMap[k]; }
 	// 添加克隆函数的目的是为了显式调用拷贝,而非自动调用拷贝,可以避免可以使用移动构造而没有使用的情况
 	void clone(HashMap<Key, Value>& target) const

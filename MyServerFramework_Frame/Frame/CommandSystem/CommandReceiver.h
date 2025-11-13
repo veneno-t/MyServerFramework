@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
 
-class MICRO_LEGEND_FRAME_API CommandReceiver : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API CommandReceiver : public ClassObject
 {
-	BASE(CommandReceiver, ClassPooledObject);
+	BASE(CommandReceiver, ClassObject);
 public:
 	~CommandReceiver() override;
 	virtual void setName(const string& name) 

@@ -1,11 +1,11 @@
 ﻿#include "GameHeader.h"
 
-// 下面包含自动生成的代码,以FrameSystem Register为起始关键字,以后面的第一个空行或者}为结束
 void Game::registeComponent()
 {
 	base::registeComponent();
-	// FrameSystem Register
+	// auto generate start FrameSystem Register
 	registeSystem<GameConfigSystem>(STR(GameConfigSystem));
+	// auto generate end FrameSystem Register
 }
 
 void Game::constructDone()
@@ -41,6 +41,7 @@ void Game::launch()
 	{
 		SCServerCheckPing::send(client, index);
 	});
+	// CmdNetServerLogoutAccount内部是为了支持断线重连的,但是重连的绝大部分逻辑都在应用层,底层只是针对网络连接断开时是否要去退出账号和角色
 	CmdNetServerLogoutAccount::mLogoutPlayer = ([](TCPServerClient* client)
 	{
 		auto* player = static_cast<CharacterPlayer*>(mCharacterManager->getCharacter(client->getPlayerGUID()));

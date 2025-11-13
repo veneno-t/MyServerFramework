@@ -3,5 +3,5 @@
 #include "ClassBaseTypePool.h"
 #include "DTNode.h"
 
-class MICRO_LEGEND_FRAME_API DTNodePool : public ClassBaseTypePool<DTNode>
+class DTNodePool : public ClassBaseTypePool<DTNode>
 {};

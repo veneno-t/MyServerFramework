@@ -14,18 +14,17 @@ public:
 	TCPServerSystem();
 	void init() override;
 	void quit() override;
-	void update(const float elapsedTime) override;
+	void update(float elapsedTime) override;
 	float getHeartBeatTimeOut()	const											{ return mHeartBeatTimeOut; }
 	bool getOutputLog() const 													{ return mOutputLog; }
 	bool isAvailable() const													{ return mSocket != INVALID_SOCKET; }
 	int getClientCount() const													{ return mClientList.size(); }
 	ushort getPort() const														{ return mPort; }
-	TCPServerClient* getClient(const int clientGUID) const						{ return mClientList.tryGet(clientGUID); }
-	TCPServerClient* getClientByAccountGUID(const llong accountGUID) const		{ return mClientAccountIDList.tryGet(accountGUID); }
+	TCPServerClient* getClient(int clientGUID) const							{ return mClientList.tryGet(clientGUID); }
 	ServerCheckPingCallback getServerCheckPingCallback() const					{ return mServerCheckPing; }
 	void setServerCheckPingCallback(ServerCheckPingCallback callback)			{ mServerCheckPing = callback; }
 	void setFreezeAccountCallback(FreezeAccountCallback callback)				{ mFreezeAccount = callback; }
-	void increaseSendPacketCount(const ushort packetType, const string& name)	
+	void increaseSendPacketCount(ushort packetType, const string& name)	
 	{
 		++mSendPacketCount;
 		++mPacketSendCountMap.insertOrGet(packetType);
@@ -37,8 +36,6 @@ public:
 	void writePacket(PacketTCP* packet);
 	const SerializerBitWrite* getPacketDataBuffer() const						{ return mPacketDataBuffer; }
 	void logoutAll();
-	void notifyAccountLogin(TCPServerClient* client);
-	void notifyAccountLogout(TCPServerClient* client);
 	static void encrypt(char* data, int length, const byte* key, int keyLen, byte param);
 	static void decrypt(char* data, int length, const byte* key, int keyLen, byte param);
 protected:
@@ -46,17 +43,16 @@ protected:
 	static void receiveThread(CustomThread* thread) { static_cast<This*>(thread->getArgs())->processRecv(); }
 	static void sendThread(CustomThread* thread) { static_cast<This*>(thread->getArgs())->processSend(); }
 	static int comparePacketTypeCount(Vector2Int& x, Vector2Int& y) { return MathUtility::sign(y.y - x.y); }
-	int notifyAcceptClient(const MY_SOCKET socket, const string& ip);
-	void disconnectSocket(const int clientGUID, const string& reason);	// 与客户端断开连接,只能在主线程中调用
+	int notifyAcceptClient(MY_SOCKET socket, const string& ip);
+	void disconnectSocket(TCPServerClient* client);	// 与客户端断开连接,只能在主线程中调用
 	void processSend();
 	void processRecv();
 	int generateSocketGUID() { return mSocketGUIDSeed++; }
-	void checkSendRecvError(TCPServerClient* client, const int successLength) const;
+	void checkSendRecvError(TCPServerClient* client, int successLength) const;
 protected:
 	Vector<pair<MY_SOCKET, string>> mAcceptBuffer;			// 连接缓存列表
 	HashMap<ushort, string> mPacketSendNameMap;				// 用于查询消息ID对应的名字
 	HashMap<ushort, int> mPacketSendCountMap;				// 记录每个消息发送的数量
-	HashMap<llong, TCPServerClient*> mClientAccountIDList;	// 客户端列表,索引为账号ID,用于根据账号ID查找客户端
 	HashMap<int, TCPServerClient*> mClientList;				// 客户端列表,用于主线程访问
 	Vector<TCPServerClient*> mSendClientList;				// 客户端列表,用于发送线程访问,修改客户端列表时,需要同步修改这三个列表
 	Vector<TCPServerClient*> mRecvClientList;				// 客户端列表,用于接收线程访问
@@ -85,8 +81,8 @@ protected:
 	bool mOutputLog = true;									// 是否输出日志
 	static constexpr float mDumpPacketTimeInternal = 20.0f;	// 每20秒打印一次收发数据信息
 	static constexpr float mServerHeartBeatTimeOut = 60.0f;	// 服务器自身心跳间隔时间
-	static constexpr int mKey0 = 1;
-	static constexpr int mKey1 = 2;
-	static constexpr int mKey2 = 3;
-	static constexpr int mKey3 = 4;
+	static constexpr int mKey0 = 41;
+	static constexpr int mKey1 = 3;
+	static constexpr int mKey2 = 600;
+	static constexpr int mKey3 = 34;
 };

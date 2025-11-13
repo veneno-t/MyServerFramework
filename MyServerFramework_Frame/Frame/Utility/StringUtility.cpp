@@ -60,7 +60,7 @@ namespace StringUtility
 
 	void removeStartAll(string& stream, const char key)
 	{
-		FOR_I((int)stream.length())
+		FOR_I(stream.length())
 		{
 			if (stream[i] != key)
 			{
@@ -72,7 +72,7 @@ namespace StringUtility
 
 	void removeStart(string& stream, const char key)
 	{
-		FOR_I((int)stream.length())
+		FOR_I(stream.length())
 		{
 			if (stream[i] == key)
 			{
@@ -84,7 +84,7 @@ namespace StringUtility
 
 	void removeLastAll(string& stream, const char key)
 	{
-		FOR_INVERSE_I((int)stream.length())
+		FOR_INVERSE_I(stream.length())
 		{
 			if (stream[i] != key)
 			{
@@ -96,7 +96,7 @@ namespace StringUtility
 
 	void removeLast(string& stream, const char key)
 	{
-		FOR_INVERSE_I((int)stream.length())
+		FOR_INVERSE_I(stream.length())
 		{
 			if (stream[i] == key)
 			{
@@ -109,7 +109,7 @@ namespace StringUtility
 	int findCharCount(const string& str, const char key)
 	{
 		int count = 0;
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -236,7 +236,7 @@ namespace StringUtility
 
 	int getLastNotNumberPos(const string& str)
 	{
-		FOR_INVERSE_I((int)str.length())
+		FOR_INVERSE_I(str.length())
 		{
 			if (str[i] > '9' || str[i] < '0')
 			{
@@ -273,9 +273,9 @@ namespace StringUtility
 		return -1;
 	}
 
-	int getLastNotChar(const char* str, const char value)
+	int getLastNotChar(const string& str, const char value)
 	{
-		FOR_INVERSE_I(strlength(str))
+		FOR_INVERSE_I(str.length())
 		{
 			if (str[i] != value)
 			{
@@ -319,8 +319,12 @@ namespace StringUtility
 
 	void split(const char* str, const char key, Vector<string>& vec, const bool removeEmpty)
 	{
-		int startPos = 0;
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return;
+		}
+		int startPos = 0;
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		bool ret = true;
@@ -342,17 +346,29 @@ namespace StringUtility
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + 1;
 			// 放入列表
-			if (curString[0] != '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
-				vec.push_back(curString.str());
+				continue;
 			}
+			vec.push_back(curString.str());
 		}
+	}
+
+	Vector<string> split(const char* str, const char key, const bool removeEmpty)
+	{
+		Vector<string> vec;
+		split(str, key, vec, removeEmpty);
+		return vec;
 	}
 
 	int split(const char* str, const char key, string* stringBuffer, const int bufferSize, const bool removeEmpty)
 	{
-		int startPos = 0;
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return 0;
+		}
+		int startPos = 0;
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		int curCount = 0;
@@ -375,7 +391,7 @@ namespace StringUtility
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + 1;
 			// 放入列表
-			if (curString[0] == '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
 				continue;
 			}
@@ -392,6 +408,10 @@ namespace StringUtility
 	void split(const char* str, const char* key, Vector<string>& vec, const bool removeEmpty)
 	{
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return;
+		}
 		const int keyLen = strlength(key);
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
@@ -412,18 +432,23 @@ namespace StringUtility
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + keyLen;
 			// 放入列表
-			if (curString[0] != '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
-				vec.push_back(curString.str());
+				continue;
 			}
+			vec.push_back(curString.str());
 		}
 	}
 
 	void split(const string& str, const char* key, Vector<string>& vec, const bool removeEmpty)
 	{
+		const int sourceLen = (int)str.length();
+		if (sourceLen == 0)
+		{
+			return;
+		}
 		int startPos = 0;
 		const int keyLen = strlength(key);
-		const int sourceLen = (int)str.length();
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
 		int devidePos = -1;
@@ -442,16 +467,21 @@ namespace StringUtility
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + keyLen;
 			// 放入列表
-			if (curString[0] != '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
-				vec.push_back(curString.str());
+				continue;
 			}
+			vec.push_back(curString.str());
 		}
 	}
 
 	int split(const char* str, const char* key, string* stringBuffer, const int bufferSize, const bool removeEmpty)
 	{
 		const int sourceLen = strlength(str);
+		if (sourceLen == 0)
+		{
+			return 0;
+		}
 		const int keyLen = strlength(key);
 		constexpr int STRING_BUFFER = 1024;
 		MyString<STRING_BUFFER> curString;
@@ -472,8 +502,7 @@ namespace StringUtility
 			curString.copy(str + startPos, devidePos - startPos);
 			curString[devidePos - startPos] = '\0';
 			startPos = devidePos + keyLen;
-			// 放入列表
-			if (curString[0] == '\0' || !removeEmpty)
+			if (curString[0] == '\0' && removeEmpty)
 			{
 				continue;
 			}
@@ -552,7 +581,7 @@ namespace StringUtility
 
 	void replaceAll(string& str, const char key, const char newWord)
 	{
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -742,7 +771,7 @@ namespace StringUtility
 
 	string ULLsToS(const Vector<ullong>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -767,7 +796,7 @@ namespace StringUtility
 
 	string LLsToS(const Vector<llong>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -816,7 +845,7 @@ namespace StringUtility
 
 	string bytesToString(const Vector<byte>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -840,7 +869,7 @@ namespace StringUtility
 
 	string SsToS(const Vector<short>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -864,7 +893,7 @@ namespace StringUtility
 
 	string USsToS(const Vector<ushort>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -888,7 +917,7 @@ namespace StringUtility
 
 	string IsToS(const Vector<int>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -913,7 +942,7 @@ namespace StringUtility
 
 	string UIsToS(const Vector<uint>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -938,7 +967,7 @@ namespace StringUtility
 
 	string FsToS(const Vector<float>& valueList, const char* seperate)
 	{
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return FrameDefine::EMPTY;
 		}
@@ -964,7 +993,7 @@ namespace StringUtility
 	void FsToS(char* buffer, const int bufferSize, const Vector<float>& valueList, const char* seperate)
 	{
 		buffer[0] = '\0';
-		if (valueList.size() == 0)
+		if (valueList.isEmpty())
 		{
 			return;
 		}
@@ -1741,7 +1770,7 @@ namespace StringUtility
 
 	string removePreNumber(const string& str)
 	{
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] < '0' || str[i] > '9')
 			{
@@ -2350,7 +2379,7 @@ namespace StringUtility
 	string toLower(const string& str)
 	{
 		string ret = str;
-		FOR_I((int)ret.length())
+		FOR_I(ret.length())
 		{
 			ret[i] = toLower(ret[i]);
 		}
@@ -2360,7 +2389,7 @@ namespace StringUtility
 	string toUpper(const string& str)
 	{
 		string ret = str;
-		FOR_I((int)ret.length())
+		FOR_I(ret.length())
 		{
 			ret[i] = toUpper(ret[i]);
 		}
@@ -2369,7 +2398,7 @@ namespace StringUtility
 
 	void rightToLeft(string& str)
 	{
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] == '\\')
 			{
@@ -2379,7 +2408,7 @@ namespace StringUtility
 	}
 	void leftToRight(string& str)
 	{
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] == '/')
 			{
@@ -2518,7 +2547,7 @@ namespace StringUtility
 
 	bool checkString(const string& str, const string& valid)
 	{
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (!valid.find_first_of(str[i]))
 			{
@@ -2557,27 +2586,23 @@ namespace StringUtility
 	{
 		const int oneLength = addSpace ? 3 : 2;
 		CharArrayScopeThread byteData(getGreaterPower2(dataCount * oneLength + 1));
-		FOR_J(dataCount)
+		FOR_I(dataCount)
 		{
-			const string byteStr = charToHexString(data[j]);
-			byteData.mArray[j * oneLength + 0] = byteStr[0];
-			byteData.mArray[j * oneLength + 1] = byteStr[1];
+			const string byteStr = charToHexString(data[i]);
+			byteData.mArray[i * oneLength + 0] = byteStr[0];
+			byteData.mArray[i * oneLength + 1] = byteStr[1];
 			if (oneLength >= 3)
 			{
-				byteData.mArray[j * oneLength + 2] = ' ';
+				byteData.mArray[i * oneLength + 2] = ' ';
 			}
 		}
 		byteData.mArray[dataCount * oneLength] = '\0';
 		return byteData.mArray;
 	}
 
-	bool isNumber(const char* str, int length)
+	bool isNumber(const string& str)
 	{
-		if (length == 0)
-		{
-			length = strlength(str);
-		}
-		FOR_I(length)
+		FOR_I(str.length())
 		{
 			if (!isNumber(str[i]))
 			{
@@ -2590,7 +2615,7 @@ namespace StringUtility
 	int getCharCount(const string& str, char key)
 	{
 		int count = 0;
-		FOR_I((int)str.length())
+		FOR_I(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -2619,6 +2644,15 @@ namespace StringUtility
 		return count;
 	}
 
+	void appendWithAlign(string& oriStr, const string& appendStr, const int alignWidth)
+	{
+		FOR_I(clampMin(alignWidth - (int)oriStr.length()))
+		{
+			oriStr += ' ';
+		}
+		oriStr += appendStr;
+	}
+
 	bool isPhoneNumber(const char* str)
 	{
 		// 手机号固定11位
@@ -2637,7 +2671,7 @@ namespace StringUtility
 		return true;
 	}
 
-	bool hasControlChar(const char* str)
+	bool hasControlChar(const string& str)
 	{
 		int index = 0;
 		while (str[index] != '\0')
@@ -2651,7 +2685,7 @@ namespace StringUtility
 		return false;
 	}
 
-	bool hasInvisibleChar(const char* str)
+	bool hasInvisibleChar(const string& str)
 	{
 		// 不能有控制字符,不能有英文空格,不能有中文空格
 		if (hasControlChar(str))
@@ -2868,7 +2902,7 @@ namespace StringUtility
 			{
 				return;
 			}
-			FOR_I(mIntString.size())
+			FOR_VECTOR(mIntString)
 			{
 				if (i == 0)
 				{
@@ -2904,9 +2938,9 @@ namespace StringUtility
 		return getGreaterPower2(value);
 	}
 
-	// encode的长度为4 * ((text_len + 2) / 3)
-	int base64_encode(const byte* str, const int length, char* encode)
+	string base64_encode(const byte* str, const int length)
 	{
+		char* encode = new char[4 * ((length + 2) / 3) + 1];
 		int i, j;
 		for (i = 0, j = 0; i + 3 <= length; i += 3)
 		{
@@ -2939,19 +2973,21 @@ namespace StringUtility
 			}
 		}
 		encode[j] = '\0';
-		return j;
+		string temp = encode;
+		DELETE_ARRAY(encode);
+		return temp;
 	}
 
-	// encode的长度为4 * ((text_len + 2) / 3)
-	int base64_encode(const string& str, char* encode)
+	string base64_encode(const string& str)
 	{
-		return base64_encode((byte*)str.c_str(), (int)str.length(), encode);
+		return base64_encode((byte*)str.c_str(), (int)str.length());
 	}
 
-	int base64_decode(const char* code, const int codeLen, byte* dest)
+	string base64_decode(const char* code, const int codeLen)
 	{
+		byte* dest = new byte[4 * ((codeLen + 2) / 3) + 1];
 		int j = 0;
-		byte quad[4];
+		byte quad[4] = {};
 		for (int i = 0; i < codeLen; i += 4)
 		{
 			// 分组，每组四个分别依次转换为base64表内的十进制数
@@ -2981,8 +3017,16 @@ namespace StringUtility
 			}
 		}
 		dest[j] = '\0';
-		return j;
+		string str = (char*)dest;
+		DELETE_ARRAY(dest);
+		return str;
 	}
+
+	string base64_decode(const string& code)
+	{
+		return base64_decode(code.c_str(), (int)code.length());
+	}
+
 	// 工具函数：按位循环左移
 	uint32_t rotate_left(const uint32_t value, const int shift)
 	{
@@ -2998,7 +3042,7 @@ namespace StringUtility
 		// 填充零直到长度对 512 取余为 448
 		while ((padded_message.size() * 8) % 512 != 448) 
 		{
-			padded_message.push_back(0x00);
+			padded_message.push_back(0);
 		}
 		// 添加原始消息长度（64 位，大端序）
 		for (int i = 7; i >= 0; --i) 
@@ -3034,7 +3078,7 @@ namespace StringUtility
 		// 处理每个 512 位的消息块
 		for (size_t i = 0; i < padded_message.size(); i += 64)
 		{
-			uint32_t W[80]; // 消息调度数组
+			uint32_t W[80]{}; // 消息调度数组
 			// 初始化 W 前 16 个字
 			for (int j = 0; j < 16; ++j)
 			{
@@ -3103,7 +3147,7 @@ namespace StringUtility
 		byte digest[20];
 		sha1(message, digest);
 		// 转换为十六进制字符串
-		std::ostringstream oss;
+		ostringstream oss;
 		for (int i = 0; i < 20; ++i) 
 		{
 			oss << std::hex << std::setw(2) << std::setfill('0') << (int)digest[i];

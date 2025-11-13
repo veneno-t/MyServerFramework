@@ -1,13 +1,14 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "TimeValue.h"
 
-class MICRO_LEGEND_FRAME_API TimeTask : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API TimeTask : public ClassObject
 {
-	BASE(TimeTask, ClassPooledObject);
+	BASE(TimeTask, ClassObject);
 public:
-	void destroy();
+	virtual ~TimeTask() { destroy(); }
+	void destroy() override;
 	virtual void init(){}
 	virtual void update(const float elapsedTime){}
 	void resetProperty() override;

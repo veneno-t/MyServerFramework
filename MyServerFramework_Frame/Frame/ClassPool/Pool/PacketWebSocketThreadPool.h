@@ -3,7 +3,7 @@
 #include "ClassTypePoolThread.h"
 #include "PacketWebSocketFactoryManager.h"
 
-class MICRO_LEGEND_FRAME_API PacketWebSocketThreadPool : public ClassTypePoolThread<PacketWebSocket, ushort>
+class PacketWebSocketThreadPool : public ClassTypePoolThread<PacketWebSocket, ushort>
 {
 protected:
 	PacketWebSocket* create(const ushort type) override

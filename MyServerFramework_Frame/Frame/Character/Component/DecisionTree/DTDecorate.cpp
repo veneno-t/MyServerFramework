@@ -3,7 +3,7 @@
 TASK_STATE DTDecorate::start()
 {
 	base::start();
-	if (mChildList == nullptr || mChildList->size() == 0)
+	if (mChildList == nullptr || mChildList->isEmpty())
 	{
 		mState = TASK_STATE::SUCCESS;
 		return mState;

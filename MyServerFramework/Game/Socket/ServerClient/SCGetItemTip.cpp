@@ -4,6 +4,7 @@
 SCGetItemTip SCGetItemTip::mStaticObject;
 string SCGetItemTip::mPacketName = STR(SCGetItemTip);
 // auto generate end
+
 void SCGetItemTip::send(CharacterPlayer* player)
 {
 	auto& packet = get();

@@ -3,6 +3,7 @@
 #include "CharacterPlayer.cpp"
 #include "CharacterPlayerData.cpp"
 #include "CharacterRegister.cpp"
+#include "StateRegister.cpp"
 #include "GameBase.cpp"
 #include "GameDefine.cpp"
 #include "GameSTLPoolRegister.cpp"

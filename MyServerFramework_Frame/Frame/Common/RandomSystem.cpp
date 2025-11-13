@@ -3,9 +3,9 @@
 RandomSystem::RandomSystem()
 {
 	mRandomSequence.zero();
-	FOR_I(mRandomSequence.size())
+	for (int& item : mRandomSequence)
 	{
-		mRandomSequence[i] = ((rand() & 0x7FFF) << 15) + rand();
+		item = ((rand() & 0x7FFF) << 15) + rand();
 	}
 }
 

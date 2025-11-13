@@ -1,9 +1,11 @@
 ﻿#include "FrameHeader.h"
 
-LogoutAccountCallback CmdNetServerLogoutAccount::mLogoutAccount;
-LogoutPlayerCallback CmdNetServerLogoutAccount::mLogoutPlayer;
-WebSocketLogoutAccountCallback CmdNetServerLogoutAccount::mWebSocketLogoutAccount;
-WebSocketLogoutPlayerCallback CmdNetServerLogoutAccount::mWebSocketLogoutPlayer;
+TCPServerClientCallback CmdNetServerLogoutAccount::mLogoutAccount;
+TCPServerClientCallback CmdNetServerLogoutAccount::mLogoutPlayer;
+TCPServerClientCallback CmdNetServerLogoutAccount::mLogoutPlayerConnectError;
+WebSocketServerClientCallback CmdNetServerLogoutAccount::mWebSocketLogoutAccount;
+WebSocketServerClientCallback CmdNetServerLogoutAccount::mWebSocketLogoutPlayer;
+WebSocketServerClientCallback CmdNetServerLogoutAccount::mWebSocketLogoutPlayerConnectError;
 
 void CmdNetServerLogoutAccount::execute(TCPServerClient* client)
 {
@@ -12,16 +14,38 @@ void CmdNetServerLogoutAccount::execute(TCPServerClient* client)
 		return;
 	}
 
-	// 如果玩家在线,则退出玩家角色
-	if (client->getPlayerGUID() > 0)
+	// 如果是网络原因导致断开,会等待角色进行重连
+	if (client->getDeadType() == DEAD_TYPE::NET_ERROR)
 	{
-		// 通知UDP此客户端断开连接
-		mUDPServerSystem->getClient()->removeClientToken(client->getPlayerGUID());
-		CALL(mLogoutPlayer, client);
+		// 如果玩家在线,则给玩家角色标记即将销毁,设置销毁倒计时,以及重连凭证
+		if (client->getPlayerGUID() > 0)
+		{
+			CALL(mLogoutPlayerConnectError, client);
+		}
+		// 如果玩家不在线,就直接退出账号登录
+		else
+		{
+			if (client->getAccountGUID() > 0)
+			{
+				CALL(mLogoutAccount, client);
+				client->setAccountGUID(0);
+			}
+		}
 	}
-	// 退出账号登录
-	mTCPServerSystem->notifyAccountLogout(client);
-	CALL(mLogoutAccount, client);
+	// 如果是客户端主动断开,或者是服务器踢下线的,就需要退出账号和角色
+	else
+	{
+		if (client->getPlayerGUID() > 0)
+		{
+			mUDPServerSystem->getClient()->removeClientToken(client->getPlayerGUID());
+			CALL(mLogoutPlayer, client);
+		}
+		if (client->getAccountGUID() > 0)
+		{
+			CALL(mLogoutAccount, client);
+			client->setAccountGUID(0);
+		}
+	}
 }
 
 void CmdNetServerLogoutAccount::execute(WebSocketServerClient* client)
@@ -31,14 +55,35 @@ void CmdNetServerLogoutAccount::execute(WebSocketServerClient* client)
 		return;
 	}
 
-	// 如果玩家在线,则退出玩家角色
-	if (client->getPlayerGUID() > 0)
+	// 强制退出角色和账号
+	if (client->getDeadType() == DEAD_TYPE::NET_ERROR)
 	{
-		// 通知UDP此客户端断开连接
-		mUDPServerSystem->getClient()->removeClientToken(client->getPlayerGUID());
-		CALL(mWebSocketLogoutPlayer, client);
+		// 如果玩家在线,则给玩家角色标记即将销毁,设置销毁倒计时,以及重连凭证
+		if (client->getPlayerGUID() > 0)
+		{
+			CALL(mWebSocketLogoutPlayerConnectError, client);
+		}
+		// 如果玩家不在线,就直接退出账号登录
+		else
+		{
+			if (client->getAccountGUID() > 0)
+			{
+				CALL(mWebSocketLogoutAccount, client);
+				client->setAccountGUID(0);
+			}
+		}
 	}
-	// 退出账号登录
-	mWebSocketServerSystem->notifyAccountLogout(client);
-	CALL(mWebSocketLogoutAccount, client);
+	else
+	{
+		if (client->getPlayerGUID() > 0)
+		{
+			mUDPServerSystem->getClient()->removeClientToken(client->getPlayerGUID());
+			CALL(mWebSocketLogoutPlayer, client);
+		}
+		if (client->getAccountGUID() > 0)
+		{
+			CALL(mWebSocketLogoutAccount, client);
+			client->setAccountGUID(0);
+		}
+	}
 }

@@ -20,8 +20,7 @@ public:
 	bool isAvailable() const													{ return mSocket != INVALID_SOCKET; }
 	int getClientCount() const													{ return mClientList.size(); }
 	ushort getPort() const														{ return mPort; }
-	WebSocketServerClient* getClient(const int clientGUID) const				{ return mClientList.tryGet(clientGUID); }
-	WebSocketServerClient* getClientByAccountGUID(const llong accountGUID) const{ return mClientAccountIDList.tryGet(accountGUID); }
+	WebSocketServerClient* getClient(int clientGUID) const						{ return mClientList.tryGet(clientGUID); }
 	WebServerCheckPingCallback getServerCheckPingCallback() const				{ return mServerCheckPing; }
 	void setServerCheckPingCallback(WebServerCheckPingCallback callback)		{ mServerCheckPing = callback; }
 	void setFreezeAccountCallback(FreezeAccountCallback callback)				{ mFreezeAccount = callback; }
@@ -32,23 +31,20 @@ public:
 	void writePacket(PacketWebSocket* packet);
 	const SerializerWrite* getPacketDataBuffer() const							{ return mPacketDataBuffer; }
 	void logoutAll();
-	void notifyAccountLogin(WebSocketServerClient* client);
-	void notifyAccountLogout(WebSocketServerClient* client);
 	static void encrypt(char* data, int length, const byte* key, int keyLen, byte param);
 	static void decrypt(char* data, int length, const byte* key, int keyLen, byte param);
 protected:
 	static void acceptThread(CustomThread* thread);
 	static void receiveThread(CustomThread* thread) { static_cast<This*>(thread->getArgs())->processRecv(); }
 	static void sendThread(CustomThread* thread) { static_cast<This*>(thread->getArgs())->processSend(); }
-	int notifyAcceptClient(const MY_SOCKET socket, const string& ip);
-	void disconnectSocket(const int clientGUID, const string& reason);	// 与客户端断开连接,只能在主线程中调用
+	int notifyAcceptClient(MY_SOCKET socket, const string& ip);
+	void disconnectSocket(int clientGUID, const string& reason);	// 与客户端断开连接,只能在主线程中调用
 	void processSend();
 	void processRecv();
 	int generateSocketGUID() { return mSocketGUIDSeed++; }
-	void checkSendRecvError(WebSocketServerClient* client, const int successLength) const;
+	void checkSendRecvError(WebSocketServerClient* client, int successLength) const;
 protected:
 	Vector<pair<MY_SOCKET, string>> mAcceptBuffer;				// 连接缓存列表
-	HashMap<llong, WebSocketServerClient*> mClientAccountIDList;// 客户端列表,索引为账号ID,用于根据账号ID查找客户端
 	HashMap<int, WebSocketServerClient*> mClientList;			// 客户端列表,用于主线程访问
 	Vector<WebSocketServerClient*> mSendClientList;				// 客户端列表,用于发送线程访问,修改客户端列表时,需要同步修改这三个列表
 	Vector<WebSocketServerClient*> mRecvClientList;				// 客户端列表,用于接收线程访问

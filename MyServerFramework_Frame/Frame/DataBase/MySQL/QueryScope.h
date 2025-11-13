@@ -6,11 +6,11 @@
 class QueryScope
 {
 protected:
-	MySQLTable* mTable = nullptr;
+	const MySQLTable* mTable = nullptr;
 public:
 	MYSQL_RES* mResult = nullptr;
 public:
-	QueryScope(MySQLTable* table, const char* queryStr);
+	QueryScope(const MySQLTable* table, const char* queryStr);
 	~QueryScope();
 };
 

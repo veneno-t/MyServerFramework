@@ -6,6 +6,67 @@ SerializerRead::SerializerRead(const char* buffer, const int bufferSize):
 	mIndex(0)
 {}
 
+bool SerializerRead::readVector2List(Vector<Vector2>& list)
+{
+	int count;
+	if (!read(count))
+	{
+		return false;
+	}
+	bool result = true;
+	list.resize(count);
+	FOR_I(count)
+	{
+		result = readVector2(list[i]) && result;
+	}
+	return result;
+}
+bool SerializerRead::readVector2IntList(Vector<Vector2Int>& list)
+{
+	int count;
+	if (!read(count))
+	{
+		return false;
+	}
+	bool result = true;
+	list.resize(count);
+	FOR_I(count)
+	{
+		result = readVector2Int(list[i]) && result;
+	}
+	return result;
+}
+bool SerializerRead::readVector3List(Vector<Vector3>& list)
+{
+	int count;
+	if (!read(count))
+	{
+		return false;
+	}
+	bool result = true;
+	list.resize(count);
+	FOR_I(count)
+	{
+		result = readVector3(list[i]) && result;
+	}
+	return result;
+}
+bool SerializerRead::readVector3IntList(Vector<Vector3Int>& list)
+{
+	int count;
+	if (!read(count))
+	{
+		return false;
+	}
+	bool result = true;
+	list.resize(count);
+	FOR_I(count)
+	{
+		result = readVector3Int(list[i]) && result;
+	}
+	return result;
+}
+
 bool SerializerRead::readStringList(Vector<string>& list)
 {
 	int count;

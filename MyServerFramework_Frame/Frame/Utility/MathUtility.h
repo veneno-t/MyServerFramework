@@ -386,6 +386,10 @@ namespace MathUtility
 	Vector2UInt toVec2UInt(Vector2Int vec2) { return { (uint)vec2.x, (uint)vec2.y }; }
 	Vector2UInt toVec2UInt(Vector2Short vec2) { return { (uint)vec2.x, (uint)vec2.y }; }
 	Vector2UInt toVec2UInt(Vector2UShort vec2) { return { vec2.x, vec2.y }; }
+	template<typename T>
+	constexpr T getMin(const T a, const T b) { return a < b ? a : b; }
+	template<typename T>
+	constexpr T getMax(const T a, const T b) { return a > b ? a : b; }
 	MICRO_LEGEND_FRAME_API void checkInt(float& value, float precision = MIN_DELTA); // 判断传入的参数是否已经接近于整数,如果接近于整数,则设置为整数
 	constexpr bool isZero(const float value, const float precision = MIN_DELTA) { return value >= -precision && value <= precision; }
 	constexpr bool isZero(const double value, const double precision = MIN_DELTA_DOUBLE) { return value >= -precision && value <= precision; }
@@ -411,20 +415,20 @@ namespace MathUtility
 	constexpr int divideInt(int value0, int value1) { return value1 == 0 ? 0 : value0 / value1; }
 	constexpr ullong divideInt(ullong value0, ullong value1) { return value1 == 0ull ? 0ull : value0 / value1; }
 	// 计算出count个元素分为batch个批次时,批次的数量
-	constexpr int generateBatchCount(const ullong count, const ullong batch)
+	constexpr int generateBatchCount(const ullong count, const int batch)
 	{
-		const ullong batchCount = divideInt(count, batch);
+		const ullong batchCount = divideInt(count, (ullong)batch);
 		return (int)(batch * batchCount != count ? batchCount + 1 : batchCount);
 	}
 	// 计算出第batchIndex个批次的元素个数
-	constexpr int generateBatchSize(const ullong count, const ullong batch, const int batchIndex)
+	constexpr int generateBatchSize(const ullong count, const int batch, const int batchIndex)
 	{
-		if (batchIndex * batch >= count)
+		const int preCount = batchIndex * batch;
+		if ((ullong)preCount >= count)
 		{
 			return 0;
 		}
-		int curCount = (int)(count - batchIndex * batch);
-		return curCount > (int)batch ? (int)batch : curCount;
+		return getMin((int)(count - preCount), (int)batch);
 	}
 	// 得到比value大的第一个pow的n次方的数
 	constexpr int getGreaterPowerValue(int value, int pow);
@@ -530,6 +534,15 @@ namespace MathUtility
 	template<typename T>
 	constexpr T clampZero(const T value) { return value < (T)0 ? (T)0 : value; }
 	template<typename T>
+	constexpr T clampZeroRef(T& value) 
+	{
+		if (value < (T)0)
+		{
+			value = (T)0;
+		}
+		return value; 
+	}
+	template<typename T>
 	constexpr void clampMaxRef(T& value, const T maxValue)
 	{
 		if (value > maxValue)
@@ -565,7 +578,9 @@ namespace MathUtility
 	constexpr bool lengthLess(const Vector2& vec, const float length) { return vec.x * vec.x + vec.y * vec.y < length* length; }
 	constexpr bool lengthGreater(const Vector2& vec, const float length) { return vec.x * vec.x + vec.y * vec.y > length * length; }
 	constexpr bool lengthLess(const Vector3& vec, const float length) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z < length * length; }
+	constexpr bool lengthLessSquared(const Vector3& vec, const float squaredLength) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z < squaredLength; }
 	constexpr bool lengthGreater(const Vector3& vec, const float length) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z > length * length; }
+	constexpr bool lengthGreaterSquared(const Vector3& vec, const float squaredLength) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z > squaredLength; }
 	constexpr bool isVectorEqual(const Vector3& vec0, const Vector3& vec1) { return isEqual(vec0.x, vec1.x) && isEqual(vec0.y, vec1.y) && isEqual(vec0.z, vec1.z); }
 	constexpr bool isVectorEqual(const Vector2& vec0, const Vector2& vec1) { return isEqual(vec0.x, vec1.x) && isEqual(vec0.y, vec1.y); }
 	constexpr bool isVectorEqual(const Vector3& vec0, const Vector3& vec1, float precision) { return isEqual(vec0.x, vec1.x, precision) && isEqual(vec0.y, vec1.y, precision) && isEqual(vec0.z, vec1.z, precision); }
@@ -798,13 +813,13 @@ namespace MathUtility
 	int randomSelect(const ArrayList<Length0, int>& oddsList)
 	{
 		int max = 0;
-		FOR_I(oddsList.size())
+		for (const int odds : oddsList)
 		{
-			max += oddsList[i];
+			max += odds;
 		}
 		const int random = randomInt(0, max);
 		int curValue = 0;
-		FOR_I(oddsList.size())
+		FOR_VECTOR(oddsList)
 		{
 			curValue += oddsList[i];
 			if (random <= curValue)
@@ -998,10 +1013,6 @@ namespace MathUtility
 	constexpr void clampDegree180(float& radianAngle) { clampCycle(radianAngle, -180.0f, 180.0f); }
 	constexpr void clampRadian360(float& radianAngle) { clampCycle(radianAngle, 0.0f, MATH_PI * 2.0f); }
 	constexpr void clampDegree360(float& radianAngle) { clampCycle(radianAngle, 0.0f, 360.0f); }
-	template<typename T>
-	constexpr T getMin(const T a, const T b) { return a < b ? a : b; }
-	template<typename T>
-	constexpr T getMax(const T a, const T b) { return a > b ? a : b; }
 	constexpr bool inFixedRange(const int value, const int range0, const int range1) { return value >= range0 && value <= range1; }
 	constexpr bool inFixedRange(const float value, const float range0, const float range1) { return value >= range0 && value <= range1; }
 	constexpr bool inRange(const int value, const int range0, const int range1) { return value >= getMin(range0, range1) && value <= getMax(range0, range1); }
@@ -1107,7 +1118,7 @@ namespace MathUtility
 	// 计算两条直线的交点,返回值表示两条直线是否相交
 	MICRO_LEGEND_FRAME_API bool intersectLine2(const Line2& line0, const Line2& line1, Vector2& intersect);
 	// 计算两条直线的交点,返回值表示两条直线是否相交,忽略Y轴
-	MICRO_LEGEND_FRAME_API bool intersectLine3IgnoreY(const Line3& line0, const Line3& line1, Vector2& intersect);
+	MICRO_LEGEND_FRAME_API bool intersectLine3IgnoreY(const Line3& line0, const Line3& line1, Vector3& intersect);
 	// k为斜率,也就是cotan(直线与y轴的夹角)
 	MICRO_LEGEND_FRAME_API bool generateLineExpression(const Line2& line, float& k, float& b);
 	// 计算两条线段的交点,返回值表示两条线段是否相交,checkEndPoint为是否判断两条线段的端点,为false表示即使端点重合也不认为线段相交
@@ -1224,6 +1235,18 @@ namespace MathUtility
 			quickSortDescend(arr.data(), 0, arr.size() - 1, compare);
 		}
 	}
+	template<typename T, int Length>
+	void quickSort(ArrayList<Length, T>& arr, int (*compare)(T&, T&), const bool ascend = true)
+	{
+		if (ascend)
+		{
+			quickSortAscend(arr.data(), 0, arr.size() - 1, compare);
+		}
+		else
+		{
+			quickSortDescend(arr.data(), 0, arr.size() - 1, compare);
+		}
+	}
 	template<typename T>
 	void quickSort(T* arr, int count, int (*compare)(T&, T&), const bool ascend = true)
 	{
@@ -1275,7 +1298,7 @@ namespace MathUtility
 					lastStartPtr->push_back(start, middle + 1);
 					lastEndPtr->push_back(middle - 1, end);
 				}
-				if (startList.size() == 0)
+				if (startList.isEmpty())
 				{
 					break;
 				}
@@ -1303,7 +1326,7 @@ namespace MathUtility
 					lastStartPtr->push_back(start, middle + 1);
 					lastEndPtr->push_back(middle - 1, end);
 				}
-				if (startList.size() == 0)
+				if (startList.isEmpty())
 				{
 					break;
 				}
@@ -1350,7 +1373,7 @@ namespace MathUtility
 					lastStartPtr->push_back(start, middle + 1);
 					lastEndPtr->push_back(middle - 1, end);
 				}
-				if (startList.size() == 0)
+				if (startList.isEmpty())
 				{
 					break;
 				}
@@ -1378,7 +1401,7 @@ namespace MathUtility
 					lastStartPtr->push_back(start, middle + 1);
 					lastEndPtr->push_back(middle - 1, end);
 				}
-				if (startList.size() == 0)
+				if (startList.isEmpty())
 				{
 					break;
 				}
@@ -1400,13 +1423,15 @@ using MathUtility::clampRef;
 using MathUtility::clampMinRef;
 using MathUtility::randomSelect;
 using MathUtility::clampMax;
-using MathUtility::lengthGreater;
 using MathUtility::randomFloat;
 using MathUtility::clampMin;
 using MathUtility::inRange;
 using MathUtility::clampMaxRef;
 using MathUtility::getLength;
 using MathUtility::lengthLess;
+using MathUtility::lengthLessSquared;
+using MathUtility::lengthGreater;
+using MathUtility::lengthGreaterSquared;
 using MathUtility::isEqual;
 using MathUtility::normalize;
 using MathUtility::getMax;
@@ -1455,3 +1480,5 @@ using MathUtility::randomSelectQuick;
 using MathUtility::TWO_PI_RADIAN;
 using MathUtility::HALF_PI_RADIAN;
 using MathUtility::PI_RADIAN;
+using MathUtility::intersect;
+using MathUtility::intersectLineTriangle;

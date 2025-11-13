@@ -28,18 +28,12 @@ void WebSocketServerClient::init()
 
 WebSocketServerClient::~WebSocketServerClient()
 {
-	delete mRecvBuffer;
-	mRecvBuffer = nullptr;
-	delete mMessageBuffer;
-	mMessageBuffer = nullptr;
-	delete mPayloadBuffer;
-	mPayloadBuffer = nullptr;
-	delete mSendWriter;
-	mSendWriter = nullptr;
-	delete mPacketTempBuffer0;
-	mPacketTempBuffer0 = nullptr;
-	delete mPacketTempBuffer1;
-	mPacketTempBuffer1 = nullptr;
+	DELETE(mRecvBuffer);
+	DELETE(mMessageBuffer);
+	DELETE(mPayloadBuffer);
+	DELETE(mSendWriter);
+	DELETE(mPacketTempBuffer0);
+	DELETE(mPacketTempBuffer1);
 	// 关闭客户端套接字,并从列表移除
 	CLOSE_SOCKET(mSocket);
 	mSequenceNumber = 0;
@@ -72,7 +66,7 @@ void WebSocketServerClient::update(const float elapsedTime)
 	}
 	if (tickTimerOnce(mHeartBeatTime, elapsedTime))
 	{
-		setDeadClient("客户端心跳超时");
+		setDeadClient("客户端心跳超时", DEAD_TYPE::SERVER_KICK_OUT);
 	}
 }
 
@@ -329,14 +323,13 @@ string WebSocketServerClient::handle_websocket_handshake(const string& request)
 	constexpr int SHA1_LENGTH = 20;
 	byte buffer[SHA1_LENGTH + 1]{0};
 	sha1(websocket_key + MAGIC_KEY, buffer);
-	char websocket_accept[128];
-	base64_encode(buffer, SHA1_LENGTH, websocket_accept);
+	string websocket_accept = base64_encode(buffer, SHA1_LENGTH);
 	// 构造响应头
 	string response;
 	response += "HTTP/1.1 101 Switching Protocols\r\n";
 	response += "Upgrade: websocket\r\n";
 	response += "Connection: Upgrade\r\n";
-	response += "Sec-WebSocket-Accept: " + string((char*)websocket_accept) + "\r\n\r\n";
+	response += "Sec-WebSocket-Accept: " + websocket_accept + "\r\n\r\n";
 	return response;
 }
 
@@ -528,7 +521,7 @@ void WebSocketServerClient::handle_complete_message(char* data, const int dataCo
 	if (ret != PARSE_RESULT::SUCCESS)
 	{
 		// 先设置为断开连接的客户端
-		setDeadClient("消息解析错误:" + IToS((int)ret));
+		setDeadClient("消息解析错误:" + IToS((int)ret), DEAD_TYPE::SERVER_KICK_OUT);
 	}
 	// 将解析后的消息列表同步到列表中
 	mExecutePacketList.add(mTempPacketList);
@@ -617,7 +610,6 @@ PARSE_RESULT WebSocketServerClient::packetRead(int& index, PacketWebSocket*& pac
 		LOG(info);
 		PLAYER_LOG_NO_PRINT(info, mPlayerGUID);
 		mPacketWebSocketThreadPool->destroyClass(packet);
-		packet = nullptr;
 		reason = "sequence number check error! lastNumber:" + IToS(mLastReceiveNumber) + 
 						", receiveNumber:" + IToS(sequenceNumber);
 		return PARSE_RESULT::SEQUENCE_NUMBER_ERROR;

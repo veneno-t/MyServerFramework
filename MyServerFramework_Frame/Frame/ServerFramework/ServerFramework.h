@@ -48,11 +48,11 @@ public:
 		mFrameComponentMap.insert(name, component);
 		if (component->isClassPool())
 		{
-			mPoolSystemList.insert(component);
+			mPoolSystemList.push_back(component);
 		}
 		else if (component->isFactory())
 		{
-			mFactorySystemList.insert(component);
+			mFactorySystemList.push_back(component);
 		}
 	}
 	void registeSecond(void* userData, VoidPtrCallback callback)	{ mSecondCallback.insert(userData, callback); }
@@ -78,8 +78,8 @@ protected:
 	HashMap<void*, VoidPtrCallback> mHourCallback;
 	HashMap<void*, VoidPtrCallback> mDayCallback;
 	HashMap<void*, VoidPtrCallback> mWeekCallback;
-	Set<FrameComponent*> mPoolSystemList;
-	Set<FrameComponent*> mFactorySystemList;
+	Vector<FrameComponent*> mPoolSystemList;
+	Vector<FrameComponent*> mFactorySystemList;
 #ifdef LINUX
 	ulong mStartMiliTime;
 #endif
@@ -91,4 +91,5 @@ protected:
 	int mLastDayOfWeek = 0;
 	llong mAllFrameMS = 0;			// 用于计算每帧的平均耗时
 	llong mAllFrameCount = 0;		// 用于计算每帧的平均耗时
+	double mTickToNS = 0.0;
 };

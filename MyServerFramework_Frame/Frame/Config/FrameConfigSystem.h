@@ -10,21 +10,24 @@ public:
 	~FrameConfigSystem() override { destory(); }
 	void init() override;
 	void destory() {}
-	int getTCPPort() const					{ return mTCPPort; }
-	int getUDPPort() const					{ return mUDPPort; }
-	int getWebSocketPort() const			{ return mWebSocketPort; }
-	int getHttpPort() const					{ return mHttpPort; }
-	float getHeartBeatTimeout() const		{ return mHeartBeatTimeout; }
-	int getBacklog() const					{ return mBacklog; }
-	bool getShowCommandDebugLog() const		{ return mShowCommandDebugLog > 0; }
-	bool getOutputNetLog() const			{ return mOutputNetLog > 0; }
-	int getMySQLPortNumber() const			{ return mMySQLPortNumber; }
-	const string& getDomainName() const		{ return mDomainName; }
-	const string& getServerName() const		{ return mServerName; }
-	const string& getMySQLHost() const		{ return mMySQLHost; }
-	const string& getMySQLUser() const		{ return mMySQLUser; }
-	const string& getMySQLPassword() const	{ return mMySQLPassword; }
-	const string& getMySQLDataBase() const	{ return mMySQLDataBase; }
+	int getTCPPort() const							{ return mTCPPort; }
+	int getUDPPort() const							{ return mUDPPort; }
+	int getWebSocketPort() const					{ return mWebSocketPort; }
+	int getHttpPort() const							{ return mHttpPort; }
+	float getHeartBeatTimeout() const				{ return mHeartBeatTimeout; }
+	int getBacklog() const							{ return mBacklog; }
+	bool getShowCommandDebugLog() const				{ return mShowCommandDebugLog > 0; }
+	bool getOutputNetLog() const					{ return mOutputNetLog > 0; }
+	int getMySQLPortNumber() const					{ return mMySQLPortNumber; }
+	const string& getDomainName() const				{ return mDomainName; }
+	const string& getServerName() const				{ return mServerName; }
+	const int& getServerID() const					{ return mServerID; }
+	const string& getMySQLHost() const				{ return mMySQLHost; }
+	const string& getMySQLUser() const				{ return mMySQLUser; }
+	const string& getMySQLPassword() const			{ return mMySQLPassword; }
+	const string& getMySQLDataBase() const			{ return mMySQLDataBase; }
+	const string& getSSLCertificationFile() const	{ return mSSLCertificationFile; }
+	const string& getSSLPrivateKeyFile() const		{ return mSSLPrivateKeyFile; }
 	static Vector<pair<string, string>> parseConfig(const string& fileName);
 protected:
 	void readConfig(const Vector<pair<string, string>>& valueList);
@@ -33,6 +36,7 @@ protected:
 	int mUDPPort = 0;					// udp绑定的接收消息的端口号
 	int mWebSocketPort = 0;				// WebSocket绑定的端口号
 	int mHttpPort = 0;					// http端口号
+	int mServerID = 0;					// 服务器ID
 	float mHeartBeatTimeout = 0.0f;		// 心跳超时时间
 	int mBacklog = 0;					// 连接请求队列的最大长度
 	int mShowCommandDebugLog = 0;		// 是否显示命令调试信息
@@ -44,4 +48,6 @@ protected:
 	string mMySQLUser;					// 数据库用户名
 	string mMySQLPassword;				// 数据库密码
 	string mMySQLDataBase;				// 数据库名
+	string mSSLCertificationFile;		// ssl证书文件路径,相对于可执行文件的路径
+	string mSSLPrivateKeyFile;			// ssl私钥文件路径,相对于可执行文件的路径
 };

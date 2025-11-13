@@ -14,66 +14,69 @@ public:
 	virtual ~MySQLTable();
 	void setMySQL(MYSQL* mysql) { mMySQL = mysql; }
 	virtual void init() {}
-	virtual void lateInit() {}
+	virtual void lateInit() { checkTableStructure(); }
 
 	// 查询
 	MySQLDataListScope queryAll(MySQLDataListScope& scope)
 	{
 		return MySQLDataListScope(queryAll());
 	}
-	MySQLDataScope queryDataByIDPtr(llong instanceID)
+	MySQLDataScope queryByIDPtr(llong instanceID)
 	{
-		return MySQLDataScope(queryDataByID(instanceID));
+		return MySQLDataScope(queryByID(instanceID));
 	}
-	MySQLDataListScope queryDataListByFullParamPtr(const QueryParam& param)
+	MySQLDataListScope queryListByFullParamPtr(const QueryParam& param)
 	{
-		return MySQLDataListScope(queryDataListByFullParam(param));
+		return MySQLDataListScope(queryListByFullParam(param));
 	}
-	bool queryDataExistByColumnString(int column, const string& value);
-	bool queryDataExistByColumnLLongStringAnd(int column0, llong value0, int column1, const string& value1);
+	bool queryExistByString(int column, const string& value);
+	bool queryExistByLLongStringAnd(int column0, llong value0, int column1, const string& value1);
 	// 查询指定ID的数据是否存在
-	bool queryDataExistByID(llong instanceID);
-	MySQLDataListScope queryDataListByColumnIntPtr(int column, int value, int maxCount)
+	bool queryExistByID(llong instanceID);
+	// 这里的Ptr后缀是为了与模板的T后缀和不带Scope的版本做区分
+	MySQLDataListScope queryListByIntPtr(int column, int value, int maxCount)
 	{
-		return MySQLDataListScope(queryDataListByColumnInt(column, value, maxCount));
+		return MySQLDataListScope(queryListByInt(column, value, maxCount));
 	}
-	MySQLDataListScope queryDataListByColumnIntGreaterPtr(int column, int value)
+	MySQLDataListScope queryListByIntGreaterPtr(int column, int value)
 	{
-		return MySQLDataListScope(queryDataListByColumnIntGreater(column, value));
+		return MySQLDataListScope(queryListByIntGreater(column, value));
 	}
-	MySQLDataListScope queryDataListByColumnLLongPtr(int column, llong value, int maxCount)
+	MySQLDataListScope queryListByLLongPtr(int column, llong value, int maxCount)
 	{
-		return MySQLDataListScope(queryDataListByColumnLLong(column, value, maxCount));
+		return MySQLDataListScope(queryListByLLong(column, value, maxCount));
 	}
-	MySQLDataListScope queryDataListByColumnLLongListPtr(int column, const Vector<llong>& idList)
+	MySQLDataListScope queryListByLLongListPtr(int column, const Vector<llong>& idList)
 	{
-		return MySQLDataListScope(queryDataListByColumnLLongList(column, idList));
+		return MySQLDataListScope(queryListByLLongList(column, idList));
 	}
-	MySQLDataListScope queryDataListByColumnLLong2OrPtr(int column0, llong value0, int column1, llong value1, int maxCount)
+	MySQLDataListScope queryListByLLong2OrPtr(int column0, llong value0, int column1, llong value1, int maxCount)
 	{
-		return MySQLDataListScope(queryDataListByColumnLLong2Or(column0, value0, column1, value1, maxCount));
+		return MySQLDataListScope(queryListByLLong2Or(column0, value0, column1, value1, maxCount));
 	}
-	MySQLDataListScope queryDataListByColumnStringPtr(int column, const string& value)
+	MySQLDataListScope queryListByStringPtr(int column, const string& value)
 	{
-		return MySQLDataListScope(queryDataListByColumnString(column, value));
+		return MySQLDataListScope(queryListByString(column, value));
 	}
-	MySQLDataListScope queryDataListByColumnStringListPtr(int column, const Vector<string>& value)
+	MySQLDataListScope queryListByStringListPtr(int column, const Vector<string>& value)
 	{
-		return MySQLDataListScope(queryDataListByColumnStringList(column, value));
+		return MySQLDataListScope(queryListByStringList(column, value));
 	}
-	MySQLDataListScope queryDataListByIDRangePtr(llong minID, llong maxID)
+	MySQLDataListScope queryListByIDRangePtr(llong minID, llong maxID)
 	{
-		return MySQLDataListScope(queryDataListByIDRange(minID, maxID));
+		return MySQLDataListScope(queryListByIDRange(minID, maxID));
 	}
-	MySQLDataListScope queryDataListByIDListPtr(const Vector<llong>& idList)
+	MySQLDataListScope queryListByIDListPtr(const Vector<llong>& idList)
 	{
-		return MySQLDataListScope(queryDataListByIDList(idList));
+		return MySQLDataListScope(queryListByIDList(idList));
 	}
-	MySQLDataListScope queryDataListByIDListPtr(Vector<llong>&& idList)
+	MySQLDataListScope queryListByIDListPtr(Vector<llong>&& idList)
 	{
-		return MySQLDataListScope(queryDataListByIDList(move(idList)));
+		return MySQLDataListScope(queryListByIDList(move(idList)));
 	}
-	llong queryDataCount(const char* condition);
+	llong queryCount(const char* condition);
+	int queryMaxInt(int column);
+	llong queryMaxLLong(int column);
 
 	// 删除
 	bool deleteByID(llong instanceID) const;
@@ -81,12 +84,13 @@ public:
 	template<int Length>
 	bool deleteByIDList(const ArrayList<Length, llong>& idList) const { return deleteByIDList(idList.data(), idList.size()); }
 	bool deleteByIDList(const llong* idList, int idCount) const;
-	bool deleteByColumnLLong(int column, llong value, bool onlyOnce) const;
-	bool deleteByColumnInt(int column, int value, bool onlyOnce) const;
+	bool deleteByLLong(int column, llong value, bool onlyOnce) const;
+	bool deleteByInt(int column, int value, bool onlyOnce) const;
 	bool deleteInIDRange(llong minID, llong maxID) const;
-	bool deleteByColumnString(int column, const string& value, bool onlyOnce) const;
-	bool deleteByColumnLLong2And(int column0, llong value0, int column1, llong value1, bool onlyOnce) const;
-	bool deleteByColumnLLong2Or(int column0, llong value0, int column1, llong value1, bool onlyOnce) const;
+	bool deleteByString(int column, const string& value, bool onlyOnce) const;
+	bool deleteByLLong2And(int column0, llong value0, int column1, llong value1, bool onlyOnce) const;
+	bool deleteByLLongIntAnd(int column0, llong value0, int column1, int value1, bool onlyOnce) const;
+	bool deleteByLLong2Or(int column0, llong value0, int column1, llong value1, bool onlyOnce) const;
 	void deleteAll();
 	
 	// 插入
@@ -130,8 +134,8 @@ public:
 	int getColCount() const { return mColumnNameList.size(); }
 	const string& getColName(const int colIndex) const { return mColumnNameList[colIndex]; }
 	int getColIndex(const string& name) const { return mColumnIndexList.tryGet(name, -1); }
-	void addColToFlag(ullong& flag, int colIndex);
-	void addColToFlag(ullong& flag, int* colIndex, int colCount);
+	ullong generateColumnFlag(int colIndex);
+	ullong generateColumnFlag(short* colIndex, int colCount);
 	void notifyDataBaseConnected() { mMaxGUID = queryMaxGUID(); }
 	llong getMaxGUID() const { return mMaxGUID; }
 	void setMaxGUID(const llong maxGUID) { mMaxGUID = maxGUID; }
@@ -147,35 +151,35 @@ public:
 	// 执行一条需要查询数据的语句,返回查询到的数据
 	MYSQL_RES* executeQuery(const char* str, bool allowReconnect = true) const;
 	// 销毁数据查询对象
-	void endQuery(MYSQL_RES* result);
+	void endQuery(MYSQL_RES* result) const;
 protected:
 	// 查询全部数据,需要手动使用MySQLDataBase::destroyData销毁获取到的数据对象
 	Vector<MySQLData*> queryAll(bool createTempData = true);
-	Vector<MySQLData*> queryDataListByFullParam(const QueryParam& param);
-	MySQLData* queryDataByID(llong instanceID);
-	MySQLData* queryDataByColumnInt(int column, int value);
-	MySQLData* queryDataByColumnLLong(int column, llong value);
-	MySQLData* queryDataByColumnString(int column, const string& value);
-	MySQLData* queryDataByColumnString2And(int column0, const string& value0, int column1, const string& value1);
-	MySQLData* queryDataByColumnLLong2Or(int column, llong value, int column1, llong value1);
-	MySQLData* queryDataByColumnLLongIntAnd(int column0, llong value0, int column1, int value1);
-	MySQLData* queryDataByColumnLLongStringAnd(int column0, llong value0, int column1, const string& value1);
-	Vector<MySQLData*> queryDataListByColumnInt(int column, int value, int maxCount);
-	Vector<MySQLData*> queryDataListByColumnIntGreater(int column, int value);
-	Vector<MySQLData*> queryDataListByColumnLLong(int column, llong value, int maxCount);
-	Vector<MySQLData*> queryDataListByColumnLLongList(int column, const Vector<llong>& idList);
-	Vector<MySQLData*> queryDataListByColumnLLong2Or(int column0, llong value0, int column1, llong value1, int maxCount);
-	Vector<MySQLData*> queryDataListByColumnString(int column, const string& value);
-	Vector<MySQLData*> queryDataListByColumnStringList(int column, const Vector<string>& value);
-	Vector<MySQLData*> queryDataListByIDRange(llong minID, llong maxID);
+	Vector<MySQLData*> queryListByFullParam(const QueryParam& param);
+	MySQLData* queryByID(llong instanceID);
+	MySQLData* queryByInt(int column, int value);
+	MySQLData* queryByLLong(int column, llong value);
+	MySQLData* queryByString(int column, const string& value);
+	MySQLData* queryByString2And(int column0, const string& value0, int column1, const string& value1);
+	MySQLData* queryByLLong2Or(int column, llong value, int column1, llong value1);
+	MySQLData* queryByLLongIntAnd(int column0, llong value0, int column1, int value1);
+	MySQLData* queryByLLongStringAnd(int column0, llong value0, int column1, const string& value1);
+	Vector<MySQLData*> queryListByInt(int column, int value, int maxCount);
+	Vector<MySQLData*> queryListByIntGreater(int column, int value);
+	Vector<MySQLData*> queryListByLLong(int column, llong value, int maxCount);
+	Vector<MySQLData*> queryListByLLongList(int column, const Vector<llong>& idList);
+	Vector<MySQLData*> queryListByLLong2Or(int column0, llong value0, int column1, llong value1, int maxCount);
+	Vector<MySQLData*> queryListByString(int column, const string& value);
+	Vector<MySQLData*> queryListByStringList(int column, const Vector<string>& value);
+	Vector<MySQLData*> queryListByIDRange(llong minID, llong maxID);
 	// 不能保证查询结果与id列表顺序一致
-	Vector<MySQLData*> queryDataListByIDList(const Vector<llong>& idList);
+	Vector<MySQLData*> queryListByIDList(const Vector<llong>& idList);
 	// 不能保证查询结果与id列表顺序一致
-	Vector<MySQLData*> queryDataListByIDList(Vector<llong>&& idList);
+	Vector<MySQLData*> queryListByIDList(Vector<llong>&& idList);
 	// 查询
-	bool queryDataExist(const char* condition);
-	Vector<MySQLData*> queryDataList(const QueryParam& param, bool createTempData);
-	MySQLData* queryData(const QueryParam& param);
+	bool queryExist(const char* condition);
+	Vector<MySQLData*> queryList(const QueryParam& param, bool createTempData);
+	MySQLData* query(const QueryParam& param);
 	// 插入
 	bool doInsert(const string& valueStr, bool showError = true) const;
 	// 删除
@@ -184,8 +188,10 @@ protected:
 	bool doUpdate(const char* updateStr, const char* condition, bool onlyOnce) const;
 	bool doUpdate(const string& updateStr, const char* condition, bool onlyOnce) const;
 	llong queryMaxGUID();
+	// 检查数据库表格结构是否与代码注册的结构一致
+	void checkTableStructure() const;
 	MySQLData* mysqlToResultData(MYSQL_RES* result);
-	void mysqlToResultData(MYSQL_RES* result, const Vector<MySQLData*>& dataList);
+	void mysqlToResultData(MYSQL_RES* result, const Vector<MySQLData*>& dataList) const;
 	const char* parseColPtr(MYSQL_RES* result, int colIndex) const;
 	int parseColInt(MYSQL_RES* result, const int colIndex) const
 	{
@@ -229,7 +235,7 @@ protected:
 	MySQLCacheTable* mCacheTable = nullptr;		// 表格缓存对象
 	const char* mTableName = nullptr;			// 表格名
 	MYSQL* mMySQL = nullptr;					// 数据库对象
-	llong mMaxGUID = 0;							// 当前数据的最大ID
+	atomic<llong> mMaxGUID = 0;					// 当前数据的最大ID,由于有时候会在mysql线程中修改此变量,所以使用原子类型
 	static HashMap<int, char*> mTemp;			// 解析数据时临时使用的
 };
 #endif

@@ -7,7 +7,7 @@ class MICRO_LEGEND_FRAME_API FileContent
 public:
 	virtual ~FileContent()
 	{
-		delete[] mBuffer;
+		DELETE_ARRAY(mBuffer);
 	}
 	void createBuffer(int bufferSize);
 public:

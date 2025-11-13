@@ -7,10 +7,8 @@ UDPServerClient::UDPServerClient() :
 
 UDPServerClient::~UDPServerClient()
 {
-	delete mSendWriter;
-	mSendWriter = nullptr;
-	delete[] mEncryptBuffer;
-	mEncryptBuffer = nullptr;
+	DELETE(mSendWriter);
+	DELETE_ARRAY(mEncryptBuffer);
 }
 
 void UDPServerClient::sendPacket(PacketTCP* packet, const llong token, const sockaddr_in& addr)
@@ -72,7 +70,7 @@ void UDPServerClient::sendPacket(PacketTCP* packet, const llong token, const soc
 void UDPServerClient::processSend(MY_SOCKET socket)
 {
 	static HashMap<llong, pair<sockaddr_in, Vector<pair<char*, int>>>> tempSendList;
-	if (mSendList.size() == 0)
+	if (mSendList.isEmpty())
 	{
 		return;
 	}
@@ -83,7 +81,7 @@ void UDPServerClient::processSend(MY_SOCKET socket)
 		for (const auto& iter : mSendList)
 		{
 			UDPClientInfo* clientInfo = iter.second;
-			if (clientInfo->getSendList().size() == 0)
+			if (clientInfo->getSendList().isEmpty())
 			{
 				continue;
 			}
@@ -112,7 +110,7 @@ void UDPServerClient::removeClientToken(const llong token)
 	THREAD_LOCK(mSendListLock);
 	UDPClientInfo* info = nullptr;
 	mSendList.erase(token, info);
-	delete info;
+	DELETE(info);
 }
 
 void UDPServerClient::recvData(char* data, const int dataCount, const sockaddr_in& addr)
@@ -131,8 +129,7 @@ void UDPServerClient::recvData(char* data, const int dataCount, const sockaddr_i
 		// udp消息不支持在子线程执行,需要耗费较多性能去查找对应的客户端
 		if (cmd == nullptr)
 		{
-			CMD_THREAD_DELAY(CmdNetServerReceiveUDPPacket, cmdTemp);
-			cmd = cmdTemp;
+			cmd = CMD_THREAD_DELAY<CmdNetServerReceiveUDPPacket>();
 			cmd->mAddress = addr;
 		}
 		cmd->mPacketList.insertOrGet(token).push_back(packet);
@@ -228,7 +225,6 @@ PARSE_RESULT UDPServerClient::packetRead(char* buffer, const int dataLength, int
 	if (crcCode != readCrc)
 	{
 		mPacketTCPThreadPool->destroyClass(packet);
-		packet = nullptr;
 		return PARSE_RESULT::CRC_ERROR;
 	}
 	bitIndex = reader.getBitIndex();

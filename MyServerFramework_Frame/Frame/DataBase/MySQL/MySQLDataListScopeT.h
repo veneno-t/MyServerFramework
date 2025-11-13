@@ -8,6 +8,8 @@
 template<typename T>
 class MySQLDataListScopeT
 {
+    typedef typename vector<T*>::iterator iterator;
+    typedef typename vector<T*>::const_iterator const_iterator;
 private:
     Vector<T*> mList;               // 原始数据
     Counter* mCounter = nullptr;    // 引用计数
@@ -16,7 +18,7 @@ public:
     MySQLDataListScopeT(){}
     explicit MySQLDataListScopeT(Vector<MySQLData*>&& list)
     {
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             return;
         }
@@ -30,7 +32,7 @@ public:
     }
     explicit MySQLDataListScopeT(Vector<T*>&& list)
     {
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             return;
         }
@@ -42,7 +44,7 @@ public:
     MySQLDataListScopeT(const MySQLDataListScopeT& other) :
         mCounter(other.mCounter)
     {
-        if (other.mList.size() == 0)
+        if (other.mList.isEmpty())
         {
             return;
         }
@@ -76,10 +78,17 @@ public:
     {
         release();
     }
+    
+    iterator begin()                { return mList.begin(); }
+    iterator end()                  { return mList.end(); }
+    const_iterator begin() const    { return mList.begin(); }
+    const_iterator end()  const     { return mList.end(); }
+    const_iterator cbegin() const   { return mList.cbegin(); }
+    const_iterator cend() const     { return mList.cend(); }
     // 指针访问操作符,只允许左值调用,右值不能调用,因为容易产生析构后才返回的问题
-    const Vector<T*>& get() const& { return mList; }
+    const Vector<T*>& get() const&  { return mList; }
     const Vector<T*>& get() const&& = delete;
-    bool isValid() const { return mList.size() != 0; }
+    bool isValid() const            { return mList.size() != 0; }
     // 如果已经确认data在外部被销毁了,则可以从当前列表中移除
     void erase(T* data) { mList.eraseElement(data); }
     void erase(const Vector<T*>& dataList)
@@ -96,7 +105,6 @@ public:
         {
             mMySQLDataPool->destroyClassList(mList);
             mCounterThreadPool->destroyClass(mCounter);
-            mCounter = nullptr;
         }
     }
     void releaseNoDestroy()
@@ -108,7 +116,6 @@ public:
             {
                 mList.clear();
                 mCounterThreadPool->destroyClass(mCounter);
-                mCounter = nullptr;
             }
             else
             {

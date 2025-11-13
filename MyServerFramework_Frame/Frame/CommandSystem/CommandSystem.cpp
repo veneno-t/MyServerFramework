@@ -9,7 +9,6 @@ void CommandSystem::quit()
 			destroyCmd(delayInfo->mCommand);
 		}
 		mDelayCommandPool->destroyClassList(mDelayCommandList);
-		mDelayCommandList.clear();
 	}
 
 	{
@@ -21,7 +20,6 @@ void CommandSystem::quit()
 				destroyCmd(delayInfo->mCommand);
 			}
 			mDelayCommandPool->destroyClassList(item.second);
-			item.second.clear();
 		}
 		mThreadCommandList.clear();
 	}
@@ -119,7 +117,6 @@ void CommandSystem::update(const float elapsedTime)
 		}
 	}
 	mDelayCommandPool->destroyClassList(mExecuteList);
-	mExecuteList.clear();
 	const llong time2 = getRealTimeMS();
 	if (time2 - time1 > 10)
 	{
@@ -439,7 +436,7 @@ bool CommandSystem::checkExecuteCmd(const GameCommand* cmd, CommandReceiver* cmd
 	}
 	if (cmd->isDestroy())
 	{
-		ERROR("cmd is invalid! make sure create cmd use CommandSystem.newCmd! cmd type : " + string(typeid(*cmd).name()) + ", assign id : " + LLToS(cmd->getAssignID()));
+		ERROR("cmd is invalid! make sure create cmd use mCommandPool->newClass or like CMD_DELAY! cmd type : " + string(typeid(*cmd).name()) + ", assign id : " + LLToS(cmd->getAssignID()));
 		return false;
 	}
 	if (cmd->getCommandState() != COMMAND_STATE::PUSHED)

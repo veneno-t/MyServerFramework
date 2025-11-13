@@ -8,6 +8,12 @@ template<int Length, class T>
 class Array
 {
 public:
+	T* begin() { return mValue; }
+	T* end() { return mValue + Length; }
+	const T* begin() const { return mValue; }
+	const T* end() const { return mValue + Length; }
+	const T* cbegin() const { return mValue; }
+	const T* cend() const { return mValue + Length; }
 	const T* data() const { return mValue; }
 	T* data() { return mValue; }
 	int eraseElement(const T& element, const int curCount)
@@ -132,7 +138,7 @@ public:
 	{
 		if (offset >= Length)
 		{
-			ERROR("数组越界");
+			ERROR("数组越界,index:" + to_string(offset) + ", Length:" + to_string(Length));
 			return nullptr;
 		}
 		return mValue + offset; 
@@ -151,7 +157,7 @@ public:
 	{
 		if (index < 0 || index >= Length)
 		{
-			ERROR("数组越界");
+			ERROR("数组越界,index:" + to_string(index) + ", Length:" + to_string(Length));
 			index = Length - 1;
 		}
 		return mValue[index];
@@ -160,7 +166,7 @@ public:
 	{
 		if (index < 0 || index >= Length)
 		{
-			ERROR("数组越界");
+			ERROR("数组越界,index:" + to_string(index) + ", Length:" + to_string(Length));
 			index = Length - 1;
 		}
 		return mValue[index];

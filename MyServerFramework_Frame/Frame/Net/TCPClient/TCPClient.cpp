@@ -10,14 +10,10 @@ TCPClient::TCPClient():
 TCPClient::~TCPClient() 
 {
 	disconnect();
-	delete mSendBuffer;
-	mSendBuffer = nullptr;
-	delete mRecvBuffer;
-	mRecvBuffer = nullptr;
-	delete mSendWriter;
-	mSendWriter = nullptr;
-	delete mPacketDataBuffer;
-	mPacketDataBuffer = nullptr;
+	DELETE(mSendBuffer);
+	DELETE(mRecvBuffer);
+	DELETE(mSendWriter);
+	DELETE(mPacketDataBuffer);
 }
 
 void TCPClient::disconnect()
@@ -29,9 +25,11 @@ void TCPClient::disconnect()
 	WSACleanup();
 #endif
 	CLOSE_SOCKET(mSocket);
+	mCurServerHeartBeatTime = -1.0f;
 	mSequenceNumber = 0;
 	mLastReceiveSequenceNumber = 0;
 	mExecutePacketList.clear();
+	mSendLock.unlock();
 }
 
 void TCPClient::init(const string& ip, const ushort port)
@@ -56,7 +54,7 @@ void TCPClient::init(const string& ip, const ushort port)
 	}
 
 	// 设置Socket地址
-	SOCKADDR_IN addrServ;
+	SOCKADDR_IN addrServ{};
 	addrServ.sin_family = AF_INET;
 	addrServ.sin_port = htons(mServerPort);
 #ifdef WINDOWS
@@ -200,7 +198,7 @@ bool TCPClient::processRecv()
 	return true;
 }
 
-void TCPClient::checkSendRecvError(const int successLength) const
+void TCPClient::checkSendRecvError(const int successLength)
 {
 	// 客户端可能已经与服务器断开了连接,先立即标记该客户端已断开,然后再移除
 	if (successLength == 0)
@@ -211,6 +209,8 @@ void TCPClient::checkSendRecvError(const int successLength) const
 	{
 		LOG(mServerName + "服务器recv或send返回值小于0");
 	}
+	delayCall([this]() { disconnect(); });
+	
 	const int errorCode = errno;
 	if (errorCode == 0)
 	{
@@ -331,7 +331,7 @@ PARSE_RESULT TCPClient::packetRead(int& bitIndex, PacketTCP*& packet, MyString<2
 	packet->setSequenceNumber(sequenceNumber);
 	if (sequenceNumber != mLastReceiveSequenceNumber + 1 && mLastReceiveSequenceNumber != 0x7FFFFFFF)
 	{
-		const string info = "丢包:" + IToS(sequenceNumber - mLastReceiveSequenceNumber - 1) + 
+		string info = "丢包:" + IToS(sequenceNumber - mLastReceiveSequenceNumber - 1) + 
 							", 已接收包数量:" + UIToS(mParsedCount) + ", 当前包序列号:" + IToS(sequenceNumber);
 		LOG(info);
 		mPacketTCPThreadPool->destroyClass(packet);

@@ -47,16 +47,14 @@ void COMCharacterStateMachine::destroy()
 
 void COMCharacterStateMachine::destroyState(CharacterState* state, const int line)
 {
-	state->destroy();
-	mStatePool->destroyClass(state);
 	state->mLine = line;
+	mStatePool->destroyClass(state);
 }
 
-void COMCharacterStateMachine::destroyStateList(const Vector<CharacterState*>& stateList, const int line)
+void COMCharacterStateMachine::destroyStateList(Vector<CharacterState*>& stateList, const int line)
 {
 	for (CharacterState* state : stateList)
 	{
-		state->destroy();
 		state->mLine = line;
 	}
 	mStatePool->destroyClassList(stateList);
@@ -134,7 +132,7 @@ CharacterState* COMCharacterStateMachine::addState(const ushort type, StateParam
 		// 移除状态组互斥的状态,此处会涉及到列表的删除,所以不能直接使用主列表进行遍历
 		for (auto& iterState : mStateTypeList)
 		{
-			if (iterState.second.size() == 0 || iterState.first == state->getType())
+			if (iterState.second.isEmpty() || iterState.first == state->getType())
 			{
 				continue;
 			}
@@ -150,7 +148,20 @@ CharacterState* COMCharacterStateMachine::addState(const ushort type, StateParam
 	{
 		ERROR_PROFILE("4Debug:状态在添加之前销毁了自己");
 		state = nullptr;
-		return state;
+		return nullptr;
+	}
+
+	if (state->getStateMutex() == STATE_MUTEX::OVERLAP_LAYER)
+	{
+		// 移除完状态以后,如果是叠加层数的buff,则需要通知当前buff有新的相同buff添加
+		CharacterState* existState = getFirstState(type);
+		if (existState != nullptr)
+		{
+			existState->addSameState(state);
+			// 因为没有调用enter,所以只需要直接销毁
+			destroyState(state, __LINE__);
+			return nullptr;
+		}
 	}
 
 	// 进入状态
@@ -164,7 +175,7 @@ CharacterState* COMCharacterStateMachine::addState(const ushort type, StateParam
 	{
 		ERROR_PROFILE((string("5状态已经被销毁:") + typeid(*state).name()).c_str());
 		state = nullptr;
-		return state;
+		return nullptr;
 	}
 	// 如果没有持续时间,则只执行一个enter,不存储起来
 	if (isZero(state->getStateTime()))
@@ -184,9 +195,9 @@ CharacterState* COMCharacterStateMachine::addState(const ushort type, StateParam
 	const auto& groupList = mFrameStateManager->getGroupList(type);
 	if (groupList.size() > 0)
 	{
-		FOR_VECTOR(groupList)
+		for (short item : groupList)
 		{
-			++mGroupStateCountList.insertOrGet(groupList[i]);
+			++mGroupStateCountList.insertOrGet(item);
 		}
 	}
 	return state;
@@ -226,9 +237,9 @@ bool COMCharacterStateMachine::removeState(CharacterState* state, const bool isB
 	auto& groupList = mFrameStateManager->getGroupList(state->getType());
 	if (groupList.size() > 0)
 	{
-		FOR_VECTOR(groupList)
+		for (short item : groupList)
 		{
-			if (short* countPtr = mGroupStateCountList.getPtr(groupList[i]))
+			if (short* countPtr = mGroupStateCountList.getPtr(item))
 			{
 				--(*countPtr);
 			}
@@ -293,9 +304,9 @@ void COMCharacterStateMachine::removeStateType(const ushort type, const bool isB
 	auto& groupList = mFrameStateManager->getGroupList(type);
 	if (groupList.size() > 0)
 	{
-		FOR_VECTOR(groupList)
+		for (short item : groupList)
 		{
-			if (short* countPtr = mGroupStateCountList.getPtr(groupList[i]))
+			if (short* countPtr = mGroupStateCountList.getPtr(item))
 			{
 				(*countPtr) -= removeCount;
 			}
@@ -324,7 +335,7 @@ void COMCharacterStateMachine::removeStateInGroup(const int group, const bool is
 
 CharacterState* COMCharacterStateMachine::getFirstState(const ushort type) const
 {
-	if (mStateTypeList.size() == 0)
+	if (mStateTypeList.isEmpty())
 	{
 		return nullptr;
 	}
@@ -370,7 +381,7 @@ bool COMCharacterStateMachine::canAddState(CharacterState* state, StateParam* pa
 		// 因为此处在遍历过程中不会对列表进行任何的修改,所以可以直接访问主列表
 		for (const auto& iterState : mStateTypeList)
 		{
-			if (iterState.second.size() == 0 || iterState.first == state->getType())
+			if (iterState.second.isEmpty() || iterState.first == state->getType())
 			{
 				continue;
 			}
@@ -456,7 +467,7 @@ bool COMCharacterStateMachine::mutexWithExistState(CharacterState* state, Charac
 
 bool COMCharacterStateMachine::allowKeepStateByGroup(const ushort newState, const ushort existState)
 {
-	if (mAllowKeepTypeList.size() == 0)
+	if (mAllowKeepTypeList.isEmpty())
 	{
 		initAllowKeepTypeList();
 	}
@@ -473,22 +484,20 @@ bool COMCharacterStateMachine::allowKeepStateByGroupInternal(const ushort newSta
 	}
 	auto& newGroup = mFrameStateManager->getGroupList(newState);
 	auto& existGroup = mFrameStateManager->getGroupList(existState);
-	const int countNew = newGroup.size();
-	const int countExist = existGroup.size();
 	// 有一个状态不属于任何状态组时两个状态是可以共存的
-	if (countNew == 0 || countExist == 0)
+	if (newGroup.isEmpty() || existGroup.isEmpty())
 	{
 		return true;
 	}
-	FOR_I(countNew)
+	for (short group0 : newGroup)
 	{
-		FOR_J(countExist)
+		for (short group1 : existGroup)
 		{
-			if (newGroup[i] != existGroup[j])
+			if (group0 != group1)
 			{
 				continue;
 			}
-			const StateGroup* group = mFrameStateManager->getStateGroup(newGroup[i]);
+			const StateGroup* group = mFrameStateManager->getStateGroup(group0);
 			const GROUP_MUTEX operate = group->getMutex();
 			switch (operate)
 			{
@@ -536,7 +545,7 @@ bool COMCharacterStateMachine::allowKeepStateByGroupInternal(const ushort newSta
 
 bool COMCharacterStateMachine::allowAddStateByGroup(const ushort newState, const ushort existState)
 {
-	if (mAllowAddTypeList.size() == 0)
+	if (mAllowAddTypeList.isEmpty())
 	{
 		initAllowAddTypeList();
 	}
@@ -561,16 +570,16 @@ bool COMCharacterStateMachine::allowAddStateByGroupInternal(const ushort newStat
 	{
 		return true;
 	}
-	FOR_I(countNew)
+	for (const short group0 : newGroup)
 	{
-		FOR_J(countExist)
+		for (const short group1 : existGroup)
 		{
 			// 属于同一状态组,并且该状态组中的所有状态都不能共存,而且不允许添加跟当前状态互斥的状态,则不允许添加该状态
-			if (newGroup[i] != existGroup[j])
+			if (group0 != group1)
 			{
 				continue;
 			}
-			const StateGroup* group = mFrameStateManager->getStateGroup(newGroup[i]);
+			const StateGroup* group = mFrameStateManager->getStateGroup(group0);
 			const GROUP_MUTEX operate = group->getMutex();
 			switch (operate)
 			{

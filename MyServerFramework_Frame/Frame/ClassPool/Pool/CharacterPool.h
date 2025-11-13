@@ -4,7 +4,7 @@
 #include "CharacterFactoryManager.h"
 #include "FrameBase.h"
 
-class MICRO_LEGEND_FRAME_API CharacterPool : public ClassTypePool<Character, byte>
+class CharacterPool : public ClassTypePool<Character, byte>
 {
 protected:
 	Character* create(const byte type) override

@@ -1,12 +1,12 @@
 ﻿#pragma once
 
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
 #include "FrameCallback.h"
 
-class MICRO_LEGEND_FRAME_API GameCommand : public ClassPooledObject
+class MICRO_LEGEND_FRAME_API GameCommand : public ClassObject
 {
-	BASE(GameCommand, ClassPooledObject);
+	BASE(GameCommand, ClassObject);
 public:
 	GameCommand()
 	{

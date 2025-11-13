@@ -12,7 +12,12 @@ public:
 	template<typename T>
 	static VectorPoolThread<T>* getPoolThread()
 	{
-		return static_cast<VectorPoolThread<T>*>(mVectorPoolThreadList.tryGet((llong)typeid(T).hash_code()));
+		auto* ptr = static_cast<VectorPoolThread<T>*>(mVectorPoolThreadList.tryGet((llong)typeid(T).hash_code()));
+		if (ptr == nullptr)
+		{
+			ERROR("T类型的VectorPool未注册 type:" + string(typeid(T).name()));
+		}
+		return ptr;
 	}
 	template<typename T>
 	void registeVectorPool()

@@ -4,7 +4,7 @@
 #include "GameComponentFactoryManager.h"
 #include "FrameBase.h"
 
-class MICRO_LEGEND_FRAME_API GameComponentPool : public ClassTypePool<GameComponent, ushort>
+class GameComponentPool : public ClassTypePool<GameComponent, ushort>
 {
 protected:
 	GameComponent* create(ushort type) override

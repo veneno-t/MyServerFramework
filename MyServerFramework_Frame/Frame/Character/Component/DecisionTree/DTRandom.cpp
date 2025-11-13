@@ -21,7 +21,7 @@ TASK_STATE DTRandom::update(const float elapsedTime)
 {
 	base::update(elapsedTime);
 
-	if (mChildList == nullptr || mChildList->size() == 0)
+	if (mChildList == nullptr || mChildList->isEmpty())
 	{
 		mState = TASK_STATE::SUCCESS;
 		return mState;

@@ -45,11 +45,9 @@ public:
 		// 只作为条件监听的条件组是不需要向父节点通知开始执行的
 		mConditionGroup.push_back();
 		auto& lastGroup = mConditionGroup[mConditionGroup.size() - 1];
-		const int count = conditionList.size();
-		lastGroup.reserve(count);
-		FOR_I(count)
+		lastGroup.reserve(conditionList.size());
+		for (DTConditionGroup* conditionGroup : conditionList)
 		{
-			DTConditionGroup* conditionGroup = conditionList[i];
 			conditionGroup->setNotifyParentRunning(false);
 			lastGroup.push_back(conditionGroup);
 		}

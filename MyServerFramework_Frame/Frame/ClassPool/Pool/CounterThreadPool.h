@@ -3,5 +3,5 @@
 #include "ClassPoolThread.h"
 #include "Counter.h"
 
-class MICRO_LEGEND_FRAME_API CounterThreadPool : public ClassPoolThread<Counter>
+class CounterThreadPool : public ClassPoolThread<Counter>
 {};

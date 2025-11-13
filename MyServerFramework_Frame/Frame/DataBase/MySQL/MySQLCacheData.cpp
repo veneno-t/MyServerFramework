@@ -9,8 +9,8 @@ void MySQLCacheData::setTable(MySQLTable* table)
 
 void MySQLCacheData::destroy()
 {
+	base::destroy();
 	mMySQLDataPool->destroyClass(mData);
-	mData = nullptr;
 }
 
 void MySQLCacheData::resetProperty()
@@ -24,7 +24,7 @@ void MySQLCacheData::resetProperty()
 bool MySQLCacheData::isColumnNamesValid(const Vector<int>& colNames) const
 {
 	// 不指定查询列,则表示查询所有列
-	if (colNames.size() == 0)
+	if (colNames.isEmpty())
 	{
 		FOR_I(mTable->getColCount())
 		{

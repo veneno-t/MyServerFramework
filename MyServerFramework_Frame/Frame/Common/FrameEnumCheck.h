@@ -19,6 +19,19 @@ public:
 		return true;
 	}
 
+	static constexpr bool checkEnum(const DEAD_TYPE value)
+	{
+		switch (value)
+		{
+		case DEAD_TYPE::NONE:break;
+		case DEAD_TYPE::MANUAL_QUIT:break;
+		case DEAD_TYPE::SERVER_KICK_OUT:break;
+		case DEAD_TYPE::NET_ERROR:break;
+		default:return false;
+		}
+		return true;
+	}
+
 	static constexpr bool checkEnum(const GROUP_MUTEX value)
 	{
 		switch (value)
@@ -149,6 +162,7 @@ public:
 		case STATE_MUTEX::REMOVE_OLD:break;
 		case STATE_MUTEX::COEXIST:break;
 		case STATE_MUTEX::KEEP_HIGH_PRIORITY:break;
+		case STATE_MUTEX::OVERLAP_LAYER:break;
 		default:return false;
 		}
 		return true;

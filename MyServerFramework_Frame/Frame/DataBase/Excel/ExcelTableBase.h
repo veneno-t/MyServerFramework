@@ -9,7 +9,9 @@ public:
 	void setTableName(const string& tableName) { mTableName = tableName; }
 	const string& getTableName() const { return mTableName; }
 	void init(const string& fullPath) {}
-	virtual void checkAllData() {}
+	virtual void checkAllData() { checkAllDataDefault(); }
+protected:
+	virtual void checkAllDataDefault() {}
 protected:
 	string mTableName;
 };

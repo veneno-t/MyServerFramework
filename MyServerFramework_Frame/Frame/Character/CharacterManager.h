@@ -7,6 +7,7 @@ class MICRO_LEGEND_FRAME_API CharacterManager : public FrameComponent
 	BASE(CharacterManager, FrameComponent);
 public:
 	void update(float elapsedTime) override;
+	void lateUpdate(float elapsedTime) override;
 	void quit() override;
 	// managed表示是否由CharacterManager来管理创建出来的角色,false表示只创建角色,不负责更新,但是仍然会存储到列表中
 	Character* createCharacter(const string& name, byte type, llong guid, bool managed);

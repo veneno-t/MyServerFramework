@@ -14,26 +14,10 @@ void UDPServerSystem::quit()
 #ifdef WINDOWS
 	WSACleanup();
 #endif
-	if (mSocket != INVALID_SOCKET)
-	{
-		CLOSE_SOCKET(mSocket);
-		mSocket = INVALID_SOCKET;
-	}
-	if (mClient != nullptr)
-	{
-		delete mClient;
-		mClient = nullptr;
-	}
-	if (mPacketDataBuffer != nullptr)
-	{
-		delete mPacketDataBuffer;
-		mPacketDataBuffer = nullptr;
-	}
-	if (mTempRecvBuffer != nullptr)
-	{
-		delete[] mTempRecvBuffer;
-		mTempRecvBuffer = nullptr;
-	}
+	CLOSE_SOCKET(mSocket);
+	DELETE(mClient);
+	DELETE(mPacketDataBuffer);
+	DELETE_ARRAY(mTempRecvBuffer);
 }
 
 void UDPServerSystem::init()

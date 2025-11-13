@@ -2,10 +2,6 @@
 
 void FrameStateManager::quit()
 {
-	for (const auto& iter : mGroupStateList)
-	{
-		delete iter.second;
-	}
-	mGroupStateList.clear();
+	DELETE_MAP(mGroupStateList);
 	mStateGroupList.clear();
 }

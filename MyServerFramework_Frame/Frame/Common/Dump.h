@@ -52,7 +52,7 @@ protected:
 	static void signal_exit(int dunno);
 #endif
 public:
-	static const int MAX_LIB_NUM = 20;
+	static const int MAX_LIB_NUM = 64;
 	static int max_lib;
 	static library_maps_t lib[Dump::MAX_LIB_NUM];
 };

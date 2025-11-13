@@ -3,14 +3,15 @@
 #include "ThreadLock.h"
 #include "ThreadLockScope.h"
 #include "ClassPoolBase.h"
-#include "ClassPooledObject.h"
+#include "ClassObject.h"
 #include "Utility.h"
+#include "ErrorProfile.h"
 
 // 大体上与ClassTypePool类似,ClassTypePool是根据物体的类型来创建,创建后会自动设置物体的类型
 // ClassKeyPool是根据KeyType来创建,KeyType不一定是物体的类型,只是物体类型的唯一索引
 // 所以跟ClassTypePool唯一的区别就是在创建物体后不会调用对象的setType
 // 线程安全的
-template<typename ClassType, typename KeyType, typename TypeCheck = typename IsSubClassOf<ClassPooledObject, ClassType>::mType>
+template<typename ClassType, typename KeyType, typename TypeCheck = typename IsSubClassOf<ClassObject, ClassType>::mType>
 class ClassKeyPoolThread : public ClassPoolBase
 {
 	BASE(ClassKeyPoolThread, ClassPoolBase);
@@ -21,16 +22,13 @@ public:
 	void quit() override
 	{
 		THREAD_LOCK(mLock);
-		for (const auto& pair : mUnusedList)
+		for (auto& pair : mUnusedList)
 		{
-			auto& list = pair.second;
-			for (auto* value : list)
-			{
-				delete value;
-			}
+			DELETE_LIST(pair.second);
 		}
 		mUnusedList.clear();
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	void newClassListTemp(const KeyType key, Vector<ClassType*>& classList, const int dataCount)
 	{
 		newClassList(key, classList, dataCount);
@@ -85,7 +83,7 @@ public:
 			}
 			THREAD_LOCK(mTotalCountLock);
 			mTotalCount.insertOrGet(key, make_pair(typeid(*tempValidObj).name(), 0)).second += createCount;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0 && tempValidObj != nullptr)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0 && tempValidObj != nullptr)
 			{
 				LOG(string(typeid(*tempValidObj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -99,6 +97,7 @@ public:
 			}
 		}
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	ClassType* newClassTemp(const KeyType key)
 	{
 		ClassType* obj = newClass(key);
@@ -132,7 +131,7 @@ public:
 			obj->resetProperty();
 			THREAD_LOCK(mTotalCountLock);
 			++mTotalCount.insertOrGet(key, make_pair(typeid(*obj).name(), 0)).second;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -144,6 +143,7 @@ public:
 		}
 		return obj;
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	template<class T, typename TypeCheck0 = typename IsSubClassOf<ClassType, T>::mType>
 	T* newClassTemp(const KeyType key)
 	{
@@ -174,7 +174,7 @@ public:
 			obj->resetProperty();
 			THREAD_LOCK(mTotalCountLock);
 			++mTotalCount.insertOrGet(key, make_pair(typeid(*obj).name(), 0)).second;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*obj).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -184,6 +184,7 @@ public:
 		obj->markUsable(this, ++mAssignIDSeed);
 		return obj;
 	}
+	// 这里函数名中的Temp的意思是创建的对象必须在一定时间内被回收,否则就会报错,提示内存泄露
 	template<class T, typename TypeCheck0 = typename IsSubClassOf<ClassType, T>::mType>
 	void newClassListTemp(const KeyType key, Vector<ClassType*>& classList, const int dataCount)
 	{
@@ -230,7 +231,7 @@ public:
 			}
 			THREAD_LOCK(mTotalCountLock);
 			mTotalCount.insertOrGet(key, make_pair(typeid(*classList[0]).name(), 0)).second += needCreateCount;
-			if (mShowCountLog && mTotalCount[key].second % 5000 == 0)
+			if (mShowCountLog && (mTotalCount[key].second & (4096 - 1)) == 0)
 			{
 				LOG(string(typeid(*classList[0]).name()) + "的数量已经达到了" + IToS(mTotalCount[key].second) + "个");
 			}
@@ -251,6 +252,7 @@ public:
 			return;
 		}
 
+		obj->destroy();
 		// 先重置所有属性,确认设置为已回收,再添加到列表,一旦添加到列表,随时就可能再分配出去,最后加入列表可以避免线程冲突
 		if (!obj->markDispose(this))
 		{
@@ -271,19 +273,21 @@ public:
 #endif
 		obj = nullptr;
 	}
-	//------------------------------------------------------------------------------------------------------------------
-protected:
-	virtual ClassType* create(const KeyType key) = 0;
-	void onHour() override
+	void dump() override
 	{
 		for (const auto& item : mTotalCount)
 		{
-			if (item.second.second > 1000)
+			const int itemCount = item.second.second;
+			if (itemCount > 1000)
 			{
-				LOG("ClassKeyPoolThread: " + item.second.first + "的数量:" + IToS(item.second.second));
+				const int unuseCount = mUnusedList.tryGet(item.first).size();
+				LOG("ClassKeyPoolThread: " + item.second.first + "的数量:" + IToS(itemCount) + ",总大小:" + LLToS(itemCount * sizeof(ClassType) / 1024) + "KB" + ", 未使用数量:" + IToS(unuseCount));
 			}
 		}
 	}
+	//------------------------------------------------------------------------------------------------------------------
+protected:
+	virtual ClassType* create(const KeyType key) = 0;
 	void onSecond() override
 	{
 #ifdef WINDOWS

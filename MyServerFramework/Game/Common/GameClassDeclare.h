@@ -5,6 +5,7 @@ class CharacterGameData;
 class CharacterPlayer;
 class CharacterPlayerData;
 class CharacterRegister;
+class StateRegister;
 class GD;
 class CHARACTER_TYPE;
 class GameEnumCheck;

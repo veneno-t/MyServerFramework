@@ -26,11 +26,7 @@ class FactoryManager : public FrameComponent
 public:
 	void quit() override
 	{
-		for (const auto& iter : mFactoryList)
-		{
-			delete iter.second;
-		}
-		mFactoryList.clear();
+		DELETE_MAP(mFactoryList);
 	}
 	FactoryBase<BaseType, KeyType>* getFactory(const KeyType type) const { return mFactoryList.tryGet(type); }
 	const HashMap<KeyType, FactoryBase<BaseType, KeyType>*>& getFactoryList() const { return mFactoryList; }

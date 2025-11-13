@@ -75,7 +75,6 @@ public:
         {
             mMySQLDataPool->destroyClass(mData);
             mCounterThreadPool->destroyClass(mCounter);
-            mCounter = nullptr;
         }
     }
     void releaseNoDestroy()
@@ -87,7 +86,6 @@ public:
             {
                 mData = nullptr;
                 mCounterThreadPool->destroyClass(mCounter);
-                mCounter = nullptr;
             }
             else
             {

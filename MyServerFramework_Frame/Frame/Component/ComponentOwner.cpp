@@ -2,38 +2,14 @@
 
 ComponentOwner::~ComponentOwner()
 {
-	if (mFrameTickList != nullptr)
-	{
-		delete mFrameTickList;
-		mFrameTickList = nullptr;
-	}
-	if (mSecondTickList != nullptr)
-	{
-		delete mSecondTickList;
-		mSecondTickList = nullptr;
-	}
-	if (mBreableComponentList != nullptr)
-	{
-		delete mBreableComponentList;
-		mBreableComponentList = nullptr;
-	}
-	if (mComponentArray != nullptr)
-	{
-		delete mComponentArray;
-		mComponentArray = nullptr;
-	}
+	DELETE(mFrameTickList);
+	DELETE(mLateFrameTickList);
+	DELETE(mSecondTickList);
+	DELETE(mBreakbleComponentList);
+	DELETE(mComponentArray);
 	destroyAllComponents();
-
-	if (mComponentTypeMap != nullptr)
-	{
-		delete mComponentTypeMap;
-		mComponentTypeMap = nullptr;
-	}
-	if (mComponentTypeList != nullptr)
-	{
-		delete mComponentTypeList;
-		mComponentTypeList = nullptr;
-	}
+	DELETE(mComponentTypeMap);
+	DELETE(mComponentTypeList);
 }
 
 void ComponentOwner::update(const float elapsedTime)
@@ -42,15 +18,15 @@ void ComponentOwner::update(const float elapsedTime)
 	if (mFrameTickList != nullptr)
 	{
 		SAFE_VECTOR_SCOPE(*mFrameTickList, readList);
-		FOR_VECTOR(readList)
+		for (const auto& item : readList)
 		{
-			FrameTickCallback tickFunction = readList[i].second;
+			FrameTickCallback tickFunction = item.second;
 			// 可能会存在遍历过程中被禁用的组件
 			if (tickFunction == nullptr)
 			{
 				continue;
 			}
-			tickFunction(readList[i].first, elapsedTime);
+			tickFunction(item.first, elapsedTime);
 			// 对象即将被销毁时,不应该再执行任何逻辑
 			if (isPendingDestroy())
 			{
@@ -70,15 +46,15 @@ void ComponentOwner::update(const float elapsedTime)
 	if (mSecondTickList != nullptr && tickTimerLoop(mTickTimer, elapsedTime, 1.0f))
 	{
 		SAFE_VECTOR_SCOPE(*mSecondTickList, readList);
-		FOR_VECTOR(readList)
+		for (const auto& item : readList)
 		{
-			SecondTickCallback tickFunction = readList[i].second;
+			SecondTickCallback tickFunction = item.second;
 			// 可能会存在遍历过程中被禁用的组件
 			if (tickFunction == nullptr)
 			{
 				continue;
 			}
-			tickFunction(readList[i].first);
+			tickFunction(item.first);
 			// 对象即将被销毁时,不应该再执行任何逻辑
 			if (isPendingDestroy())
 			{
@@ -89,6 +65,37 @@ void ComponentOwner::update(const float elapsedTime)
 			{
 				ERROR_PROFILE((string("0当前对象已经被销毁:") + typeid(*this).name()).c_str());
 				mSecondTickList->clear();
+				return;
+			}
+		}
+	}
+}
+
+void ComponentOwner::lateUpdate(float elapsedTime)
+{
+	// 每帧都更新的组件
+	if (mLateFrameTickList != nullptr)
+	{
+		SAFE_VECTOR_SCOPE(*mLateFrameTickList, readList);
+		for (const auto& item : readList)
+		{
+			FrameTickCallback tickFunction = item.second;
+			// 可能会存在遍历过程中被禁用的组件
+			if (tickFunction == nullptr)
+			{
+				continue;
+			}
+			tickFunction(item.first, elapsedTime);
+			// 对象即将被销毁时,不应该再执行任何逻辑
+			if (isPendingDestroy())
+			{
+				return;
+			}
+			// 如果当前对象已经被销毁了则不能再执行后续的组件更新,不过正常不应该在Tick中销毁对象
+			if (isDestroy())
+			{
+				ERROR_PROFILE((string("0当前对象已经被销毁:") + typeid(*this).name()).c_str());
+				mLateFrameTickList->clear();
 				return;
 			}
 		}
@@ -115,6 +122,18 @@ void ComponentOwner::destroyComponent(GameComponent* component)
 			}
 		}
 	}
+	if (mLateFrameTickList != nullptr)
+	{
+		auto& mainList = mLateFrameTickList->getMainList();
+		FOR_VECTOR(mainList)
+		{
+			if (mainList[i].first == component)
+			{
+				mLateFrameTickList->eraseAt(i);
+				break;
+			}
+		}
+	}
 	if (mSecondTickList != nullptr)
 	{
 		auto& mainList = mSecondTickList->getMainList();
@@ -135,9 +154,9 @@ void ComponentOwner::destroyComponent(GameComponent* component)
 	{
 		mComponentTypeList->eraseElement(component);
 	}
-	if (mBreableComponentList != nullptr)
+	if (mBreakbleComponentList != nullptr)
 	{
-		mBreableComponentList->eraseElement(component);
+		mBreakbleComponentList->eraseElement(component);
 	}
 	if (mComponentArray != nullptr)
 	{
@@ -151,6 +170,10 @@ void ComponentOwner::destroyAllComponents()
 	{
 		mFrameTickList->clear();
 	}
+	if (mLateFrameTickList != nullptr)
+	{
+		mLateFrameTickList->clear();
+	}
 	if (mSecondTickList != nullptr)
 	{
 		mSecondTickList->clear();
@@ -161,16 +184,11 @@ void ComponentOwner::destroyAllComponents()
 	}
 	if (mComponentTypeList != nullptr)
 	{
-		for (GameComponent* com : *mComponentTypeList)
-		{
-			com->destroy();
-		}
 		mGameComponentPool->destroyClassList(*mComponentTypeList);
-		mComponentTypeList->clear();
 	}
-	if (mBreableComponentList != nullptr)
+	if (mBreakbleComponentList != nullptr)
 	{
-		mBreableComponentList->clear();
+		mBreakbleComponentList->clear();
 	}
 	if (mComponentArray != nullptr)
 	{
@@ -185,6 +203,10 @@ void ComponentOwner::resetProperty()
 	{
 		mFrameTickList->clear();
 	}
+	if (mLateFrameTickList != nullptr)
+	{
+		mLateFrameTickList->clear();
+	}
 	if (mSecondTickList != nullptr)
 	{
 		mSecondTickList->clear();
@@ -197,9 +219,9 @@ void ComponentOwner::resetProperty()
 	{
 		mComponentTypeList->clear();
 	}
-	if (mBreableComponentList != nullptr)
+	if (mBreakbleComponentList != nullptr)
 	{
-		mBreableComponentList->clear();
+		mBreakbleComponentList->clear();
 	}
 	if (mComponentArray != nullptr)
 	{
@@ -217,11 +239,11 @@ void ComponentOwner::registeFrameTick(GameComponent* component, FrameTickCallbac
 	mFrameTickList->push_back(make_pair(component, callback));
 	if (dynamic_cast<IComponentBreakable*>(component) != nullptr)
 	{
-		if (mBreableComponentList == nullptr)
+		if (mBreakbleComponentList == nullptr)
 		{
-			mBreableComponentList = new Vector<GameComponent*>();
+			mBreakbleComponentList = new Vector<GameComponent*>();
 		}
-		mBreableComponentList->push_back(component);
+		mBreakbleComponentList->push_back(component);
 	}
 }
 
@@ -231,9 +253,38 @@ void ComponentOwner::unregisteFrameTick(GameComponent* component, FrameTickCallb
 	{
 		mFrameTickList->eraseElement(make_pair(component, callback));
 	}
-	if (mBreableComponentList != nullptr && dynamic_cast<IComponentBreakable*>(component) != nullptr)
+	if (mBreakbleComponentList != nullptr && dynamic_cast<IComponentBreakable*>(component) != nullptr)
 	{
-		mBreableComponentList->eraseElement(component);
+		mBreakbleComponentList->eraseElement(component);
+	}
+}
+
+void ComponentOwner::registeLateFrameTick(GameComponent* component, FrameTickCallback callback)
+{
+	if (mLateFrameTickList == nullptr)
+	{
+		mLateFrameTickList = new SafeVector<pair<GameComponent*, FrameTickCallback>>();
+	}
+	mLateFrameTickList->push_back(make_pair(component, callback));
+	if (dynamic_cast<IComponentBreakable*>(component) != nullptr)
+	{
+		if (mBreakbleComponentList == nullptr)
+		{
+			mBreakbleComponentList = new Vector<GameComponent*>();
+		}
+		mBreakbleComponentList->push_back(component);
+	}
+}
+
+void ComponentOwner::unregisteLateFrameTick(GameComponent* component, FrameTickCallback callback)
+{
+	if (mLateFrameTickList != nullptr)
+	{
+		mLateFrameTickList->eraseElement(make_pair(component, callback));
+	}
+	if (mBreakbleComponentList != nullptr && dynamic_cast<IComponentBreakable*>(component) != nullptr)
+	{
+		mBreakbleComponentList->eraseElement(component);
 	}
 }
 
@@ -246,11 +297,11 @@ void ComponentOwner::registeSecondTick(GameComponent* component, SecondTickCallb
 	mSecondTickList->push_back(make_pair(component, callback));
 	if (dynamic_cast<IComponentBreakable*>(component) != nullptr)
 	{
-		if (mBreableComponentList == nullptr)
+		if (mBreakbleComponentList == nullptr)
 		{
-			mBreableComponentList = new Vector<GameComponent*>();
+			mBreakbleComponentList = new Vector<GameComponent*>();
 		}
-		mBreableComponentList->push_back(component);
+		mBreakbleComponentList->push_back(component);
 	}
 }
 
@@ -260,8 +311,8 @@ void ComponentOwner::unregisteSecondTick(GameComponent* component, SecondTickCal
 	{
 		mSecondTickList->eraseElement(make_pair(component, callback));
 	}
-	if (mBreableComponentList != nullptr && dynamic_cast<IComponentBreakable*>(component) != nullptr)
+	if (mBreakbleComponentList != nullptr && dynamic_cast<IComponentBreakable*>(component) != nullptr)
 	{
-		mBreableComponentList->eraseElement(component);
+		mBreakbleComponentList->eraseElement(component);
 	}
 }
