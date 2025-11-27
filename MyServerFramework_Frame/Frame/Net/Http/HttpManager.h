@@ -6,6 +6,7 @@ class MICRO_LEGEND_FRAME_API HttpManager : public FrameComponent
 {
 	BASE(HttpManager, FrameComponent);
 public:
+#ifdef BUILDING_LIBCURL
 	void init() override;
 	void quit() override;
 	void requestHttpGet(const string& url, const string& contentType, const StringCallback& callback);
@@ -17,4 +18,5 @@ protected:
 	static void curlThread(CustomThread* thread) {}
 protected:
 	CustomThread* mThread = nullptr;
+#endif
 };

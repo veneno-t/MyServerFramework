@@ -15,7 +15,7 @@ public:
 	// 如果设置的size比当前size小,则不会生效
 	void setSize(int size) 
 	{
-		FOR_I(size - mSize)
+		FOR(size - mSize)
 		{
 			mValue[mSize++] = mDefault;
 		}
@@ -163,7 +163,7 @@ public:
 	}
 	bool eraseFirstElement(const T& element)
 	{
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mValue[i] == element)
 			{
@@ -183,7 +183,7 @@ public:
 	}
 	bool contains(const T& element) const
 	{
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mValue[i] == element)
 			{
@@ -278,7 +278,7 @@ public:
 	// 将数组的每一个元素都设置为value
 	void fillArray(const T& value)
 	{
-		FOR_I(Length)
+		FOR(Length)
 		{
 			mValue[i] = value;
 		}

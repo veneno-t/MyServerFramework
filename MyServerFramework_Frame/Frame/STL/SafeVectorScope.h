@@ -9,11 +9,14 @@ class SafeVectorScope
 {
 protected:
 	SafeVector<T>* mList = nullptr;
+	const Vector<T>* mReadList = nullptr;
 public:
 	SafeVectorScope(SafeVector<T>& list)
 	{
 		mList = &list;
+		mReadList = &(mList->startForeach());
 	}
+	const Vector<T>& getReadList() const { return *mReadList; }
 	~SafeVectorScope()
 	{
 		mList->endForeach();

@@ -152,7 +152,7 @@ namespace StringUtility
 	void strcat_s(MyString<Length>& destBuffer, const char** sourceArray, const int sourceCount)
 	{
 		int destIndex = destBuffer.length();
-		FOR_I(sourceCount)
+		FOR(sourceCount)
 		{
 			const char* curSource = sourceArray[i];
 			if (curSource == nullptr)
@@ -223,7 +223,7 @@ namespace StringUtility
 			ERROR("buffer is too small");
 			return;
 		}
-		FOR_I(zeroCount)
+		FOR(zeroCount)
 		{
 			charArray[i] = '0';
 		}
@@ -278,7 +278,7 @@ namespace StringUtility
 		if (sign > 0)
 		{
 			const int lengthToHead = Length - index;
-			FOR_I(index)
+			FOR(index)
 			{
 				charArray[i] = charArray[i + lengthToHead] + '0';
 			}
@@ -288,7 +288,7 @@ namespace StringUtility
 		{
 			charArray[0] = '-';
 			const int lengthToHead = Length - index;
-			FOR_I(index)
+			FOR(index)
 			{
 				charArray[i + 1] = charArray[i + lengthToHead] + '0';
 			}
@@ -384,7 +384,7 @@ namespace StringUtility
 		if (sign > 0)
 		{
 			const int lengthToHead = Length - index;
-			FOR_I(index)
+			FOR(index)
 			{
 				charArray[i] = charArray[i + lengthToHead] + '0';
 			}
@@ -394,7 +394,7 @@ namespace StringUtility
 		{
 			charArray[0] = '-';
 			const int lengthToHead = Length - index;
-			FOR_I(index)
+			FOR(index)
 			{
 				charArray[i + 1] = charArray[i + lengthToHead] + '0';
 			}
@@ -456,7 +456,7 @@ namespace StringUtility
 		}
 		// 将数字从数组末尾移动到开头,并且将数字转换为数字字符
 		const int lengthToHead = Length - index;
-		FOR_I(index)
+		FOR(index)
 		{
 			charArray[i] = charArray[i + lengthToHead] + '0';
 		}
@@ -496,7 +496,7 @@ namespace StringUtility
 		}
 		// 将数字从数组末尾移动到开头,并且将数字转换为数字字符
 		const int lengthToHead = Length - index;
-		FOR_I(index)
+		FOR(index)
 		{
 			charArray[i] = charArray[i + lengthToHead] + '0';
 		}
@@ -608,7 +608,7 @@ namespace StringUtility
 		// 先查找小数点和结束符的位置
 		int dotPos = -1;
 		int strLen = 0;
-		FOR_I(Length)
+		FOR(Length)
 		{
 			if (charArray[i] == '.')
 			{
@@ -623,7 +623,7 @@ namespace StringUtility
 		if (dotPos >= 0)
 		{
 			// 从结束符往前查找
-			FOR_I(strLen)
+			FOR(strLen)
 			{
 				const int index = strLen - 1 - i;
 				// 如果找到了小数点仍然没有找到一个不为'0'的字符,则从小数点部分截断字符串
@@ -645,9 +645,9 @@ namespace StringUtility
 		return strLen;
 	}
 	MICRO_LEGEND_FRAME_API string bytesToString(const char* buffer, int length);
-	string V2ToS(const Vector2& vec, const char* seperate = ",") { return FToS(vec.x) + seperate + FToS(vec.y); }
+	string V2ToS(Vector2 vec, const char* seperate = ",") { return FToS(vec.x) + seperate + FToS(vec.y); }
 	template<int Length>
-	void V2ToS(MyString<Length>& buffer, const Vector2& vec, const char* seperate = ",")
+	void V2ToS(MyString<Length>& buffer, Vector2 vec, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
 		FLOAT_STR(xStr, vec.x);
@@ -674,10 +674,10 @@ namespace StringUtility
 		INT_STR(zStr, vec.z);
 		strcat_t(buffer, xStr.str(), seperate, yStr.str(), seperate, zStr.str());
 	}
-	string V2IToS(const Vector2Int& value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
-	string V2UIToS(const Vector2UInt& value, const char* seperate = ",") { return UIToS(value.x) + seperate + UIToS(value.y); }
+	string V2IToS(Vector2Int value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
+	string V2UIToS(Vector2UInt value, const char* seperate = ",") { return UIToS(value.x) + seperate + UIToS(value.y); }
 	template<int Length>
-	void V2IToS(MyString<Length>& buffer, const Vector2Int& value, const char* seperate = ",")
+	void V2IToS(MyString<Length>& buffer, Vector2Int value, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
 		INT_STR(xStr, value.x);
@@ -685,25 +685,25 @@ namespace StringUtility
 		strcat_t(buffer, xStr.str(), seperate, yStr.str());
 	}
 	template<int Length>
-	void V2UIToS(MyString<Length>& buffer, const Vector2UInt& value, const char* seperate = ",")
+	void V2UIToS(MyString<Length>& buffer, Vector2UInt value, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
 		INT_STR(xStr, value.x);
 		INT_STR(yStr, value.y);
 		strcat_t(buffer, xStr.str(), seperate, yStr.str());
 	}
-	string V2SToS(const Vector2Short& value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
+	string V2SToS(Vector2Short value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
 	template<int Length>
-	void V2SToS(MyString<Length>& buffer, const Vector2Short& value, const char* seperate = ",")
+	void V2SToS(MyString<Length>& buffer, Vector2Short value, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
 		INT_STR(xStr, value.x);
 		INT_STR(yStr, value.y);
 		strcat_t(buffer, xStr.str(), seperate, yStr.str());
 	}
-	string V2USToS(const Vector2UShort& value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
+	string V2USToS(Vector2UShort value, const char* seperate = ",") { return IToS(value.x) + seperate + IToS(value.y); }
 	template<int Length>
-	void V2USToS(MyString<Length>& buffer, const Vector2UShort& value, const char* seperate = ",")
+	void V2USToS(MyString<Length>& buffer, Vector2UShort value, const char* seperate = ",")
 	{
 		buffer[0] = '\0';
 		INT_STR(xStr, value.x);
@@ -746,7 +746,7 @@ namespace StringUtility
 		CharArrayScopeThread charArray(arrayLen);
 		charArray.mArray[0] = 0;
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			ULLToS(temp, valueList[i]);
 			if (i != count - 1)
@@ -769,7 +769,7 @@ namespace StringUtility
 			return;
 		}
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			ULLToS(temp, valueList[i]);
 			if (i != count - 1)
@@ -792,7 +792,7 @@ namespace StringUtility
 		}
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			ULLToS(temp, valueList[i]);
 			if (i != count - 1)
@@ -814,7 +814,7 @@ namespace StringUtility
 		}
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			ULLToS(temp, valueList[i]);
 			if (i != count - 1)
@@ -842,7 +842,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -863,7 +863,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -884,7 +884,7 @@ namespace StringUtility
 		}
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -905,7 +905,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -925,7 +925,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -945,7 +945,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		buffer[0] = '\0';
 		MyString<32> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -968,7 +968,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<4> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -990,7 +990,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<4> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1011,7 +1011,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<4> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1033,7 +1033,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1055,7 +1055,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1076,7 +1076,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1100,7 +1100,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -1122,7 +1122,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1144,7 +1144,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1165,7 +1165,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1189,7 +1189,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -1214,7 +1214,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -1239,7 +1239,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -1261,7 +1261,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1283,7 +1283,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1304,7 +1304,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1326,7 +1326,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1348,7 +1348,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = UIToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1370,7 +1370,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = UIToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1391,7 +1391,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = UIToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1414,7 +1414,7 @@ namespace StringUtility
 
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = FToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1436,7 +1436,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = FToS(temp, valueList[i]);
 			strcat_s(buffer, temp.str(), len);
@@ -1451,7 +1451,7 @@ namespace StringUtility
 	{
 		const int seperateLen = strlength(seperate);
 		buffer[0] = '\0';
-		FOR_I(stringCount)
+		FOR(stringCount)
 		{
 			strcat_s(buffer, strList[i]);
 			if (i != stringCount - 1)
@@ -2562,57 +2562,57 @@ namespace StringUtility
 		LLsToS(charArray.mArray, arrayLen, longArray);
 		sqlAddString(queryStr, charArray.mArray, addComma);
 	}
-	void sqlAddVector2Int(char* queryStr, int size, const Vector2Int& value, bool addComma = true);
+	void sqlAddVector2Int(char* queryStr, int size, Vector2Int value, bool addComma = true);
 	template<int Length>
-	void sqlAddVector2Int(MyString<Length>& queryStr, const Vector2Int& value, const bool addComma = true)
+	void sqlAddVector2Int(MyString<Length>& queryStr, Vector2Int value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2IToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2Int(string& queryStr, const Vector2Int& value, const bool addComma = true)
+	void sqlAddVector2Int(string& queryStr, Vector2Int value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2IToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2UInt(char* queryStr, int size, const Vector2UInt& value, bool addComma = true);
+	void sqlAddVector2UInt(char* queryStr, int size, Vector2UInt value, bool addComma = true);
 	template<int Length>
-	void sqlAddVector2UInt(MyString<Length>& queryStr, const Vector2UInt& value, const bool addComma = true)
+	void sqlAddVector2UInt(MyString<Length>& queryStr, Vector2UInt value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2UIToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2UInt(string& queryStr, const Vector2UInt& value, const bool addComma = true)
+	void sqlAddVector2UInt(string& queryStr, Vector2UInt value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2UIToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2Short(char* queryStr, int size, const Vector2Short& value, bool addComma = true);
+	void sqlAddVector2Short(char* queryStr, int size, Vector2Short value, bool addComma = true);
 	template<int Length>
-	void sqlAddVector2Short(MyString<Length>& queryStr, const Vector2Short& value, const bool addComma = true)
+	void sqlAddVector2Short(MyString<Length>& queryStr, Vector2Short value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2SToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2Short(string& queryStr, const Vector2Short& value, const bool addComma = true)
+	void sqlAddVector2Short(string& queryStr, Vector2Short value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2SToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2UShort(char* queryStr, int size, const Vector2UShort& value, bool addComma = true);
+	void sqlAddVector2UShort(char* queryStr, int size, Vector2UShort value, bool addComma = true);
 	template<int Length>
-	void sqlAddVector2UShort(MyString<Length>& queryStr, const Vector2UShort& value, const bool addComma = true)
+	void sqlAddVector2UShort(MyString<Length>& queryStr, Vector2UShort value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2USToS(temp, value);
 		sqlAddString(queryStr, temp.str(), addComma);
 	}
-	void sqlAddVector2UShort(string& queryStr, const Vector2UShort& value, const bool addComma = true)
+	void sqlAddVector2UShort(string& queryStr, Vector2UShort value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2USToS(temp, value);
@@ -3149,39 +3149,39 @@ namespace StringUtility
 		sqlUpdateString(updateInfo, col, charArray.mArray, addComma);
 	}
 	template<int Length>
-	void sqlUpdateVector2Int(MyString<Length>& updateInfo, const string& col, const Vector2Int& value, const bool addComma = true)
+	void sqlUpdateVector2Int(MyString<Length>& updateInfo, const string& col, Vector2Int value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2IToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
-	void sqlUpdateVector2Int(string& updateInfo, const string& col, const Vector2Int& value, const bool addComma = true)
+	void sqlUpdateVector2Int(string& updateInfo, const string& col, Vector2Int value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2IToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
 	template<int Length>
-	void sqlUpdateVector2UInt(MyString<Length>& updateInfo, const string& col, const Vector2UInt& value, const bool addComma = true)
+	void sqlUpdateVector2UInt(MyString<Length>& updateInfo, const string& col, Vector2UInt value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2UIToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
-	void sqlUpdateVector2UInt(string& updateInfo, const string& col, const Vector2UInt& value, const bool addComma = true)
+	void sqlUpdateVector2UInt(string& updateInfo, const string& col, Vector2UInt value, const bool addComma = true)
 	{
 		MyString<32> temp;
 		V2UIToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
 	template<int Length>
-	void sqlUpdateVector2UShort(MyString<Length>& updateInfo, const string& col, const Vector2UShort& value, const bool addComma = true)
+	void sqlUpdateVector2UShort(MyString<Length>& updateInfo, const string& col, Vector2UShort value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2USToS(temp, value);
 		sqlUpdateString(updateInfo, col, temp.str(), addComma);
 	}
-	void sqlUpdateVector2UShort(string& updateInfo, const string& col, const Vector2UShort& value, const bool addComma = true)
+	void sqlUpdateVector2UShort(string& updateInfo, const string& col, Vector2UShort value, const bool addComma = true)
 	{
 		MyString<16> temp;
 		V2USToS(temp, value);

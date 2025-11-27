@@ -60,7 +60,7 @@ public:
 	template<int Length>
 	void setData(const Array<Length, T>& values, const int count)
 	{
-		FOR_I(count)
+		FOR(count)
 		{
 			mSet.insert(values[i]);
 		}
@@ -75,7 +75,7 @@ public:
 	}
 	void setData(const T* values, const int count)
 	{
-		FOR_I(count)
+		FOR(count)
 		{
 			mSet.insert(values[i]);
 		}

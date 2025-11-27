@@ -476,7 +476,7 @@ namespace BinaryUtility
 	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	constexpr void readArray(const char* buffer, const int bufferSize, int& index, T* dest, const int arrayLength)
 	{
-		FOR_I(arrayLength)
+		FOR(arrayLength)
 		{
 			dest[i] = read<T>(buffer, bufferSize, index);
 		}
@@ -484,7 +484,7 @@ namespace BinaryUtility
 	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	constexpr void readArrayInverse(const char* buffer, const int bufferSize, int& index, T* dest, const int arrayLength)
 	{
-		FOR_I(arrayLength)
+		FOR(arrayLength)
 		{
 			dest[i] = readInverse<T>(buffer, bufferSize, index);
 		}
@@ -556,7 +556,7 @@ namespace BinaryUtility
 		if (bitCount > 0)
 		{
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(byteCount - 1)
+			FOR(byteCount - 1)
 			{
 				readByteBits(buffer, bitIndex, ((byte*)&value)[i], 8);
 			}
@@ -601,7 +601,7 @@ namespace BinaryUtility
 		if (bitCount > 0)
 		{
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(byteCount - 1)
+			FOR(byteCount - 1)
 			{
 				readByteBits(buffer, bitIndex, ((byte*)&value)[i], 8);
 			}
@@ -641,7 +641,7 @@ namespace BinaryUtility
 			}
 			// 读取所有元素位
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(Count)
+			FOR(Count)
 			{
 				T& value = *list[i];
 				value = 0;
@@ -662,7 +662,7 @@ namespace BinaryUtility
 		// 每个元素使用独立的长度位
 		else
 		{
-			FOR_I(Count)
+			FOR(Count)
 			{
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, *list[i]);
 			}
@@ -707,7 +707,7 @@ namespace BinaryUtility
 			}
 			// 读取所有元素位
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				T& value = list[i];
 				value = 0;
@@ -728,7 +728,7 @@ namespace BinaryUtility
 		// 每个元素使用独立的长度位
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, list[i]);
 			}
@@ -759,7 +759,7 @@ namespace BinaryUtility
 			}
 			// 读取所有元素位
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(Count)
+			FOR(Count)
 			{
 				T& value = *list[i];
 				value = 0;
@@ -774,7 +774,7 @@ namespace BinaryUtility
 		// 每个元素使用独立的长度位
 		else
 		{
-			FOR_I(Count)
+			FOR(Count)
 			{
 				readUnsignedIntegerBit(buffer, bufferSize, bitIndex, *list[i]);
 			}
@@ -819,7 +819,7 @@ namespace BinaryUtility
 			}
 			// 读取所有元素位
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				T& value = list[i];
 				value = 0;
@@ -834,7 +834,7 @@ namespace BinaryUtility
 		// 每个元素使用独立的长度位
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				readUnsignedIntegerBit(buffer, bufferSize, bitIndex, list[i]);
 			}
@@ -912,7 +912,7 @@ namespace BinaryUtility
 			// 再写入值的所有位
 			// 计算出要写多少个字节,按每个字节去写入
 			const byte byteCount = bitCountToByteCount(bitCount);
-			FOR_I(byteCount - 1)
+			FOR(byteCount - 1)
 			{
 				writeByteBits(buffer, bitIndex, ((byte*)&value)[i], 8);
 			}
@@ -948,7 +948,7 @@ namespace BinaryUtility
 			// 再写入值的所有位
 			// 计算出要写多少个字节,按每个字节去写入
 			const byte byteCount = bitCountToByteCount(bitCount);
-			FOR_I(byteCount - 1)
+			FOR(byteCount - 1)
 			{
 				writeByteBits(buffer, bitIndex, ((byte*)&value)[i], 8);
 			}
@@ -1008,7 +1008,7 @@ namespace BinaryUtility
 		// 写入独立长度所占空间小于统一个数时才会继续计算值所占的空间,如果长度部分已经大于了,则不需要再继续计算了
 		if (bitCountSingle < bitCountUnity)
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				T thisAbsValue = abs(list[i]);
 				// 值为0时不会写入符号位和数据,不为0时才会写入
@@ -1045,7 +1045,7 @@ namespace BinaryUtility
 			}
 			const byte byteCount = bitCountToByteCount(maxBitCount);
 			// 再写入所有值的每一位
-			FOR_I(count)
+			FOR(count)
 			{
 				T value = list[i];
 				// 写入符号位
@@ -1068,7 +1068,7 @@ namespace BinaryUtility
 		{
 			// 写入0表示使用独立的长度位,只是下标跳一位,不会实际写入
 			++bitIndex;
-			FOR_I(count)
+			FOR(count)
 			{
 				writeSignedIntegerBit(buffer, bufferSize, bitIndex, list[i]);
 			}
@@ -1112,7 +1112,7 @@ namespace BinaryUtility
 		if (bitCountSingle < bitCountUnity)
 		{
 			// 每个元素绝对值所占用的位数,最高位固定是1,所以减去1位
-			FOR_I(count)
+			FOR(count)
 			{
 				T thisValue = list[i];
 				if (thisValue > 0)
@@ -1146,7 +1146,7 @@ namespace BinaryUtility
 				return false;
 			}
 			const byte byteCount = bitCountToByteCount(maxBitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				const T& value = list[i];
 				// 写入值的所有位
@@ -1162,7 +1162,7 @@ namespace BinaryUtility
 		{
 			// 写入0表示使用独立的长度位,只是下标跳一位,不会实际写入
 			++bitIndex;
-			FOR_I(count)
+			FOR(count)
 			{
 				writeUnsignedIntegerBit(buffer, bufferSize, bitIndex, list[i]);
 			}
@@ -1181,10 +1181,10 @@ namespace BinaryUtility
 	{
 		return writeUnsignedIntegerListBit(buffer, bufferSize, bitIndex, list.data(), list.size(), true);
 	}
-	bool MICRO_LEGEND_FRAME_API writeVector2(char* buffer, int bufferSize, int& index, const Vector2& value);
-	bool MICRO_LEGEND_FRAME_API writeVector2Inverse(char* buffer, int bufferSize, int& index, const Vector2& value);
-	bool MICRO_LEGEND_FRAME_API writeVector2Int(char* buffer, int bufferSize, int& index, const Vector2Int& value);
-	bool MICRO_LEGEND_FRAME_API writeVector2IntInverse(char* buffer, int bufferSize, int& index, const Vector2Int& value);
+	bool MICRO_LEGEND_FRAME_API writeVector2(char* buffer, int bufferSize, int& index, Vector2 value);
+	bool MICRO_LEGEND_FRAME_API writeVector2Inverse(char* buffer, int bufferSize, int& index, Vector2 value);
+	bool MICRO_LEGEND_FRAME_API writeVector2Int(char* buffer, int bufferSize, int& index, Vector2Int value);
+	bool MICRO_LEGEND_FRAME_API writeVector2IntInverse(char* buffer, int bufferSize, int& index, Vector2Int value);
 	bool MICRO_LEGEND_FRAME_API writeVector3(char* buffer, int bufferSize, int& index, const Vector3& value);
 	bool MICRO_LEGEND_FRAME_API writeVector3Inverse(char* buffer, int bufferSize, int& index, const Vector3& value);
 	bool MICRO_LEGEND_FRAME_API writeVector4(char* buffer, int bufferSize, int& index, const Vector4& value);
@@ -1205,7 +1205,7 @@ namespace BinaryUtility
 	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	constexpr bool writeArray(char* buffer, const int bufferSize, int& index, T* valueArray, const int arrayLength)
 	{
-		FOR_I(arrayLength)
+		FOR(arrayLength)
 		{
 			if (!write(buffer, bufferSize, index, valueArray[i]))
 			{
@@ -1217,7 +1217,7 @@ namespace BinaryUtility
 	template<typename T, typename TypeCheck = typename IsPodType<T>::mType>
 	constexpr bool writeArrayInverse(char* buffer, const int bufferSize, int& index, T* valueArray, const int arrayLength)
 	{
-		FOR_I(arrayLength)
+		FOR(arrayLength)
 		{
 			if (!writeInverse(buffer, bufferSize, index, valueArray[i]))
 			{
@@ -1231,7 +1231,7 @@ namespace BinaryUtility
 	{
 		constexpr int typeSize = sizeof(T);
 		constexpr int halfSize = typeSize >> 1;
-		FOR_I(halfSize)
+		FOR(halfSize)
 		{
 			swapByte(value, i, typeSize - 1 - i);
 		}

@@ -19,7 +19,7 @@ public:
 	void initDefault(const int count)
 	{
 		Vector<ClassType*> list(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			ClassType* obj = new ClassType();
 			obj->resetProperty();

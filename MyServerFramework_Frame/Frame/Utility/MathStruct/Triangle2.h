@@ -6,7 +6,7 @@ class MICRO_LEGEND_FRAME_API Triangle2
 {
 public:
 	Triangle2() = default;
-	Triangle2(const Vector2& point0, const Vector2& point1, const Vector2& point2):
+	Triangle2(Vector2 point0, Vector2 point1, Vector2 point2):
 		mPoint0(point0),
 		mPoint1(point1),
 		mPoint2(point2)

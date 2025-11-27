@@ -15,7 +15,7 @@ ComponentOwner::~ComponentOwner()
 void ComponentOwner::update(const float elapsedTime)
 {
 	// 每帧都更新的组件
-	if (mFrameTickList != nullptr)
+	if (mFrameTickList != nullptr && !mFrameTickList->isEmpty())
 	{
 		SAFE_VECTOR_SCOPE(*mFrameTickList, readList);
 		for (const auto& item : readList)

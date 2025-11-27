@@ -9,13 +9,13 @@ public:
 		mStart(start),
 		mEnd(end)
 	{}
-	Line2 toLine2IgnoreY() const
+	Line2D toLine2IgnoreY() const
 	{
-		return Line2({ mStart.x, mStart.z }, { mEnd.x, mEnd.z });
+		return Line2D({ mStart.x, mStart.z }, { mEnd.x, mEnd.z });
 	}
-	Line2 toLine2IgnoreX() const
+	Line2D toLine2IgnoreX() const
 	{
-		return Line2({ mStart.z, mStart.y }, { mEnd.z, mEnd.y });
+		return Line2D({ mStart.z, mStart.y }, { mEnd.z, mEnd.y });
 	}
 public:
 	Vector3 mStart;

@@ -15,7 +15,7 @@ public:
 	void initDefault(const int count)
 	{
 		Vector<T*> list(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			list.push_back(new T());
 		}

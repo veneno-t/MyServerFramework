@@ -18,7 +18,7 @@ bool SerializerBitWrite::writeStringList(const Vector<string>& list)
 		return false;
 	}
 	bool result = true;
-	FOR_I(count)
+	FOR(count)
 	{
 		result = writeString(list[i]) && result;
 	}

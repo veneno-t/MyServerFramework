@@ -8,7 +8,7 @@ template<typename T, typename TypeCheck = typename IsNotPodAndPointerType<T>::mT
 static void copyVector(const vector<T>& source, const int sourceCount, vector<T>& target, const int targetOldCount)
 {
 	target.reserve(target.size() + sourceCount);
-	FOR_I(sourceCount)
+	FOR(sourceCount)
 	{
 		target.emplace_back(source[i]);
 	}
@@ -18,7 +18,7 @@ template<typename T, typename TypeCheck = typename IsNotPodAndPointerType<T>::mT
 static void copyVector(const T* source, const int sourceCount, vector<T>& target, const int targetOldCount)
 {
 	target.reserve(targetOldCount + sourceCount);
-	FOR_I(sourceCount)
+	FOR(sourceCount)
 	{
 		target.emplace_back(source[i]);
 	}
@@ -101,7 +101,7 @@ public:
 		{
 			return false;
 		}
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mVector[i] != other[i])
 			{
@@ -116,7 +116,7 @@ public:
 		{
 			return true;
 		}
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mVector[i] != other[i])
 			{
@@ -318,10 +318,14 @@ public:
 		mVector.clear();
 		mSize = count;
 		mVector.reserve(mSize);
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			mVector.emplace_back(values[i]);
 		}
+	}
+	void setAllDefaultMemorySet()
+	{
+		memset(mVector.data(), mDefaultValue, mVector.size() * sizeof(T));
 	}
 	void push_back()
 	{
@@ -463,7 +467,7 @@ public:
 	}
 	bool eraseElement(const T& value)
 	{
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mVector[i] == value)
 			{
@@ -484,7 +488,7 @@ public:
 	// 将指定值的元素替换为默认值
 	bool resetElement(const T& value)
 	{
-		FOR_I(mSize)
+		FOR(mSize)
 		{
 			if (mVector[i] == value)
 			{
@@ -645,6 +649,10 @@ public:
 	{
 		vector<T> temp;
 		mVector.swap(temp);
+	}
+	void sort()
+	{
+		std::sort(mVector.begin(), mVector.end());
 	}
 public:
 	vector<T> mVector;

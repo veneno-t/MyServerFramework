@@ -7,19 +7,17 @@
 // 用法,在需要查看性能消耗的地方添加PROFILE()即可
 struct MICRO_LEGEND_FRAME_API ProfilerScope
 {
-    int id = 0;
+    ProfilerData* d = nullptr;
     uint64_t start = 0;
-    ProfilerScope(const char* file, const char* func, int _id) :
-        id(_id), 
-        start(readTSC())
+    ProfilerScope(int _id, const char* file, const char* func)
     {
-        Profiler::get(id, file, func);
+        d = &Profiler::get(_id, file, func);
+        start = readTSC();
     }
     ~ProfilerScope()
     {
-        auto end = readTSC();
-        auto& d = Profiler::mData[id];
-        d.mTotalTicks += (end - start);
-        ++d.mCount;
+        const uint64_t end = readTSC();
+        d->mTotalTicks += (end - start);
+        ++d->mCount;
     }
 };

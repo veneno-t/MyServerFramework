@@ -1740,10 +1740,13 @@
     <ClInclude Include="Frame\Utility\FileStruct\FileContent.h">
       <Filter>Frame\Utility\FileStruct</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\Utility\MathStruct\Line2.cpp">
+    <ClInclude Include="Frame\Utility\MathStruct\Line2.h">
       <Filter>Frame\Utility\MathStruct</Filter>
     </ClInclude>
-    <ClInclude Include="Frame\Utility\MathStruct\Line2.h">
+    <ClInclude Include="Frame\Utility\MathStruct\Line2D.cpp">
+      <Filter>Frame\Utility\MathStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\Utility\MathStruct\Line2D.h">
       <Filter>Frame\Utility\MathStruct</Filter>
     </ClInclude>
     <ClInclude Include="Frame\Utility\MathStruct\Line3.h">

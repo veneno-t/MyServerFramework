@@ -17,20 +17,20 @@ public:
 	bool isKeyCurrentDown(int key) const;
 	bool isKeyCurrentUp(int key) const;
 	float getKeyTime(int key) const;
-	void mouseLeftDown(const Vector2& position);
-	void mouseRightDown(const Vector2& position);
-	void mouseMiddleDown(const Vector2& position);
-	void mouseLeftUp(const Vector2& position);
-	void mouseRightUp(const Vector2& position);
-	void mouseMiddleUp(const Vector2& position);
-	void mouseMove(const Vector2& position)								{ setCurMousePosition(position); }
+	void mouseLeftDown(Vector2 position);
+	void mouseRightDown(Vector2 position);
+	void mouseMiddleDown(Vector2 position);
+	void mouseLeftUp(Vector2 position);
+	void mouseRightUp(Vector2 position);
+	void mouseMiddleUp(Vector2 position);
+	void mouseMove(Vector2 position)									{ setCurMousePosition(position); }
 	void mouseWheel(const float delta)									{ mCurMouseWheelDelta = delta; }
-	void setCurMousePosition(const Vector2& curPos)						{ mLastMousePosition = mCurMousePosition; mCurMousePosition = curPos; }
+	void setCurMousePosition(Vector2 curPos)							{ mLastMousePosition = mCurMousePosition; mCurMousePosition = curPos; }
 	const KeyState* getMouseButtonState(const MOUSE_BUTTON mouse) const	{ return mMouseState.getPtrConst(mouse); }
 	const Set<int>& getCurDownKeyList() const							{ return mCurDownKeyList; }
 	const Set<int>& getCurCharList() const								{ return mCurCharList; }
-	const Vector2& getMousePosition() const								{ return mCurMousePosition; }
-	const Vector2& getLastMousePosition() const							{ return mLastMousePosition; }
+	Vector2 getMousePosition() const									{ return mCurMousePosition; }
+	Vector2 getLastMousePosition() const								{ return mLastMousePosition; }
 	float getMouseWheelDelta() const									{ return mCurMouseWheelDelta; }
 protected:
 	HashMap<MOUSE_BUTTON, KeyState> mMouseState;	// 鼠标的按下状态

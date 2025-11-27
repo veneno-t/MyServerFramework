@@ -87,7 +87,7 @@ namespace BinaryUtility
 	{
 		int count = 0;
 		constexpr int bitCount = sizeof(char) * 8;
-		FOR_I(bitCount)
+		FOR(bitCount)
 		{
 			if ((c & (1 << i)) > 0)
 			{
@@ -99,7 +99,7 @@ namespace BinaryUtility
 
 	ushort crc16(ushort crc, const char* buffer, const int len, const int bufferOffset)
 	{
-		FOR_I(len)
+		FOR(len)
 		{
 			crc = crc16_byte(crc, buffer[bufferOffset + i]);
 		}
@@ -177,7 +177,7 @@ namespace BinaryUtility
 
 			// 读取所有的值
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				// 读符号位
 				const bool isNegative = getBufferBit(buffer, bitIndex++);
@@ -194,7 +194,7 @@ namespace BinaryUtility
 		}
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				int value = 0;
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, value);
@@ -234,7 +234,7 @@ namespace BinaryUtility
 
 			// 读取所有的值
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				// 读符号位
 				const bool isNegative = getBufferBit(buffer, bitIndex++);
@@ -251,7 +251,7 @@ namespace BinaryUtility
 		}
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				int value = 0;
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, value);
@@ -298,7 +298,7 @@ namespace BinaryUtility
 			}
 			// 读取所有的值
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				// 读符号位
 				const bool isNegative = getBufferBit(buffer, bitIndex++);
@@ -315,7 +315,7 @@ namespace BinaryUtility
 		}
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				llong value = 0;
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, value);
@@ -353,7 +353,7 @@ namespace BinaryUtility
 			}
 			// 读取所有的值
 			const int byteCount = bitCountToByteCount(bitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				// 读符号位
 				const bool isNegative = getBufferBit(buffer, bitIndex++);
@@ -370,7 +370,7 @@ namespace BinaryUtility
 		}
 		else
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				llong value = 0;
 				readSignedIntegerBit(buffer, bufferSize, bitIndex, value);
@@ -471,7 +471,7 @@ namespace BinaryUtility
 		// 写入独立长度所占空间小于统一个数时才会继续计算值所占的空间,如果长度部分已经大于了,则不需要再继续计算了
 		if (bitCountSingle < bitCountUnity)
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				const int thisAbsValue = MathUtility::round(MathUtility::abs(list[i]) * powValue);
 				// 值为0时不会写入符号位和数据,不为0时才会写入
@@ -507,7 +507,7 @@ namespace BinaryUtility
 				return false;
 			}
 			const byte byteCount = bitCountToByteCount(maxBitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				int intValue = MathUtility::round(list[i] * powValue);
 				// 写入符号位
@@ -530,7 +530,7 @@ namespace BinaryUtility
 		{
 			// 写入0表示使用独立的长度位,只是下标跳一位,不会实际写入
 			++bitIndex;
-			FOR_I(count)
+			FOR(count)
 			{
 				writeSignedIntegerBit(buffer, bufferSize, bitIndex, MathUtility::round(list[i] * powValue));
 			}
@@ -569,7 +569,7 @@ namespace BinaryUtility
 		// 写入独立长度所占空间小于统一个数时才会继续计算值所占的空间,如果长度部分已经大于了,则不需要再继续计算了
 		if (bitCountSingle < bitCountUnity)
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				const llong thisAbsValue = roundDouble(MathUtility::abs(list[i]) * powValue);
 				// 值为0时不会写入符号位和数据,不为0时才会写入
@@ -605,7 +605,7 @@ namespace BinaryUtility
 				return false;
 			}
 			const byte byteCount = bitCountToByteCount(maxBitCount);
-			FOR_I(count)
+			FOR(count)
 			{
 				llong llongValue = roundDouble(list[i] * powValue);
 				// 写入符号位
@@ -628,7 +628,7 @@ namespace BinaryUtility
 		{
 			// 写入0表示使用独立的长度位,只是下标跳一位,不会实际写入
 			++bitIndex;
-			FOR_I(count)
+			FOR(count)
 			{
 				writeSignedIntegerBit(buffer, bufferSize, bitIndex, roundDouble(list[i] * powValue));
 			}
@@ -636,22 +636,22 @@ namespace BinaryUtility
 		return true;
 	}
 
-	bool writeVector2(char* buffer, const int bufferSize, int& index, const Vector2& value)
+	bool writeVector2(char* buffer, const int bufferSize, int& index, const Vector2 value)
 	{
 		return write(buffer, bufferSize, index, value.x) && write(buffer, bufferSize, index, value.y);
 	}
 
-	bool writeVector2Inverse(char* buffer, const int bufferSize, int& index, const Vector2& value)
+	bool writeVector2Inverse(char* buffer, const int bufferSize, int& index, const Vector2 value)
 	{
 		return writeInverse(buffer, bufferSize, index, value.x) && writeInverse(buffer, bufferSize, index, value.y);
 	}
 
-	bool writeVector2Int(char* buffer, const int bufferSize, int& index, const Vector2Int& value)
+	bool writeVector2Int(char* buffer, const int bufferSize, int& index, const Vector2Int value)
 	{
 		return write(buffer, bufferSize, index, value.x) && write(buffer, bufferSize, index, value.y);
 	}
 
-	bool writeVector2IntInverse(char* buffer, const int bufferSize, int& index, const Vector2Int& value)
+	bool writeVector2IntInverse(char* buffer, const int bufferSize, int& index, const Vector2Int value)
 	{
 		return writeInverse(buffer, bufferSize, index, value.x) && writeInverse(buffer, bufferSize, index, value.y);
 	}
@@ -812,7 +812,7 @@ namespace BinaryUtility
 		{
 			return;
 		}
-		FOR_I(65536)
+		FOR(65536)
 		{
 			mBitCountTable[i] = internalGenerateBitCount(i);
 		}
@@ -825,7 +825,7 @@ namespace BinaryUtility
 			return 0;
 		}
 		// 从高到低遍历每一位,找到最高位1的下标
-		FOR_I(16)
+		FOR(16)
 		{
 			if (getBit(value, 15 - i) == 1)
 			{

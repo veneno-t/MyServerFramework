@@ -1,5 +1,6 @@
 ﻿#include "FrameHeader.h"
 
+#ifdef BUILDING_LIBCURL
 void HttpManager::init()
 {
     curl_global_init(CURL_GLOBAL_ALL);
@@ -132,3 +133,4 @@ string HttpManager::httpPost(const string& url, const string& contentType, const
     curl_easy_cleanup(curl);
     return response;
 }
+#endif

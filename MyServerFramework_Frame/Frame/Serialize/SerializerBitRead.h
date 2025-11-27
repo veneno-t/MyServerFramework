@@ -91,7 +91,7 @@ public:
 		}
 		bool result = true;
 		list.resize(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			result = result && readCustom(list[i]);
 		}

@@ -26,7 +26,7 @@ bool MySQLCacheData::isColumnNamesValid(const Vector<int>& colNames) const
 	// 不指定查询列,则表示查询所有列
 	if (colNames.isEmpty())
 	{
-		FOR_I(mTable->getColCount())
+		FOR(mTable->getColCount())
 		{
 			if (!isColumnValid(i))
 			{

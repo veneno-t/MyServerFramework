@@ -209,6 +209,7 @@ class TimeTaskSystem;
 class SerializeTest;
 class FileContent;
 class Line2;
+class Line2D;
 class Line3;
 class Rect;
 class Rect3;

@@ -168,7 +168,7 @@ void TCPServerSystem::processSend()
 			FD_ZERO(&fdwrite);
 			int selectedClientCount = 0;
 			// 不能超过最大并发连接数,采用FD_SETSIZE一组的轮询方式
-			FOR_I(FD_SETSIZE)
+			FOR(FD_SETSIZE)
 			{
 				if (j >= clientCount)
 				{
@@ -194,7 +194,7 @@ void TCPServerSystem::processSend()
 			{
 				continue;
 			}
-			FOR_I(selectedClientCount)
+			FOR(selectedClientCount)
 			{
 				TCPServerClient* client = selectedClient[i];
 				if (!FD_ISSET(client->getSocket(), &fdwrite))
@@ -249,7 +249,7 @@ void TCPServerSystem::processRecv()
 			FD_ZERO(&fdread);
 			int selectedClientCount = 0;
 			// 不能超过最大并发连接数,采用FD_SETSIZE一组的轮询方式
-			FOR_I(FD_SETSIZE)
+			FOR(FD_SETSIZE)
 			{
 				if (j >= clientCount)
 				{
@@ -268,7 +268,7 @@ void TCPServerSystem::processRecv()
 			{
 				continue;
 			}
-			FOR_I(selectedClientCount)
+			FOR(selectedClientCount)
 			{
 				TCPServerClient* client = selectedClient[i];
 				if (client->isDeadClient() || !FD_ISSET(client->getSocket(), &fdread))
@@ -401,7 +401,7 @@ void TCPServerSystem::update(const float elapsedTime)
 		const int count = getMin(temp.size(), 10);
 		for (int i = 0; i < count; ++i)
 		{
-			const Vector2Int& item = temp[i];
+			const Vector2Int item = temp[i];
 			LOG("类型:" + IToS(item.x) + ":" + mPacketSendNameMap.tryGet(item.x) + ",数量:" + IToS(item.y));
 		}
 		LOG("发送数量top10的消息: end");
@@ -503,7 +503,7 @@ void TCPServerSystem::encrypt(char* data, const int length, const byte* key, con
 		return;
 	}
 	int keyIndex = (param ^ 223) & (keyLen - 1);
-	FOR_I(length)
+	FOR(length)
 	{
 		const byte keyChar = (byte)(key[keyIndex] ^ (byte)param);
 		data[i] ^= keyChar;
@@ -524,7 +524,7 @@ void TCPServerSystem::decrypt(char* data, const int length, const byte* key, con
 		return;
 	}
 	int keyIndex = (param ^ 223) & (keyLen - 1);
-	FOR_I(length)
+	FOR(length)
 	{
 		const byte keyChar = (byte)(key[keyIndex] ^ (byte)param);
 		data[i] ^= (byte)(((keyChar * keyIndex) & (mKey0 * mKey1)) | ((mKey2 + mKey3) * keyIndex));

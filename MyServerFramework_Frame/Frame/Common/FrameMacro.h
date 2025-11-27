@@ -14,16 +14,26 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 #ifdef _LIBEVENT
-#pragma comment(lib, "event.lib")
-#pragma comment(lib, "event_core.lib")
-#pragma comment(lib, "event_extra.lib")
-#pragma comment(lib, "event_openssl.lib")
-#pragma comment(lib, "libssl.lib")
-#pragma comment(lib, "libcrypto.lib")
+#if _DEBUG
+#pragma comment(lib, "../lib/libevent/Debug/event.lib")
+#pragma comment(lib, "../lib/libevent/Debug/event_core.lib")
+#pragma comment(lib, "../lib/libevent/Debug/event_extra.lib")
+#pragma comment(lib, "../lib/libevent/Debug/event_openssl.lib")
+#pragma comment(lib, "../lib/openssl_x64/MTd/libssl.lib")
+#pragma comment(lib, "../lib/openssl_x64/MTd/libcrypto.lib")
+#else
+#pragma comment(lib, "../lib/libevent/Release/event.lib")
+#pragma comment(lib, "../lib/libevent/Release/event_core.lib")
+#pragma comment(lib, "../lib/libevent/Release/event_extra.lib")
+#pragma comment(lib, "../lib/libevent/Release/event_openssl.lib")
+#pragma comment(lib, "../lib/openssl_x64/MT/libssl.lib")
+#pragma comment(lib, "../lib/openssl_x64/MT/libcrypto.lib")
+#endif
 #endif
 #ifdef _MYSQL
-#pragma comment(lib, "libmysql.lib")
+#pragma comment(lib, "../lib/MySQL8.0_x64/libmysql.lib")
 #endif
+#pragma comment(lib, "Dbghelp.lib")
 #pragma warning(disable: 4005)
 #pragma warning(disable: 4251)
 // libevent的头文件只能在windows库文件之前包含,否则会有定义冲突的报错
@@ -78,6 +88,7 @@
 #include <vector>
 #include <set>
 #include <list>
+#include <stack>
 #include <bitset>
 #include <chrono>
 #include <thread>
@@ -114,21 +125,24 @@
 #ifdef BUILDING_LIBCURL
 #include "curl/curl.h"
 #if WINDOWS
-#pragma comment(lib, "libcurl.lib")
+#pragma comment(lib, "../lib/libcurl_x64/libcurl.lib")
 #endif
 #endif
 
 #ifdef WINDOWS
-	#ifdef MICROLEGENDSERVERFRAME_EXPORTS
-		#define MICRO_LEGEND_FRAME_API __declspec(dllexport)
-	#else
-		#define MICRO_LEGEND_FRAME_API __declspec(dllimport)
-	#endif
-#elif defined(__GNUC__)
-	#define MICRO_LEGEND_FRAME_API __attribute__((visibility("default")))
+#ifdef MICROLEGENDSERVERFRAME_EXPORTS
+#define MICRO_LEGEND_FRAME_API __declspec(dllexport)
 #else
-	#define MICRO_LEGEND_FRAME_API
+#define MICRO_LEGEND_FRAME_API __declspec(dllimport)
 #endif
+#elif defined(__GNUC__)
+#define MICRO_LEGEND_FRAME_API __attribute__((visibility("default")))
+#else
+#define MICRO_LEGEND_FRAME_API
+#endif
+
+#undef min
+#undef max
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 // 宏定义
@@ -276,13 +290,13 @@ LLsToS(strBuffer, valueArray, count)
 #define SAFE_SET_SCOPE(safeList, readList)																														\
 		auto& UNIQUE_IDENTIFIER(temp) = safeList;																												\
 		SafeSetScope<remove_cv<remove_reference<decltype(UNIQUE_IDENTIFIER(temp))>::type>::type::ValueType> UNIQUE_IDENTIFIER(a)(UNIQUE_IDENTIFIER(temp));		\
-		auto& readList = UNIQUE_IDENTIFIER(temp).startForeach()
+		const auto& readList = UNIQUE_IDENTIFIER(a).getReadList()
 
 // SafeVectorScope
 #define SAFE_VECTOR_SCOPE(safeList, readList)																													\
 		auto& UNIQUE_IDENTIFIER(temp) = safeList;																												\
 		SafeVectorScope<remove_cv<remove_reference<decltype(UNIQUE_IDENTIFIER(temp))>::type>::type::ValueType> UNIQUE_IDENTIFIER(a)(UNIQUE_IDENTIFIER(temp));	\
-		auto& readList = UNIQUE_IDENTIFIER(temp).startForeach()
+		const auto& readList = UNIQUE_IDENTIFIER(a).getReadList()
 
 // SafeHashMapScope
 #define SAFE_HASHMAP_SCOPE(safeList, readList)																													\
@@ -290,11 +304,11 @@ LLsToS(strBuffer, valueArray, count)
 		typedef remove_cv<remove_reference<decltype(UNIQUE_IDENTIFIER(temp))>::type>::type::KeyType UNIQUE_IDENTIFIER(KeyType);									\
 		typedef remove_cv<remove_reference<decltype(UNIQUE_IDENTIFIER(temp))>::type>::type::ValueType UNIQUE_IDENTIFIER(ValueType);								\
 		SafeHashMapScope<UNIQUE_IDENTIFIER(KeyType), UNIQUE_IDENTIFIER(ValueType)> UNIQUE_IDENTIFIER(a)(UNIQUE_IDENTIFIER(temp));								\
-		auto& readList = UNIQUE_IDENTIFIER(temp).startForeach()
+		const auto& readList = UNIQUE_IDENTIFIER(a).getReadList()
 
 // ProfilerScope
 #ifdef WINDOWS
-#define PROFILE() ProfilerScope UNIQUE_IDENTIFIER(temp)(__FILE__, FUNCTION_NAME, __LINE__)
+#define PROFILE() ProfilerScope UNIQUE_IDENTIFIER(temp)(__LINE__, __FILE__, FUNCTION_NAME)
 #else
 #define PROFILE()
 #endif
@@ -333,8 +347,9 @@ GameLogWrap::logInfo(UNIQUE_IDENTIFIER(str), 0, true, true)
 #define FOR_VECTOR_INVERSE(stl) for(int i = (stl).size() - 1; i >= 0; --i)
 
 // 简单的for循环
-#define FOR_I(count)			const int UNIQUE_IDENTIFIER(Count) = (int)count; for (int i = 0; i < UNIQUE_IDENTIFIER(Count); ++i)
+#define FOR(count)			const int UNIQUE_IDENTIFIER(Count) = (int)count; for (int i = 0; i < UNIQUE_IDENTIFIER(Count); ++i)
 #define FOR_J(count)			const int UNIQUE_IDENTIFIER(Count) = (int)count; for (int j = 0; j < UNIQUE_IDENTIFIER(Count); ++j)
+#define FOR_K(count)			const int UNIQUE_IDENTIFIER(Count) = (int)count; for (int k = 0; k < UNIQUE_IDENTIFIER(Count); ++k)
 #define FOR_INVERSE_I(count)	for (int i = (int)count - 1; i >= 0; --i)
 #define FOR_ONCE				for (int UNIQUE_IDENTIFIER(temp) = 0; UNIQUE_IDENTIFIER(temp) < 1; ++UNIQUE_IDENTIFIER(temp))
 

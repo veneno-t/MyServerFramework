@@ -1,9 +1,5 @@
 ﻿#include "FrameHeader.h"
 
-#ifdef WINDOWS
-#pragma comment(lib, "Dbghelp.lib")
-#endif
-
 namespace SystemUtility
 {
 	llong mIDSeedMain;
@@ -474,7 +470,7 @@ namespace SystemUtility
 	{
 		int pos1 = 0;
 		int pos2 = 0;
-		FOR_I(strlength(str))
+		FOR(strlength(str))
 		{
 			int tmp = 0;
 			if (str[i] >= '0' && str[i] <= '9')
@@ -572,7 +568,7 @@ namespace SystemUtility
 		SymInitialize(process, nullptr, TRUE);
 		const WORD frames = CaptureStackBackTrace(0, depth, pStack.data(), nullptr);
 		string oss = "stack traceback: \n";
-		FOR_I(frames)
+		FOR(frames)
 		{
 			if (i == 0)
 			{
@@ -617,7 +613,7 @@ namespace SystemUtility
 		{
 			return stack;
 		}
-		FOR_I(nptrs)
+		FOR(nptrs)
 		{
 			stack.append(strings[i]);
 			stack.push_back('\n');

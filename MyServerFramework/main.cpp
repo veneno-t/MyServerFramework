@@ -45,7 +45,7 @@ int main()
 #ifdef WINDOWS
 		if (mInputSystem != nullptr)
 		{
-			FOR_I(KEY_ARRAY.size())
+			FOR(KEY_ARRAY.size())
 			{
 				if (GetAsyncKeyState(KEY_ARRAY[i]) & 0x8000)
 				{

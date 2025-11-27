@@ -60,7 +60,7 @@ namespace StringUtility
 
 	void removeStartAll(string& stream, const char key)
 	{
-		FOR_I(stream.length())
+		FOR(stream.length())
 		{
 			if (stream[i] != key)
 			{
@@ -72,7 +72,7 @@ namespace StringUtility
 
 	void removeStart(string& stream, const char key)
 	{
-		FOR_I(stream.length())
+		FOR(stream.length())
 		{
 			if (stream[i] == key)
 			{
@@ -109,7 +109,7 @@ namespace StringUtility
 	int findCharCount(const string& str, const char key)
 	{
 		int count = 0;
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -581,7 +581,7 @@ namespace StringUtility
 
 	void replaceAll(string& str, const char key, const char newWord)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -647,7 +647,7 @@ namespace StringUtility
 
 	int strlength(const char* str, const int maxLength)
 	{
-		FOR_I(maxLength)
+		FOR(maxLength)
 		{
 			if (str[i] == '\0')
 			{
@@ -782,7 +782,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = ULLToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -807,7 +807,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -831,7 +831,7 @@ namespace StringUtility
 		charArray.mArray[0] = 0;
 		const int seperateLen = strlength(seperate);
 		MyString<32> temp;
-		FOR_I(valueCount)
+		FOR(valueCount)
 		{
 			const int len = LLToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -855,7 +855,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<4> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -879,7 +879,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -903,7 +903,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<8> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -928,7 +928,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = IToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -953,7 +953,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = UIToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -978,7 +978,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = FToS(temp, valueList[i]);
 			strcat_s(charArray.mArray, arrayLen, temp.str(), len);
@@ -1001,7 +1001,7 @@ namespace StringUtility
 		const int seperateLen = strlength(seperate);
 		MyString<16> temp;
 		const int count = valueList.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			const int len = FToS(temp, valueList[i]);
 			strcat_s(buffer, bufferSize, temp.str(), len);
@@ -1018,7 +1018,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1066,7 +1066,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(strList.size());
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1114,7 +1114,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1162,7 +1162,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(strList.size());
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1210,7 +1210,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1258,7 +1258,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1394,7 +1394,7 @@ namespace StringUtility
 	string zeroString(const int zeroCount)
 	{
 		MyString<16> charArray;
-		FOR_I(zeroCount)
+		FOR(zeroCount)
 		{
 			charArray[i] = '0';
 		}
@@ -1494,7 +1494,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1510,7 +1510,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1525,7 +1525,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1540,7 +1540,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1555,7 +1555,7 @@ namespace StringUtility
 		split(str, seperate, strList);
 		const int count = strList.size();
 		valueList.clearAndReserve(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			const string& curStr = strList[i];
 			if (curStr.length() > 0)
@@ -1654,7 +1654,7 @@ namespace StringUtility
 		}
 		if (sensitive)
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (oriString[i + originLength - patternLength] != pattern[i])
 				{
@@ -1664,7 +1664,7 @@ namespace StringUtility
 		}
 		else
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (toLower(oriString[i + originLength - patternLength]) != toLower(pattern[i]))
 				{
@@ -1685,7 +1685,7 @@ namespace StringUtility
 		}
 		if (sensitive)
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (oriString[i + originLength - patternLength] != pattern[i])
 				{
@@ -1695,7 +1695,7 @@ namespace StringUtility
 		}
 		else
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (toLower(oriString[i + originLength - patternLength]) != toLower(pattern[i]))
 				{
@@ -1716,7 +1716,7 @@ namespace StringUtility
 		}
 		if (sensitive)
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (oriString[i] != pattern[i])
 				{
@@ -1726,7 +1726,7 @@ namespace StringUtility
 		}
 		else
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (toLower(oriString[i]) != toLower(pattern[i]))
 				{
@@ -1747,7 +1747,7 @@ namespace StringUtility
 		}
 		if (sensitive)
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (oriString[i] != pattern[i])
 				{
@@ -1757,7 +1757,7 @@ namespace StringUtility
 		}
 		else
 		{
-			FOR_I(patternLength)
+			FOR(patternLength)
 			{
 				if (toLower(oriString[i]) != toLower(pattern[i]))
 				{
@@ -1770,7 +1770,7 @@ namespace StringUtility
 
 	string removePreNumber(const string& str)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] < '0' || str[i] > '9')
 			{
@@ -2298,7 +2298,7 @@ namespace StringUtility
 
 	void jsonStartArray(string& str, const int preTableCount, const bool returnLine)
 	{
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2312,7 +2312,7 @@ namespace StringUtility
 	void jsonEndArray(string& str, const int preTableCount, const bool returnLine)
 	{
 		removeLastComma(str);
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2325,7 +2325,7 @@ namespace StringUtility
 
 	void jsonStartStruct(string& str, const int preTableCount, const bool returnLine)
 	{
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2339,7 +2339,7 @@ namespace StringUtility
 	void jsonEndStruct(string& str, const int preTableCount, const bool returnLine)
 	{
 		removeLastComma(str);
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2352,7 +2352,7 @@ namespace StringUtility
 
 	void jsonAddPair(string& str, const string& name, const string& value, const int preTableCount, const bool returnLine)
 	{
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2365,7 +2365,7 @@ namespace StringUtility
 
 	void jsonAddObject(string& str, const string& name, const string& value, const int preTableCount, const bool returnLine)
 	{
-		FOR_I(preTableCount)
+		FOR(preTableCount)
 		{
 			str += "\t";
 		}
@@ -2379,7 +2379,7 @@ namespace StringUtility
 	string toLower(const string& str)
 	{
 		string ret = str;
-		FOR_I(ret.length())
+		FOR(ret.length())
 		{
 			ret[i] = toLower(ret[i]);
 		}
@@ -2389,7 +2389,7 @@ namespace StringUtility
 	string toUpper(const string& str)
 	{
 		string ret = str;
-		FOR_I(ret.length())
+		FOR(ret.length())
 		{
 			ret[i] = toUpper(ret[i]);
 		}
@@ -2398,7 +2398,7 @@ namespace StringUtility
 
 	void rightToLeft(string& str)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] == '\\')
 			{
@@ -2408,7 +2408,7 @@ namespace StringUtility
 	}
 	void leftToRight(string& str)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] == '/')
 			{
@@ -2547,7 +2547,7 @@ namespace StringUtility
 
 	bool checkString(const string& str, const string& valid)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (!valid.find_first_of(str[i]))
 			{
@@ -2559,7 +2559,7 @@ namespace StringUtility
 
 	bool hasNonAscii(const char* str)
 	{
-		FOR_I(strlength(str))
+		FOR(strlength(str))
 		{
 			if ((byte)str[i] > 0x7F)
 			{
@@ -2586,7 +2586,7 @@ namespace StringUtility
 	{
 		const int oneLength = addSpace ? 3 : 2;
 		CharArrayScopeThread byteData(getGreaterPower2(dataCount * oneLength + 1));
-		FOR_I(dataCount)
+		FOR(dataCount)
 		{
 			const string byteStr = charToHexString(data[i]);
 			byteData.mArray[i * oneLength + 0] = byteStr[0];
@@ -2602,7 +2602,7 @@ namespace StringUtility
 
 	bool isNumber(const string& str)
 	{
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (!isNumber(str[i]))
 			{
@@ -2615,7 +2615,7 @@ namespace StringUtility
 	int getCharCount(const string& str, char key)
 	{
 		int count = 0;
-		FOR_I(str.length())
+		FOR(str.length())
 		{
 			if (str[i] == key)
 			{
@@ -2646,7 +2646,7 @@ namespace StringUtility
 
 	void appendWithAlign(string& oriStr, const string& appendStr, const int alignWidth)
 	{
-		FOR_I(clampMin(alignWidth - (int)oriStr.length()))
+		FOR(clampMin(alignWidth - (int)oriStr.length()))
 		{
 			oriStr += ' ';
 		}
@@ -2661,7 +2661,7 @@ namespace StringUtility
 		{
 			return false;
 		}
-		FOR_I(length)
+		FOR(length)
 		{
 			if (!isNumber(str[i]))
 			{
@@ -2821,28 +2821,28 @@ namespace StringUtility
 		}
 	}
 
-	void sqlAddVector2Int(char* queryStr, const int size, const Vector2Int& value, const bool addComma)
+	void sqlAddVector2Int(char* queryStr, const int size, Vector2Int value, const bool addComma)
 	{
 		MyString<32> temp;
 		V2IToS(temp, value);
 		sqlAddString(queryStr, size, temp.str(), addComma);
 	}
 
-	void sqlAddVector2UInt(char* queryStr, const int size, const Vector2UInt& value, const bool addComma)
+	void sqlAddVector2UInt(char* queryStr, const int size, Vector2UInt value, const bool addComma)
 	{
 		MyString<32> temp;
 		V2UIToS(temp, value);
 		sqlAddString(queryStr, size, temp.str(), addComma);
 	}
 
-	void sqlAddVector2Short(char* queryStr, const int size, const Vector2Short& value, const bool addComma)
+	void sqlAddVector2Short(char* queryStr, const int size, Vector2Short value, const bool addComma)
 	{
 		MyString<16> temp;
 		V2SToS(temp, value);
 		sqlAddString(queryStr, size, temp.str(), addComma);
 	}
 
-	void sqlAddVector2UShort(char* queryStr, const int size, const Vector2UShort& value, const bool addComma)
+	void sqlAddVector2UShort(char* queryStr, const int size, Vector2UShort value, const bool addComma)
 	{
 		MyString<16> temp;
 		V2USToS(temp, value);

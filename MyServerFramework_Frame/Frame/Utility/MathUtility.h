@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "StringUtility.h"
-#include "Line2.h"
+#include "Line2D.h"
 #include "Line3.h"
+#include "Line2.h"
 #include "ThreadLock.h"
 #include "HashMap.h"
 #include "Set.h"
@@ -561,30 +562,30 @@ namespace MathUtility
 	constexpr float frac(const float value) { return value - (int)value; }
 	// 帧换算成秒
 	constexpr float frameToSecond(const int frame) { return frame * 0.0333f; }
-	constexpr float getSquaredLength(const Vector2& vec) { return vec.x * vec.x + vec.y * vec.y; }
+	constexpr float getSquaredLength(Vector2 vec) { return vec.x * vec.x + vec.y * vec.y; }
 	constexpr float getSquaredLength(const Vector3& vec) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z; }
 	float getLength(const float x, const float y) { return sqrt(x * x + y * y); }
 	float getLength(const float x, const float y, float z) { return sqrt(x * x + y * y + z * z); }
-	float getLength(const Vector2& vec) { return sqrt(vec.x * vec.x + vec.y * vec.y); }
+	float getLength(Vector2 vec) { return sqrt(vec.x * vec.x + vec.y * vec.y); }
 	float getLength(const Vector3& vec) { return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z); }
 	MICRO_LEGEND_FRAME_API Vector3 normalize(const Vector3& value);
-	MICRO_LEGEND_FRAME_API Vector2 normalize(const Vector2& value);
+	MICRO_LEGEND_FRAME_API Vector2 normalize(Vector2 value);
 	// 此处计算结果与unity中的Vector3.Cross()一致
 	Vector3 cross(const Vector3& v0, const Vector3& v1) { return { v1.y * v0.z - v0.y * v1.z, v1.x * v0.z - v0.x * v1.z, v1.x * v0.y - v0.x * v1.y }; }
 	constexpr float dot(const Vector3& v0, const Vector3& v1) { return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z; }
-	constexpr float dot(const Vector2& v0, const Vector2& v1) { return v0.x * v1.x + v0.y * v1.y; }
+	constexpr float dot(Vector2 v0, Vector2 v1) { return v0.x * v1.x + v0.y * v1.y; }
 	constexpr float toDegree(float radian) { return radian * Rad2Deg; }
 	constexpr float toRadian(float degree) { return degree * Deg2Rad; }
-	constexpr bool lengthLess(const Vector2& vec, const float length) { return vec.x * vec.x + vec.y * vec.y < length* length; }
-	constexpr bool lengthGreater(const Vector2& vec, const float length) { return vec.x * vec.x + vec.y * vec.y > length * length; }
+	constexpr bool lengthLess(Vector2 vec, const float length) { return vec.x * vec.x + vec.y * vec.y < length* length; }
+	constexpr bool lengthGreater(Vector2 vec, const float length) { return vec.x * vec.x + vec.y * vec.y > length * length; }
 	constexpr bool lengthLess(const Vector3& vec, const float length) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z < length * length; }
 	constexpr bool lengthLessSquared(const Vector3& vec, const float squaredLength) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z < squaredLength; }
 	constexpr bool lengthGreater(const Vector3& vec, const float length) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z > length * length; }
 	constexpr bool lengthGreaterSquared(const Vector3& vec, const float squaredLength) { return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z > squaredLength; }
 	constexpr bool isVectorEqual(const Vector3& vec0, const Vector3& vec1) { return isEqual(vec0.x, vec1.x) && isEqual(vec0.y, vec1.y) && isEqual(vec0.z, vec1.z); }
-	constexpr bool isVectorEqual(const Vector2& vec0, const Vector2& vec1) { return isEqual(vec0.x, vec1.x) && isEqual(vec0.y, vec1.y); }
+	constexpr bool isVectorEqual(Vector2 vec0, Vector2 vec1) { return isEqual(vec0.x, vec1.x) && isEqual(vec0.y, vec1.y); }
 	constexpr bool isVectorEqual(const Vector3& vec0, const Vector3& vec1, float precision) { return isEqual(vec0.x, vec1.x, precision) && isEqual(vec0.y, vec1.y, precision) && isEqual(vec0.z, vec1.z, precision); }
-	constexpr bool isVectorEqual(const Vector2& vec0, const Vector2& vec1, float precision) { return isEqual(vec0.x, vec1.x, precision) && isEqual(vec0.y, vec1.y, precision); }
+	constexpr bool isVectorEqual(Vector2 vec0, Vector2 vec1, float precision) { return isEqual(vec0.x, vec1.x, precision) && isEqual(vec0.y, vec1.y, precision); }
 	Vector3 resetY(const Vector3& vec) { return { vec.x, 0.0f, vec.z }; }
 	Line3 resetY(const Line3& line) { return { {line.mStart.x, 0.0f, line.mStart.z},{line.mEnd.x, 0.0f, line.mEnd.z} }; }
 	// 非线程安全
@@ -627,13 +628,13 @@ namespace MathUtility
 			count = oddsList.size();
 		}
 		float max = 0.0f;
-		FOR_I(count)
+		FOR(count)
 		{
 			max += oddsList[i];
 		}
 		const float random = randomFloat(0.0f, max);
 		float curValue = 0.0f;
-		FOR_I(count)
+		FOR(count)
 		{
 			curValue += oddsList[i];
 			if (random <= curValue)
@@ -649,13 +650,13 @@ namespace MathUtility
 	{
 		const int count = oddsList.size();
 		float max = 0.0f;
-		FOR_I(count)
+		FOR(count)
 		{
 			max += oddsList[i];
 		}
 		const float random = randomFloat(0.0f, max);
 		float curValue = 0.0f;
-		FOR_I(count)
+		FOR(count)
 		{
 			curValue += oddsList[i];
 			if (random <= curValue)
@@ -692,7 +693,7 @@ namespace MathUtility
 	template<typename T>
 	void randomOrder(T* list, const int count)
 	{
-		FOR_I(count)
+		FOR(count)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int rand = randomInt(i, count - 1);
@@ -706,7 +707,7 @@ namespace MathUtility
 	void randomOrder(ArrayList<Length, T>& list)
 	{
 		const int count = list.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int rand = randomInt(i, count - 1);
@@ -720,7 +721,7 @@ namespace MathUtility
 	void randomOrder(Vector<T>& list)
 	{
 		const int count = list.size();
-		FOR_I(count)
+		FOR(count)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int rand = randomInt(i, count - 1);
@@ -739,7 +740,7 @@ namespace MathUtility
 		selectIndexes.clear();
 		if (selectCount >= count)
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				selectIndexes.add(i);
 			}
@@ -747,11 +748,11 @@ namespace MathUtility
 		}
 
 		Vector<int> indexList(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			indexList.push_back(i);
 		}
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int randIndex = randomInt(i, count - 1);
@@ -782,11 +783,11 @@ namespace MathUtility
 		}
 		clampMaxRef(selectCount, selectIndexes.maxSize());
 		int max = 0;
-		FOR_I(allCount)
+		FOR(allCount)
 		{
 			max += oddsList[i];
 		}
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			const int random = randomInt(0, max);
 			int curValue = 0;
@@ -1017,7 +1018,7 @@ namespace MathUtility
 	constexpr bool inFixedRange(const float value, const float range0, const float range1) { return value >= range0 && value <= range1; }
 	constexpr bool inRange(const int value, const int range0, const int range1) { return value >= getMin(range0, range1) && value <= getMax(range0, range1); }
 	constexpr bool inRange(const float value, const float range0, const float range1) { return value >= getMin(range0, range1) && value <= getMax(range0, range1); }
-	constexpr bool inRange(const Vector2& value, const Vector2& range0, const Vector2& range1) { return inRange(value.x, range0.x, range1.x) && inRange(value.y, range0.y, range1.y); }
+	constexpr bool inRange(Vector2 value, Vector2 range0, Vector2 range1) { return inRange(value.x, range0.x, range1.x) && inRange(value.y, range0.y, range1.y); }
 	constexpr bool inRange(const Vector3& value, const Vector3& range0, const Vector3& range1) { return inRange(value.x, range0.x, range1.x) && inRange(value.y, range0.y, range1.y) && inRange(value.z, range0.z, range1.z); }
 	template<typename T>
 	constexpr T lerpSimple(const T& start, const T& end, const float t) { return start + (end - start) * t; }
@@ -1048,8 +1049,8 @@ namespace MathUtility
 	Vector3 rotateVector3AroundX(const Vector3& vec, float radian) { return rotateVector3(vec, Vector3::RIGHT, radian); }
 	Vector3 rotateVector3AroundZ(const Vector3& vec, float radian) { return rotateVector3(vec, Vector3::BACK, radian); }
 	float getAngleBetweenVector(const Vector3& vec1, const Vector3& vec2) { return acos(dot(normalize(vec1), normalize(vec2))); }
-	float getAngleBetweenVector(const Vector2& vec1, const Vector2& vec2) { return acos(dot(normalize(vec1), normalize(vec2))); }
-	MICRO_LEGEND_FRAME_API float getAngleFromVector2ToVector2(const Vector2& from, const Vector2& to, bool radian = true);
+	float getAngleBetweenVector(Vector2 vec1, Vector2 vec2) { return acos(dot(normalize(vec1), normalize(vec2))); }
+	MICRO_LEGEND_FRAME_API float getAngleFromVector2ToVector2(Vector2 from, Vector2 to, bool radian = true);
 	// 求Z轴顺时针旋转一定角度后的向量,角度范围是-MATH_PI 到 MATH_PI
 	MICRO_LEGEND_FRAME_API Vector3 getVectorFromAngle(float angle);
 	// 将表达式str中的keyword替换为replaceValue,然后计算str的值,返回值表示str中是否有被替换的值,str只能是算术表达式
@@ -1116,34 +1117,36 @@ namespace MathUtility
 	constexpr float HueToRGB(float v1, float v2, float vH);
 	MICRO_LEGEND_FRAME_API int findPointIndex(const Vector<float>& distanceListFromStart, float curDistance, int startIndex, int endIndex);
 	// 计算两条直线的交点,返回值表示两条直线是否相交
-	MICRO_LEGEND_FRAME_API bool intersectLine2(const Line2& line0, const Line2& line1, Vector2& intersect);
+	MICRO_LEGEND_FRAME_API bool intersectLine2(const Line2D& line0, const Line2D& line1, Vector2& intersect);
 	// 计算两条直线的交点,返回值表示两条直线是否相交,忽略Y轴
 	MICRO_LEGEND_FRAME_API bool intersectLine3IgnoreY(const Line3& line0, const Line3& line1, Vector3& intersect);
-	// k为斜率,也就是cotan(直线与y轴的夹角)
-	MICRO_LEGEND_FRAME_API bool generateLineExpression(const Line2& line, float& k, float& b);
 	// 计算两条线段的交点,返回值表示两条线段是否相交,checkEndPoint为是否判断两条线段的端点,为false表示即使端点重合也不认为线段相交
-	MICRO_LEGEND_FRAME_API bool intersectLineSection(const Line2& line0, const Line2& line1, Vector2& intersect, bool checkEndPoint = false);
+	MICRO_LEGEND_FRAME_API bool intersectLineSection(const Line2D& line0, const Line2D& line1, Vector2& intersect, bool checkEndPoint = false);
 	// 计算两条线段的交点,返回值表示两条线段是否相交,checkEndPoint为是否判断两条线段的端点,为false表示即使端点重合也不认为线段相交,忽略Y轴
 	MICRO_LEGEND_FRAME_API bool intersectLineSectionIgnoreY(const Line3& line0, const Line3& line1, Vector3& intersect, bool checkEndPoint = false);
 	// 计算线段与三角形是否相交
-	MICRO_LEGEND_FRAME_API bool intersectLineTriangle(const Line2& line, const Triangle2& triangle, TriangleIntersect& intersectResult, bool checkEndPoint = false);
+	MICRO_LEGEND_FRAME_API bool intersectSegment(const Vector2 A, const Vector2 B, const Vector2 C, const Vector2 D, Vector2& out);
+	MICRO_LEGEND_FRAME_API bool intersectLineTriangle(const Line2& line, const Triangle2& tri, TriangleIntersect& out, bool checkEndPoint = true);
 	// 计算线段与三角形是否相交,忽略Y轴
 	MICRO_LEGEND_FRAME_API bool intersectLineTriangleIgnoreY(const Line3& line, const Triangle3& triangle, TriangleIntersect3& intersectResult, bool checkEndPoint = false);
-	// 当忽略端点重合,如果有端点重合，则判断为不相交
+	// 当忽略端点重合,如果有端点重合，则判断为不相交,仅仅只能判断是否与矩形边相交,如果线段完全在矩形内部,会认为不相交
 	// 线段与矩形是否相交,checkEndPoint为是否判断两条线段的端点,为false表示即使端点重合也不认为线段相交
-	MICRO_LEGEND_FRAME_API bool intersect(const Line2& line, const Rect& rect, Vector2* intersectPtr = nullptr, bool checkEndPoint = false);
+	MICRO_LEGEND_FRAME_API bool intersectEdge(const Line2D& line, const Rect& rect, Vector2* intersectPtr = nullptr, bool checkEndPoint = false);
+	// 判断线段与AABB的相交
+	MICRO_LEGEND_FRAME_API bool intersectLineAABB(const Line2& line, const Rect& rect, Vector2* intersectPtr = nullptr);
+	MICRO_LEGEND_FRAME_API bool lineIntersect(const Line2& line, float x3, float y3, float x4, float y4, Vector2& out);
 	// 三维的线段与矩形是否相交,只不过忽略Y轴,checkEndPoint为是否判断两条线段的端点,为false表示即使端点重合也不认为线段相交
 	MICRO_LEGEND_FRAME_API bool intersectIgnoreY(const Line3& line, const Rect3& rect, Vector3* intersectPtr = nullptr, bool checkEndPoint = false);
 	// 计算点到线的距离
-	MICRO_LEGEND_FRAME_API float getDistanceToLine(const Vector2& point, const Line2& line);
+	MICRO_LEGEND_FRAME_API float getDistanceToLine(Vector2 point, const Line2D& line);
 	// 计算点到线的距离,忽略Y轴
 	MICRO_LEGEND_FRAME_API float getDistanceToLineIgnoreY(const Vector3& point, const Line3& line);
 	// 计算点在线上的投影
-	MICRO_LEGEND_FRAME_API Vector2 getProjectPoint(const Vector2& point, const Line2& line);
+	MICRO_LEGEND_FRAME_API Vector2 getProjectPoint(Vector2 point, const Line2D& line);
 	// 计算点在线上的投影,忽略Y轴
 	MICRO_LEGEND_FRAME_API Vector3 getProjectPointIgnoreY(const Vector3& point, const Line3& line);
 	// 计算一个向量在另一个向量上的投影
-	MICRO_LEGEND_FRAME_API Vector2 getProjection(const Vector2& v1, const Vector2& v2);
+	MICRO_LEGEND_FRAME_API Vector2 getProjection(Vector2 v1, Vector2 v2);
 	// 计算一个向量在另一个向量上的投影,忽略Y轴
 	MICRO_LEGEND_FRAME_API Vector3 getProjectionIgnoreY(const Vector3& v1, const Vector3& v2);
 	template<typename T>
@@ -1480,5 +1483,6 @@ using MathUtility::randomSelectQuick;
 using MathUtility::TWO_PI_RADIAN;
 using MathUtility::HALF_PI_RADIAN;
 using MathUtility::PI_RADIAN;
-using MathUtility::intersect;
+using MathUtility::intersectEdge;
+using MathUtility::intersectLineAABB;
 using MathUtility::intersectLineTriangle;

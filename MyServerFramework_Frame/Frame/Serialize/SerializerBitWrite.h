@@ -99,11 +99,11 @@ public:
 		writeCheck(sizeof(int) + 1 + sizeof(double) * Count);
 		return writeDouble(mBuffer, mBufferSize, mBitIndex, list, 4);
 	}
-	bool writeVector2(const Vector2& value) { return writeFloat(value.x, value.y); }
-	bool writeVector2Int(const Vector2Int& value) { return writeSigned(value.x, value.y); }
-	bool writeVector2UInt(const Vector2UInt& value) { return writeUnsigned(value.x, value.y); }
-	bool writeVector2Short(const Vector2Short& value) { return writeSigned(value.x, value.y); }
-	bool writeVector2UShort(const Vector2UShort& value) { return writeUnsigned(value.x, value.y); }
+	bool writeVector2(Vector2 value) { return writeFloat(value.x, value.y); }
+	bool writeVector2Int(Vector2Int value) { return writeSigned(value.x, value.y); }
+	bool writeVector2UInt(Vector2UInt value) { return writeUnsigned(value.x, value.y); }
+	bool writeVector2Short(Vector2Short value) { return writeSigned(value.x, value.y); }
+	bool writeVector2UShort(Vector2UShort value) { return writeUnsigned(value.x, value.y); }
 	bool writeVector3(const Vector3& value) { return writeFloat(value.x, value.y, value.z); }
 	bool writeVector4(const Vector4& value) { return writeFloat(value.x, value.y, value.z, value.w); }
 	// 自定义数据类型可以使用此接口,但是需要继承SerializableData
@@ -158,7 +158,7 @@ public:
 			return false;
 		}
 		bool result = true;
-		FOR_I(count)
+		FOR(count)
 		{
 			result = result && writeCustom(list[i]);
 		}

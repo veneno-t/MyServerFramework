@@ -9,11 +9,14 @@ class SafeHashMapScope
 {
 protected:
 	SafeHashMap<Key, Value>* mList = nullptr;
+	const HashMap<Key, Value>* mReadList = nullptr;
 public:
 	SafeHashMapScope(SafeHashMap<Key, Value>& list)
 	{
 		mList = &list;
+		mReadList = &(mList->startForeach());
 	}
+	const HashMap<Key, Value>& getReadList() const { return *mReadList; }
 	~SafeHashMapScope()
 	{
 		mList->endForeach();

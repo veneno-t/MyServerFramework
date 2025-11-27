@@ -107,7 +107,7 @@ protected:
 			// 更新操作较少,则遍历更新操作列表进行数据同步
 			if (modifyCount < mainCount)
 			{
-				FOR_I(modifyCount)
+				FOR(modifyCount)
 				{
 					auto& modifyValue = mModifyList[i];
 					if (modifyValue.mAdd)

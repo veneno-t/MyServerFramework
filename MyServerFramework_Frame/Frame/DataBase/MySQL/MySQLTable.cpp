@@ -436,7 +436,7 @@ Vector<MySQLData*> MySQLTable::queryListByLLongList(const int column, const Vect
 	// 全表查询不走缓存
 	QueryParam param;
 	const int count = idList.size();
-	FOR_I(count)
+	FOR(count)
 	{
 		if (i != count - 1)
 		{
@@ -491,7 +491,7 @@ Vector<MySQLData*> MySQLTable::queryListByStringList(const int column, const Vec
 	// 全表查询不走缓存
 	QueryParam param;
 	const int count = idList.size();
-	FOR_I(count)
+	FOR(count)
 	{
 		if (i != count - 1)
 		{
@@ -726,7 +726,7 @@ void MySQLTable::checkTableStructure() const
 		}
 		// 重置列的下标
 		mysql_field_seek(scope.mResult, 0);
-		FOR_I(mysql_num_fields(scope.mResult))
+		FOR(mysql_num_fields(scope.mResult))
 		{
 			if (strcmp(mysql_fetch_field(scope.mResult)->name, "Field") == 0)
 			{
@@ -770,7 +770,7 @@ ullong MySQLTable::generateColumnFlag(const int colIndex)
 ullong MySQLTable::generateColumnFlag(short* colIndex, const int colCount)
 {
 	ullong flag = 0;
-	FOR_I(colCount)
+	FOR(colCount)
 	{
 		if (colIndex[i] < 0)
 		{
@@ -798,7 +798,7 @@ bool MySQLTable::deleteByIDList(const llong* idList, const int idCount) const
 		return true;
 	}
 	// 从缓存里删除
-	FOR_I(idCount)
+	FOR(idCount)
 	{
 		mCacheTable->deleteData(idList[i]);
 	}
@@ -816,7 +816,7 @@ bool MySQLTable::deleteByIDList(const llong* idList, const int idCount) const
 		bool result = true;
 		// 如果超过了5000个,也要分批次删除
 		constexpr int BATCH_SIZE = 5000;
-		FOR_I(generateBatchCount(idCount, BATCH_SIZE))
+		FOR(generateBatchCount(idCount, BATCH_SIZE))
 		{
 			const int batchSize = generateBatchSize(idCount, BATCH_SIZE, i);
 			string condition;
@@ -1324,7 +1324,7 @@ MySQLData* MySQLTable::mysqlToResultData(MYSQL_RES* result)
 	// 重置列的下标
 	mysql_field_seek(result, 0);
 	mTemp.clear();
-	FOR_I(mysql_num_fields(result))
+	FOR(mysql_num_fields(result))
 	{
 		// 将char*转换为string,然后查找相同名字列的真实列名,后续就可以一直使用const char*类型,效率比string高很多
 		tempStr = mysql_fetch_field(result)->name;
@@ -1355,7 +1355,7 @@ void MySQLTable::mysqlToResultData(MYSQL_RES* result, const Vector<MySQLData*>& 
 		// 重置列的下标
 		mysql_field_seek(result, 0);
 		mTemp.clear();
-		FOR_I(mysql_num_fields(result))
+		FOR(mysql_num_fields(result))
 		{
 			// 将char*转换为string,然后查找相同名字列的真实列名,后续就可以一直使用const char*类型,效率比string高很多
 			tempStr = mysql_fetch_field(result)->name;

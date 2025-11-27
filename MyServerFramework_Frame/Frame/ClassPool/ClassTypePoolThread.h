@@ -24,7 +24,7 @@ public:
 			return;
 		}
 		Vector<ClassType*> list(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			ClassType* obj = create(type);
 			obj->resetProperty();
@@ -69,7 +69,7 @@ public:
 			auto* objSet = mUnusedList.getPtr(type);
 			if (objSet != nullptr && objSet->size() > 0)
 			{
-				FOR_I(dataCount)
+				FOR(dataCount)
 				{
 					// 首先从未使用的列表中获取,获取不到再重新创建一个
 					ClassType* obj = objSet->popBack(nullptr);
@@ -87,7 +87,7 @@ public:
 			ClassType* tempValidObj = nullptr;
 			const int needCreateCount = dataCount - classList.size();
 			int createCount = 0;
-			FOR_I(needCreateCount)
+			FOR(needCreateCount)
 			{
 				// 此处可能会创建失败
 				ClassType* obj = create(type);
@@ -224,7 +224,7 @@ public:
 		if (mUnusedList.size() > 0)
 		{
 			THREAD_LOCK(mLock);
-			FOR_I(dataCount)
+			FOR(dataCount)
 			{
 				T* obj = nullptr;
 				// 首先从未使用的列表中获取,获取不到再重新创建一个
@@ -242,7 +242,7 @@ public:
 		if (classList.size() < dataCount)
 		{
 			const int needCreateCount = dataCount - classList.size();
-			FOR_I(needCreateCount)
+			FOR(needCreateCount)
 			{
 				T* obj = new T();
 				obj->resetProperty();

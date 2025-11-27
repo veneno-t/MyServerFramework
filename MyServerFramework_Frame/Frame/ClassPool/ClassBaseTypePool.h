@@ -23,7 +23,7 @@ public:
 		}
 #endif
 		Vector<BaseClassType*> list(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			BaseClassType* obj = new T();
 			obj->resetProperty();
@@ -63,7 +63,7 @@ public:
 		{
 			if (auto* listPtr = mUnusedList.getPtr(typeHash))
 			{
-				FOR_I(dataCount)
+				FOR(dataCount)
 				{
 					// 首先从未使用的列表中获取,获取不到再重新创建一个
 					BaseClassType* obj = listPtr->popBack(nullptr);
@@ -79,7 +79,7 @@ public:
 		if (classList.size() < dataCount)
 		{
 			const int needCreateCount = dataCount - classList.size();
-			FOR_I(needCreateCount)
+			FOR(needCreateCount)
 			{
 				BaseClassType* obj = new T();
 				// 为了跟复用时的状态统一

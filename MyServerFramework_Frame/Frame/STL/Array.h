@@ -43,7 +43,7 @@ public:
 	}
 	bool eraseFirstElement(const T& element, const int curCount)
 	{
-		FOR_I(curCount)
+		FOR(curCount)
 		{
 			if (mValue[i] == element)
 			{
@@ -66,7 +66,7 @@ public:
 		{
 			length = Length;
 		}
-		FOR_I(length)
+		FOR(length)
 		{
 			if (mValue[i] == element)
 			{
@@ -181,7 +181,7 @@ public:
 	// 将数组的每一个元素都设置为value
 	void fillArray(const T& value)
 	{
-		FOR_I(Length)
+		FOR(Length)
 		{
 			mValue[i] = value;
 		}

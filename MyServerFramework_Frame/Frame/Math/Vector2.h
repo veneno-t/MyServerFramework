@@ -34,15 +34,15 @@ public:
 		const float inverse = 1.0f / that;
 		return { x * inverse, y * inverse };
 	}
-	Vector2 operator+(const Vector2& that) const { return { x + that.x, y + that.y }; }
-	Vector2 operator-(const Vector2& that) const { return { x - that.x, y - that.y }; }
-	Vector2& operator+=(const Vector2& that)
+	Vector2 operator+(Vector2 that) const { return { x + that.x, y + that.y }; }
+	Vector2 operator-(Vector2 that) const { return { x - that.x, y - that.y }; }
+	Vector2& operator+=(Vector2 that)
 	{
 		x += that.x;
 		y += that.y;
 		return *this;
 	}
-	Vector2& operator-=(const Vector2& that)
+	Vector2& operator-=(Vector2 that)
 	{
 		x -= that.x;
 		y -= that.y;

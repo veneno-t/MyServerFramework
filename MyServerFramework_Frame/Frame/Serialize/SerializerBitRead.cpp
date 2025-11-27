@@ -42,7 +42,7 @@ bool SerializerBitRead::readStringList(Vector<string>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = result && readString(list[i]);
 	}

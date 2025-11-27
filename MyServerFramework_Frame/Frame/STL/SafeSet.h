@@ -4,6 +4,12 @@
 #include "Vector.h"
 #include "ValueModify.h"
 
+// 支持在遍历列表时对列表进行插入和删除
+// 需要搭配SAFE_SET_SCOPE宏来进行遍历
+// SafeSet<int> list;
+// SAFE_SET_SCOPE(list, readList);
+// for (const int item : readList)
+// {}
 template<typename T>
 class SafeSet
 {
@@ -37,7 +43,6 @@ public:
 	const Set<T>& getMainList() const	{ return mMainList; }
 	int size() const					{ return mMainList.size(); }
 	bool isEmpty() const				{ return mMainList.isEmpty(); }
-	T* data() const						{ return mMainList.data(); }
 	bool contains(const T& value) const { return mMainList.contains(value); }
 	bool insert(const T& value)
 	{
@@ -100,7 +105,7 @@ protected:
 			// 更新操作较少,则遍历更新操作列表进行数据同步
 			if (modifyCount < mainCount)
 			{
-				FOR_I(modifyCount)
+				FOR(modifyCount)
 				{
 					auto& modifyValue = mModifyList[i];
 					if (modifyValue.mAdd)

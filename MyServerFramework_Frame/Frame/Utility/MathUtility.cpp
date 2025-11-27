@@ -76,7 +76,7 @@ namespace MathUtility
 	constexpr int getGreaterPowerValue(const int value, const int pow)
 	{
 		int powValue = 1;
-		FOR_I(30)
+		FOR(30)
 		{
 			if (powValue >= value)
 			{
@@ -175,7 +175,7 @@ namespace MathUtility
 		if (selectCount >= count)
 		{
 			selectIndexes.reserve(count);
-			FOR_I(count)
+			FOR(count)
 			{
 				selectIndexes.push_back(i);
 			}
@@ -185,7 +185,7 @@ namespace MathUtility
 		// 对应下标上的最新的值,用于代替交换下标的逻辑
 		HashMap<int, int> replacedList;
 		selectIndexes.reserve(selectCount);
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			// 随机范围下限每次递减1
 			const int randIndex = randomInt(i, count - 1);
@@ -212,7 +212,7 @@ namespace MathUtility
 		if (selectCount >= count)
 		{
 			selectIndexes.reserve(count);
-			FOR_I(count)
+			FOR(count)
 			{
 				selectIndexes.push_back(i);
 			}
@@ -220,12 +220,12 @@ namespace MathUtility
 		}
 
 		Vector<int> indexList(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			indexList.push_back(i);
 		}
 		selectIndexes.reserve(selectCount);
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int randIndex = randomInt(i, count - 1);
@@ -244,7 +244,7 @@ namespace MathUtility
 		selectIndexes.clear();
 		if (selectCount >= count)
 		{
-			FOR_I(count)
+			FOR(count)
 			{
 				selectIndexes.insert(i);
 			}
@@ -252,11 +252,11 @@ namespace MathUtility
 		}
 
 		Vector<int> indexList(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			indexList.push_back(i);
 		}
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			// 随机数生成器，范围[i, count - 1]  
 			const int randIndex = randomInt(i, count - 1);
@@ -273,7 +273,7 @@ namespace MathUtility
 		if (selectCount >= allCount)
 		{
 			selectIndexes.reserve(allCount);
-			FOR_I(allCount)
+			FOR(allCount)
 			{
 				selectIndexes.push_back(i);
 			}
@@ -287,7 +287,7 @@ namespace MathUtility
 		}
 
 		selectIndexes.reserve(selectCount);
-		FOR_I(selectCount)
+		FOR(selectCount)
 		{
 			const int random = randomInt(0, max);
 			int curValue = 0;
@@ -337,7 +337,7 @@ namespace MathUtility
 		return { value.x * inverseLength, value.y * inverseLength, value.z * inverseLength };
 	}
 
-	Vector2 normalize(const Vector2& value)
+	Vector2 normalize(Vector2 value)
 	{
 		const float inverseLength = divide(1.0f, getLength(value));
 		return { value.x * inverseLength, value.y * inverseLength };
@@ -352,7 +352,7 @@ namespace MathUtility
 		return newVec;
 	}
 
-	float getAngleFromVector2ToVector2(const Vector2& from, const Vector2& to, const bool radian)
+	float getAngleFromVector2ToVector2(Vector2 from, Vector2 to, const bool radian)
 	{
 		if (isVectorEqual(from, to))
 		{
@@ -488,7 +488,7 @@ namespace MathUtility
 		// 表示上一个运算符的下标+1
 		int beginPos = 0;
 		const int strLen = (int)newStr.length();
-		FOR_I(strLen)
+		FOR(strLen)
 		{
 			// 遍历到了最后一个字符,则直接把最后一个数字放入列表,然后退出循环
 			if (i == strLen - 1)
@@ -672,7 +672,7 @@ namespace MathUtility
 		// 表示上一个运算符的下标+1
 		int beginPos = 0;
 		const int strLen = (int)newStr.length();
-		FOR_I(strLen)
+		FOR(strLen)
 		{
 			// 遍历到了最后一个字符,则直接把最后一个数字放入列表,然后退出循环
 			if (i == strLen - 1)
@@ -845,15 +845,15 @@ namespace MathUtility
 	}
 
 	// 计算两条直线的交点,返回值表示两条直线是否相交
-	bool intersectLine2(const Line2& line0, const Line2& line1, Vector2& intersect)
+	bool intersectLine2(const Line2D& line0, const Line2D& line1, Vector2& intersect)
 	{
 		// 计算两条线的k和b
-		float k0 = 0.0f;
-		float b0 = 0.0f;
-		const bool hasK0 = generateLineExpression(line0, k0, b0);
-		float k1 = 0.0f;
-		float b1 = 0.0f;
-		const bool hasK1 = generateLineExpression(line1, k1, b1);
+		float k0 = line0.mK;
+		float b0 = line0.mB;
+		const bool hasK0 = line0.mHasK;
+		float k1 = line1.mK;
+		float b1 = line1.mB;
+		const bool hasK1 = line1.mHasK;
 		// 两条竖直的线没有交点,即使两条竖直的线重合也不计算交点
 		if (!hasK0 && !hasK1)
 		{
@@ -889,68 +889,14 @@ namespace MathUtility
 	// 计算两条直线的交点,返回值表示两条直线是否相交
 	bool intersectLine3IgnoreY(const Line3& line0, const Line3& line1, Vector3& intersect)
 	{
-		// 计算两条线的k和b
-		float k0 = 0.0f;
-		float b0 = 0.0f;
-		const bool hasK0 = generateLineExpression(line0.toLine2IgnoreY(), k0, b0);
-		float k1 = 0.0f;
-		float b1 = 0.0f;
-		const bool hasK1 = generateLineExpression(line1.toLine2IgnoreY(), k1, b1);
-		// 两条竖直的线没有交点,即使两条竖直的线重合也不计算交点
-		if (!hasK0 && !hasK1)
-		{
-			return false;
-		}
-		// 直线0为竖直的线
-		else if (!hasK0)
-		{
-			intersect.x = line0.mStart.x;
-			intersect.z = k1 * intersect.x + b1;
-			return true;
-		}
-		// 直线1为竖直的线
-		else if (!hasK1)
-		{
-			intersect.x = line1.mStart.x;
-			intersect.z = k0 * intersect.x + b0;
-			return true;
-		}
-		else
-		{
-			// 两条不重合且不平行的两条线才计算交点
-			if (!isEqual(k0, k1))
-			{
-				intersect.x = divide(b1 - b0, k0 - k1);
-				intersect.z = k0 * intersect.x + b0;
-				return true;
-			}
-		}
-		return false;
+		Vector2 intersect2;
+		const bool result = intersectLine2(line0.toLine2IgnoreY(), line1.toLine2IgnoreY(), intersect2);
+		intersect.x = intersect2.x;
+		intersect.z = intersect2.y;
+		return result;
 	}
 
-	// k为斜率,也就是cotan(直线与y轴的夹角)
-	bool generateLineExpression(const Line2& line, float& k, float& b)
-	{
-		// 一条横着的线,斜率为0
-		if (isZero(line.mStart.y - line.mEnd.y))
-		{
-			k = 0.0f;
-			b = line.mStart.y;
-		}
-		// 直线是一条竖直的线,没有斜率
-		else if (isZero(line.mStart.x - line.mEnd.x))
-		{
-			return false;
-		}
-		else
-		{
-			k = divide(line.mStart.y - line.mEnd.y, line.mStart.x - line.mEnd.x);
-			b = line.mStart.y - k * line.mStart.x;
-		}
-		return true;
-	}
-
-	bool intersectLineSection(const Line2& line0, const Line2& line1, Vector2& intersect, const bool checkEndPoint)
+	bool intersectLineSection(const Line2D& line0, const Line2D& line1, Vector2& intersect, const bool checkEndPoint)
 	{
 		// 有端点重合
 		if (isVectorEqual(line0.mStart, line1.mStart) ||
@@ -991,59 +937,186 @@ namespace MathUtility
 		return false;
 	}
 
-	// 计算线段与三角形是否相交
-	bool intersectLineTriangle(const Line2& line, const Triangle2& triangle, TriangleIntersect& intersectResult, const bool checkEndPoint)
+	bool intersectSegment(const Vector2 A, const Vector2 B, const Vector2 C, const Vector2 D, Vector2& out)
 	{
-		Vector2 intersect0;
-		Vector2 intersect1;
-		Vector2 intersect2;
-		// 对三条边都要检测,计算出最近的一个交点
-		const bool result0 = intersectLineSection(line, Line2(triangle.mPoint0, triangle.mPoint1), intersect0, checkEndPoint);
-		const bool result1 = intersectLineSection(line, Line2(triangle.mPoint1, triangle.mPoint2), intersect1, checkEndPoint);
-		const bool result2 = intersectLineSection(line, Line2(triangle.mPoint2, triangle.mPoint0), intersect2, checkEndPoint);
-		Vector2 point;
-		Vector2 linePoint0;
-		Vector2 linePoint1;
-		float closestDistance = 99999.0f * 99999.0f;
-		// 与第一条边相交
-		if (result0)
+		const float ABx = B.x - A.x;
+		const float ABy = B.y - A.y;
+		const float ACx = C.x - A.x;
+		const float ACy = C.y - A.y;
+		const float CDx = D.x - C.x;
+		const float CDy = D.y - C.y;
+
+		const float denom = ABx * CDy - ABy * CDx;
+		if (fabsf(denom) < 1e-6f) return false;
+
+		const float t = (ACx * CDy - ACy * CDx) / denom;
+		if (t < 0.0f || t > 1.0f) return false;
+
+		const float u = (ACx * ABy - ACy * ABx) / denom;
+		if (u < 0.0f || u > 1.0f) return false;
+
+		out.x = A.x + ABx * t;
+		out.y = A.y + ABy * t;
+		return true;
+	}
+
+	bool intersectLineTriangle(const Line2& line, const Triangle2& tri, TriangleIntersect& out, bool checkEndPoint)
+	{
+		float minX = tri.mPoint0.x;
+		float maxX = tri.mPoint0.x;
+		float minY = tri.mPoint0.y;
+		float maxY = tri.mPoint0.y;
+
+		const float x1 = tri.mPoint1.x;
+		const float x2 = tri.mPoint2.x;
+		const float y1 = tri.mPoint1.y;
+		const float y2 = tri.mPoint2.y;
+
+		if (x1 < minX)
 		{
-			const float squaredLength = getSquaredLength(intersect0 - line.mStart);
-			if (squaredLength < closestDistance)
+			minX = x1;
+		}
+		if (x1 > maxX)
+		{
+			maxX = x1;
+		}
+		if (x2 < minX)
+		{
+			minX = x2;
+		}
+		if (x2 > maxX)
+		{
+			maxX = x2;
+		}
+
+		if (y1 < minY)
+		{
+			minY = y1;
+		}
+		if (y1 > maxY)
+		{
+			maxY = y1;
+		}
+		if (y2 < minY)
+		{
+			minY = y2;
+		}
+		if (y2 > maxY)
+		{
+			maxY = y2;
+		}
+		const Vector2 S = line.mStart;
+		const Vector2 E = line.mEnd;
+		if ((S.x < minX && E.x < minX) || (S.x > maxX && E.x > maxX) || (S.y < minY && E.y < minY) || (S.y > maxY && E.y > maxY))
+		{
+			return false;
+		}
+
+		Vector2 inter;
+		float bestDist = 999999999.0f;
+		bool hit = false;
+		const float dx = S.x - line.mStart.x;
+		const float dy = S.y - line.mStart.y;
+		const float d = dx * dx + dy * dy;
+		// Edge 0: (P0, P1)
+		{
+			const Vector2 A = tri.mPoint0;
+			const Vector2 B = tri.mPoint1;
+
+			// S/E 是否等于端点
+			if (checkEndPoint && ((S.x == A.x && S.y == A.y) || (S.x == B.x && S.y == B.y) || (E.x == A.x && E.y == A.y) || (E.x == B.x && E.y == B.y)))
 			{
-				closestDistance = squaredLength;
-				point = intersect0;
-				linePoint0 = triangle.mPoint0;
-				linePoint1 = triangle.mPoint1;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = S;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
+			}
+			else if (intersectSegment(S, E, A, B, inter))
+			{
+				const float dx = inter.x - line.mStart.x;
+				const float dy = inter.y - line.mStart.y;
+				const float d = dx * dx + dy * dy;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = inter;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
 			}
 		}
-		// 与第二条边相交
-		if (result1)
+
+		// Edge 1: (P1, P2)
 		{
-			const float squaredLength = getSquaredLength(intersect1 - line.mStart);
-			if (squaredLength < closestDistance)
+			const Vector2 A = tri.mPoint1;
+			const Vector2 B = tri.mPoint2;
+
+			if (checkEndPoint &&
+				((S.x == A.x && S.y == A.y) || (S.x == B.x && S.y == B.y) || (E.x == A.x && E.y == A.y) || (E.x == B.x && E.y == B.y)))
 			{
-				closestDistance = squaredLength;
-				point = intersect1;
-				linePoint0 = triangle.mPoint1;
-				linePoint1 = triangle.mPoint2;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = S;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
+			}
+			else if (intersectSegment(S, E, A, B, inter))
+			{
+				const float dx = inter.x - line.mStart.x;
+				const float dy = inter.y - line.mStart.y;
+				const float d = dx * dx + dy * dy;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = inter;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
 			}
 		}
-		// 与第三条边相交
-		if (result2)
+
+		// Edge 2: (P2, P0)
 		{
-			const float squaredLength = getSquaredLength(intersect2 - line.mStart);
-			if (squaredLength < closestDistance)
+			const Vector2 A = tri.mPoint2;
+			const Vector2 B = tri.mPoint0;
+
+			if (checkEndPoint && ((S.x == A.x && S.y == A.y) || (S.x == B.x && S.y == B.y) || (E.x == A.x && E.y == A.y) || (E.x == B.x && E.y == B.y)))
 			{
-				point = intersect2;
-				linePoint0 = triangle.mPoint2;
-				linePoint1 = triangle.mPoint0;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = S;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
+			}
+			else if (intersectSegment(S, E, A, B, inter))
+			{
+				const float dx = inter.x - line.mStart.x;
+				const float dy = inter.y - line.mStart.y;
+				const float d = dx * dx + dy * dy;
+				if (d < bestDist)
+				{
+					bestDist = d;
+					out.mIntersectPoint = inter;
+					out.mLinePoint0 = A;
+					out.mLinePoint1 = B;
+					hit = true;
+				}
 			}
 		}
-		intersectResult.mIntersectPoint = point;
-		intersectResult.mLinePoint0 = linePoint0;
-		intersectResult.mLinePoint1 = linePoint1;
-		return result0 || result1 || result2;
+
+		return hit;
 	}
 
 	// 计算线段与三角形是否相交
@@ -1110,15 +1183,15 @@ namespace MathUtility
 			return false;
 		}
 		// 直线是否与任何一条边相交
-		const Vector3 cornor0(rect.mMin.x, 0.0f, rect.mMin.z);
-		const Vector3 cornor1(rect.mMin.x, 0.0f, rect.mMax.z);
-		const Vector3 cornor2(rect.mMax.x, 0.0f, rect.mMax.z);
-		const Vector3 cornor3(rect.mMax.x, 0.0f, rect.mMin.z);
+		const Vector3 corner0(rect.mMin.x, 0.0f, rect.mMin.z);
+		const Vector3 corner1(rect.mMin.x, 0.0f, rect.mMax.z);
+		const Vector3 corner2(rect.mMax.x, 0.0f, rect.mMax.z);
+		const Vector3 corner3(rect.mMax.x, 0.0f, rect.mMin.z);
 		Vector3 intersect;
-		bool result = intersectLineSectionIgnoreY(line, Line3(cornor0, cornor1), intersect, checkEndPoint) ||
-					  intersectLineSectionIgnoreY(line, Line3(cornor3, cornor2), intersect, checkEndPoint) ||
-					  intersectLineSectionIgnoreY(line, Line3(cornor3, cornor0), intersect, checkEndPoint) ||
-					  intersectLineSectionIgnoreY(line, Line3(cornor2, cornor1), intersect, checkEndPoint);
+		bool result = intersectLineSectionIgnoreY(line, Line3(corner0, corner1), intersect, checkEndPoint) ||
+					  intersectLineSectionIgnoreY(line, Line3(corner3, corner2), intersect, checkEndPoint) ||
+					  intersectLineSectionIgnoreY(line, Line3(corner3, corner0), intersect, checkEndPoint) ||
+					  intersectLineSectionIgnoreY(line, Line3(corner2, corner1), intersect, checkEndPoint);
 		if (result && intersectPtr != nullptr)
 		{
 			*intersectPtr = intersect;
@@ -1126,7 +1199,7 @@ namespace MathUtility
 		return result;
 	}
 
-	bool intersect(const Line2& line, const Rect& rect, Vector2* intersectPtr, const bool checkEndPoint)
+	bool intersectEdge(const Line2D& line, const Rect& rect, Vector2* intersectPtr, const bool checkEndPoint)
 	{
 		const float dis = getDistanceToLine(rect.getCenter(), line);
 		// 距离大于对角线的一半,则不与矩形相交
@@ -1141,10 +1214,10 @@ namespace MathUtility
 		const Vector2 leftBottom(rect.x, rect.y);
 		bool result = false;
 		Vector2 intersect;
-		result = intersectLineSection(line, Line2(leftTop, rightTop), intersect, checkEndPoint) ||
-				 intersectLineSection(line, Line2(leftBottom, rightBottom), intersect, checkEndPoint) ||
-				 intersectLineSection(line, Line2(leftBottom, leftTop), intersect, checkEndPoint) ||
-				 intersectLineSection(line, Line2(rightBottom, rightTop), intersect, checkEndPoint);
+		result = intersectLineSection(line, Line2D(leftTop, rightTop), intersect, checkEndPoint) ||
+				 intersectLineSection(line, Line2D(leftBottom, rightBottom), intersect, checkEndPoint) ||
+				 intersectLineSection(line, Line2D(leftBottom, leftTop), intersect, checkEndPoint) ||
+				 intersectLineSection(line, Line2D(rightBottom, rightTop), intersect, checkEndPoint);
 		if (result && intersectPtr != nullptr)
 		{
 			*intersectPtr = intersect;
@@ -1152,8 +1225,105 @@ namespace MathUtility
 		return result;
 	}
 
+	// 返回 true 如果 line 与 rect 有任何交集，包括完全在矩形内部
+	bool intersectLineAABB(const Line2& line, const Rect& rect, Vector2* intersectPtr)
+	{
+		const Vector2 start = line.mStart;
+		const Vector2 end = line.mEnd;
+		// 1. 计算线段包围盒
+		const float minX = getMin(start.x, end.x);
+		const float maxX = getMax(start.x, end.x);
+		const float minY = getMin(start.y, end.y);
+		const float maxY = getMax(start.y, end.y);
+
+		// 2. 快速包围盒排除
+		if (maxX < rect.x || minX > rect.x + rect.width ||
+			maxY < rect.y || minY > rect.y + rect.height)
+			return false;
+
+		// 3. 线段完全在矩形内部
+		if (start.x >= rect.x && start.x <= rect.x + rect.width &&
+			start.y >= rect.y && start.y <= rect.y + rect.height &&
+			end.x >= rect.x && end.x <= rect.x + rect.width &&
+			end.y >= rect.y && end.y <= rect.y + rect.height)
+		{
+			if (intersectPtr != nullptr)
+			{
+				// 返回线段中点作为交点示例
+				intersectPtr->x = (start.x + end.x) * 0.5f;
+				intersectPtr->y = (start.y + end.y) * 0.5f;
+			}
+			return true;
+		}
+
+		// 4. 检查与矩形四条边是否相交
+		const float left = rect.x;
+		const float right = rect.x + rect.width;
+		const float bottom = rect.y;
+		const float top = rect.y + rect.height;
+		Vector2 pt;
+		// 左边
+		if (lineIntersect(line, left, bottom, left, top, pt))
+		{
+			if (intersectPtr != nullptr)
+			{
+				*intersectPtr = pt;
+			}
+			return true;
+		}
+		// 右边
+		if (lineIntersect(line, right, bottom, right, top, pt))
+		{
+			if (intersectPtr != nullptr)
+			{
+				*intersectPtr = pt;
+			}
+			return true;
+		}
+		// 底边
+		if (lineIntersect(line, left, bottom, right, bottom, pt))
+		{
+			if (intersectPtr != nullptr)
+			{
+				*intersectPtr = pt;
+			}
+			return true;
+		}
+		// 顶边
+		if (lineIntersect(line, left, top, right, top, pt))
+		{
+			if (intersectPtr != nullptr)
+			{
+				*intersectPtr = pt;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	bool lineIntersect(const Line2& line, float x3, float y3, float x4, float y4, Vector2& out)
+	{
+		const Vector2 start = line.mStart;
+		const Vector2 end = line.mEnd;
+		const float denom = (y4 - y3) * (end.x - start.x) - (x4 - x3) * (end.y - start.y);
+		// 平行或重合
+		if (isZero(denom))
+		{
+			return false;
+		}
+		const float ua = ((x4 - x3) * (start.y - y3) - (y4 - y3) * (start.x - x3)) / denom;
+		const float ub = ((end.x - start.x) * (start.y - y3) - (end.y - start.y) * (start.x - x3)) / denom;
+		if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f)
+		{
+			out.x = start.x + ua * (end.x - start.x);
+			out.y = start.y + ua * (end.y - start.y);
+			return true;
+		}
+		return false;
+	}
+
 	// 计算点到线的距离
-	float getDistanceToLine(const Vector2& point, const Line2& line)
+	float getDistanceToLine(const Vector2 point, const Line2D& line)
 	{
 		return getLength(point - getProjectPoint(point, line));
 	}
@@ -1165,7 +1335,7 @@ namespace MathUtility
 	}
 
 	// 计算点在线上的投影
-	Vector2 getProjectPoint(const Vector2& point, const Line2& line)
+	Vector2 getProjectPoint(const Vector2 point, const Line2D& line)
 	{
 		// 计算出点到线一段的向量在线上的投影
 		const Vector2 projectOnLine = getProjection(point - line.mStart, line.mEnd - line.mStart);
@@ -1183,7 +1353,7 @@ namespace MathUtility
 	}
 
 	// 计算一个向量在另一个向量上的投影
-	Vector2 getProjection(const Vector2& v1, const Vector2& v2)
+	Vector2 getProjection(const Vector2 v1, const Vector2 v2)
 	{
 		return normalize(v2) * getLength(v1) * cos(getAngleBetweenVector(v1, v2));
 	}

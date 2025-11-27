@@ -4,6 +4,12 @@
 #include "Vector.h"
 #include "MapModify.h"
 
+// 支持在遍历列表时对列表进行插入和删除
+// 需要搭配SAFE_HASHMAP_SCOPE宏来进行遍历
+// SafeHashMap<int, int> list;
+// SAFE_HASHMAP_SCOPE(list, readList);
+// for (const auto& item : readList)
+// {}
 template<typename Key, typename Value>
 class SafeHashMap
 {
@@ -127,7 +133,7 @@ protected:
 			// 更新操作较少,则遍历更新操作列表进行数据同步
 			if (modifyCount < mainCount)
 			{
-				FOR_I(modifyCount)
+				FOR(modifyCount)
 				{
 					auto& modifyValue = mModifyList[i];
 					if (modifyValue.mAdd)

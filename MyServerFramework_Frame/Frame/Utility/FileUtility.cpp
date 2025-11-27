@@ -60,7 +60,7 @@ namespace FileUtility
 			{
 				if (patternCount > 0)
 				{
-					FOR_I(patternCount)
+					FOR(patternCount)
 					{
 						if (endWith(szTmpPath.str(), patterns[i].c_str(), false))
 						{
@@ -224,7 +224,7 @@ namespace FileUtility
 			{
 				if (patternCount > 0)
 				{
-					FOR_I(patternCount)
+					FOR(patternCount)
 					{
 						if (endWith(fullname, patterns[i].c_str(), false))
 						{
@@ -662,7 +662,7 @@ namespace FileUtility
 		rewind(pFile);
 		MD5 md5;
 		const int times = divideInt(fileSize, bufferSize);
-		FOR_I(times)
+		FOR(times)
 		{
 			// 读取文件一段内存
 			const int readCount = (int)fread(buffer, sizeof(char), bufferSize, pFile);

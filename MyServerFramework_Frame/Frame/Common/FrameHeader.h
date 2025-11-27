@@ -309,6 +309,7 @@
 #include "FrameMySQLUtility.h"
 #include "FrameUtility.h"
 #include "Line2.h"
+#include "Line2D.h"
 #include "Line3.h"
 #include "Rect.h"
 #include "Rect3.h"

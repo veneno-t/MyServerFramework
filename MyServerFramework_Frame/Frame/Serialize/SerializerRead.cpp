@@ -15,7 +15,7 @@ bool SerializerRead::readVector2List(Vector<Vector2>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = readVector2(list[i]) && result;
 	}
@@ -30,7 +30,7 @@ bool SerializerRead::readVector2IntList(Vector<Vector2Int>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = readVector2Int(list[i]) && result;
 	}
@@ -45,7 +45,7 @@ bool SerializerRead::readVector3List(Vector<Vector3>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = readVector3(list[i]) && result;
 	}
@@ -60,7 +60,7 @@ bool SerializerRead::readVector3IntList(Vector<Vector3Int>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = readVector3Int(list[i]) && result;
 	}
@@ -76,7 +76,7 @@ bool SerializerRead::readStringList(Vector<string>& list)
 	}
 	bool result = true;
 	list.resize(count);
-	FOR_I(count)
+	FOR(count)
 	{
 		result = readString(list[i]) && result;
 	}

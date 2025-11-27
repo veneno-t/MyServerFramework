@@ -116,42 +116,42 @@ float InputSystem::getKeyTime(const int key) const
 	return mKeyState.tryGet(key).mStateTime;
 }
 
-void InputSystem::mouseLeftDown(const Vector2& position)
+void InputSystem::mouseLeftDown(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::LEFT].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::LEFT].mState = KEY_STATE::CURRENT_DOWN;
 	setCurMousePosition(position);
 }
 
-void InputSystem::mouseRightDown(const Vector2& position)
+void InputSystem::mouseRightDown(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::RIGHT].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::RIGHT].mState = KEY_STATE::CURRENT_DOWN;
 	setCurMousePosition(position);
 }
 
-void InputSystem::mouseMiddleDown(const Vector2& position)
+void InputSystem::mouseMiddleDown(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::MIDDLE].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::MIDDLE].mState = KEY_STATE::CURRENT_DOWN;
 	setCurMousePosition(position);
 }
 
-void InputSystem::mouseLeftUp(const Vector2& position)
+void InputSystem::mouseLeftUp(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::LEFT].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::LEFT].mState = KEY_STATE::CURRENT_UP;
 	setCurMousePosition(position);
 }
 
-void InputSystem::mouseRightUp(const Vector2& position)
+void InputSystem::mouseRightUp(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::RIGHT].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::RIGHT].mState = KEY_STATE::CURRENT_UP;
 	setCurMousePosition(position);
 }
 
-void InputSystem::mouseMiddleUp(const Vector2& position)
+void InputSystem::mouseMiddleUp(const Vector2 position)
 {
 	mMouseState[MOUSE_BUTTON::MIDDLE].mStateTime = 0.0f;
 	mMouseState[MOUSE_BUTTON::MIDDLE].mState = KEY_STATE::CURRENT_UP;

@@ -1,6 +1,6 @@
 ﻿#include "FrameHeader.h"
 
-Line2::Line2(const Vector2& start, const Vector2& end) :
+Line2D::Line2D(const Vector2 start, const Vector2 end) :
 	mStart(start),
 	mEnd(end)
 {
@@ -18,7 +18,7 @@ Line2::Line2(const Vector2& start, const Vector2& end) :
 }
 
 // 获取直线上指定y坐标对应的x坐标
-bool Line2::getPointXOnLine(float y, float& x)
+bool Line2D::getPointXOnLine(float y, float& x)
 {
 	// 没有斜率,是一条平行于Y轴的直线,所有X都是一样的
 	if (!mHasK)

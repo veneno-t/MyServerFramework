@@ -43,7 +43,7 @@ public:
 		{
 			if (auto* objSet = mUnusedList.getPtr(key))
 			{
-				FOR_I(dataCount)
+				FOR(dataCount)
 				{
 					// 首先从未使用的列表中获取,获取不到再重新创建一个
 					ClassType* obj = objSet->popBack(nullptr);
@@ -62,7 +62,7 @@ public:
 			ClassType* tempValidObj = nullptr;
 			int createCount = 0;
 			const int needCreateCount = dataCount - classList.size();
-			FOR_I(needCreateCount)
+			FOR(needCreateCount)
 			{
 				ClassType* obj = create(key);
 				// 这里可能会创建失败
@@ -178,7 +178,7 @@ public:
 		{
 			if (auto* objVector = mUnusedList.getPtr(key))
 			{
-				FOR_I(dataCount)
+				FOR(dataCount)
 				{
 					// 首先从未使用的列表中获取,获取不到再重新创建一个
 					T* obj = static_cast<T*>(objVector->popBack(nullptr));
@@ -195,7 +195,7 @@ public:
 		{
 			// 还没有获取够,则创建剩余数量
 			const int needCreateCount = dataCount - classList.size();
-			FOR_I(needCreateCount)
+			FOR(needCreateCount)
 			{
 				T* obj = new T();
 				obj->resetProperty();

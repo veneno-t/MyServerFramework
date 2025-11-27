@@ -5,7 +5,13 @@
 class MICRO_LEGEND_FRAME_API Rect
 {
 public:
-	Rect(const Vector2& min, const Vector2& size):
+	Rect(const float minX, const float minY, const float sizeX, const float sizeY) :
+		x(minX),
+		y(minY),
+		width(sizeX),
+		height(sizeY)
+	{}
+	Rect(Vector2 min, Vector2 size):
 		x(min.x),
 		y(min.y),
 		width(size.x),

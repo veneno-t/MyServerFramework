@@ -26,7 +26,9 @@ typedef void (*CommandCallback)(GameCommand* cmd, void* user_data);
 typedef void (*ServerCheckPingCallback)(TCPServerClient* client, int index);
 typedef void (*WebServerCheckPingCallback)(WebSocketServerClient* client, int index);
 typedef void (*FreezeAccountCallback)(llong accountGUID, llong timeSecond, const char* reason);
+#ifdef _LIBEVENT
 typedef void (*HttpCallback)(evhttp_request* req, const string& uri, void* userData);
+#endif
 // 定义为普通的函数指针,方便进行比较,占用内存也较小
 typedef void (*FrameTickCallback)(GameComponent* component, float elapsedTime);
 typedef void (*SecondTickCallback)(GameComponent* component);

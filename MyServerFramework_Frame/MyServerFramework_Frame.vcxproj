@@ -699,8 +699,9 @@
     <ClInclude Include="Frame\Utility\Utility.h" />
     <ClInclude Include="Frame\Utility\FileStruct\FileContent.cpp" />
     <ClInclude Include="Frame\Utility\FileStruct\FileContent.h" />
-    <ClInclude Include="Frame\Utility\MathStruct\Line2.cpp" />
     <ClInclude Include="Frame\Utility\MathStruct\Line2.h" />
+    <ClInclude Include="Frame\Utility\MathStruct\Line2D.cpp" />
+    <ClInclude Include="Frame\Utility\MathStruct\Line2D.h" />
     <ClInclude Include="Frame\Utility\MathStruct\Line3.h" />
     <ClInclude Include="Frame\Utility\MathStruct\Rect.h" />
     <ClInclude Include="Frame\Utility\MathStruct\Rect3.h" />

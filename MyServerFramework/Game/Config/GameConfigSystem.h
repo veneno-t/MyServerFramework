@@ -8,9 +8,7 @@ class GameConfigSystem : public FrameComponent
 {
 	BASE(GameConfigSystem, FrameComponent);
 public:
-	~GameConfigSystem() override { destory(); }
 	void init() override;
-	void destory() {}
 	bool isTestServer() const { return mTestServer; }
 	bool isSeasonServer() const { return mSeasonServer; }
 protected:

@@ -54,7 +54,7 @@ public:
 		}
 		bool result = true;
 		list.resize(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			result = read(list[i]) && result;
 		}
@@ -76,7 +76,7 @@ public:
 		}
 		bool result = true;
 		list.resize(count);
-		FOR_I(count)
+		FOR(count)
 		{
 			result = readCustom(list[i]) && result;
 		}

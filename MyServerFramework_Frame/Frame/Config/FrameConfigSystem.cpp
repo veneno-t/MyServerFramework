@@ -99,7 +99,7 @@ Vector<pair<string, string>> FrameConfigSystem::parseConfig(const string& fileNa
 	{
 		// 首先去掉所有的空格和制表符
 		int curLen = 0;
-		FOR_I(lineString.length())
+		FOR(lineString.length())
 		{
 			if (lineString[i] != ' ' && lineString[i] != '\t' && lineString[i] != '\r' && lineString[i] != '\n')
 			{

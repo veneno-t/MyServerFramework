@@ -129,7 +129,7 @@
 #include "FileUtility.cpp"
 #include "FrameMySQLUtility.cpp"
 #include "FrameUtility.cpp"
-#include "Line2.cpp"
+#include "Line2D.cpp"
 #include "MathUtility.cpp"
 #include "StringUtility.cpp"
 #include "SystemUtility.cpp"

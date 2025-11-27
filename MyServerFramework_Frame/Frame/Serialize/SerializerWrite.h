@@ -15,12 +15,12 @@ public:
 		writeCheck(sizeof(T));
 		return BinaryUtility::write(mBuffer, mBufferSize, mIndex, value);
 	}
-	bool writeVector2(const Vector2& value)
+	bool writeVector2(Vector2 value)
 	{
 		writeCheck(sizeof(value));
 		return BinaryUtility::writeVector2(mBuffer, mBufferSize, mIndex, value);
 	}
-	bool writeVector2Int(const Vector2Int& value)
+	bool writeVector2Int(Vector2Int value)
 	{
 		writeCheck(sizeof(value));
 		return BinaryUtility::writeVector2Int(mBuffer, mBufferSize, mIndex, value);
@@ -50,7 +50,7 @@ public:
 			return false;
 		}
 		bool result = true;
-		FOR_I(count)
+		FOR(count)
 		{
 			result = write(list[i]) && result;
 		}
@@ -67,7 +67,7 @@ public:
 			return false;
 		}
 		bool result = true;
-		FOR_I(count)
+		FOR(count)
 		{
 			result = writeCustom(list[i]) && result;
 		}

@@ -3,6 +3,12 @@
 #include "Vector.h"
 #include "ValueModify.h"
 
+// 支持在遍历列表时对列表进行插入和删除
+// 需要搭配SAFE_SET_SCOPE宏来进行遍历
+// SafeVector<int> list;
+// SAFE_VECTOR_SCOPE(list, readList);
+// for (const int item : readList)
+// {}
 template<typename T>
 class SafeVector
 {
@@ -18,13 +24,14 @@ public:
 			ERROR("正在遍历列表,无法再次开始遍历");
 		}
 		mForeaching = true;
+		mModified = false;
 		return mUpdateList;
 	}
 	void endForeach()
 	{
 		mForeaching = false;
 		// 在结束遍历时同步一次
-		if (mModifyList.size() > 0)
+		if (mModified)
 		{
 			sync();
 		}
@@ -39,7 +46,7 @@ public:
 	// 当遍历过程中不能确定列表一定不会被修改时,都应该使用startForeach进行遍历
 	// 当确定遍历过程中列表不会被修改时,才会使用getMainList进行过遍历
 	const Vector<T>& getMainList() const	{ return mMainList; }
-	void moveMainListTo(Vector<T>& target)	
+	void moveMainListTo(Vector<T>& target)
 	{
 		// 只有当正在遍历中对列表进行修改时,才会记录修改操作
 		if (mForeaching)
@@ -54,11 +61,12 @@ public:
 			mUpdateList.clear();
 		}
 		target = move(mMainList);
+		mModified = true;
 	}
 	int size() const						{ return mMainList.size(); }
 	bool isEmpty() const					{ return mMainList.isEmpty(); }
 	T* data() const							{ return mMainList.data(); }
-	bool conains(const T& value) const		{ return mMainList.contains(value); }
+	bool contains(const T& value) const		{ return mMainList.contains(value); }
 	void push_back(const T& value)
 	{
 		mMainList.push_back(value);
@@ -71,6 +79,7 @@ public:
 		{
 			mUpdateList.push_back(value);
 		}
+		mModified = true;
 	}
 	bool eraseAt(const int index)
 	{
@@ -88,6 +97,7 @@ public:
 			mUpdateList.eraseElement(mMainList[index]);
 		}
 		mMainList.eraseAt(index);
+		mModified = true;
 		return true;
 	}
 	// 在遍历中移除元素有两种选择
@@ -111,6 +121,7 @@ public:
 		else
 		{
 			mUpdateList.eraseElement(value);
+			mModified = true;
 		}
 		return true;
 	}
@@ -130,6 +141,7 @@ public:
 			mUpdateList.clear();
 		}
 		mMainList.clear();
+		mModified = true;
 	}
 protected:
 	void sync()
@@ -146,7 +158,7 @@ protected:
 			// 更新操作较少,则遍历更新操作列表进行数据同步
 			if (modifyCount < mainCount)
 			{
-				FOR_I(modifyCount)
+				FOR(modifyCount)
 				{
 					auto& modifyValue = mModifyList[i];
 					if (modifyValue.mAdd)
@@ -166,11 +178,13 @@ protected:
 			}
 		}
 		mModifyList.clear();
+		mModified = false;
 	}
 protected:
 	Vector<ValueModify<T>> mModifyList;	// 记录操作的列表
 	Vector<T> mUpdateList;				// 用于遍历更新的列表
 	Vector<T> mMainList;				// 用于存储实时数据的列表
 	bool mForeaching = false;			// 是否正在遍历中
+	bool mModified = false;				// 是否有被修改,如果被修改,则在结束遍历时需要同步
 	int mHasResetCount = 0;				// 在遍历中被重置的元素个数
 };

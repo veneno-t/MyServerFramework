@@ -20,7 +20,7 @@ public:
 	void clear()						{ mValue[0] = '\0'; }
 	int length() const 
 	{
-		FOR_I(Length)
+		FOR(Length)
 		{
 			if (mValue[i] == '\0')
 			{
